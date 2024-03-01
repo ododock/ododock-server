@@ -1,13 +1,22 @@
 package ododock.webserver.domain.article;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
+import ododock.webserver.domain.profile.Category;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Table(name = "\"ARTICLE\"")
+@Table(name = "article")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article {
 
@@ -28,32 +37,33 @@ public class Article {
     @Column(name = "version", nullable = false)
     private Long version;
 
-    @NotBlank
     @Column(name = "title", nullable = false)
     private String title;
 
-    @NotNull
     @Column(name = "body", nullable = false)
     private String body;
 
     @ElementCollection
-    @CollectionTable(name="TAGS", joinColumns=
+    @CollectionTable(name="tags", joinColumns=
         @JoinColumn(name="article_id", nullable = true)
     )
     private Set<Tag> tags = new HashSet<Tag>();
 
-    @Nullable
-    @Column(name = "category", nullable = true)
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Builder
-    public Article(String title, String body, Set<String> tags, String category) {
+    public Article(String title, String body, @Nullable Set<String> tags, @Nullable Category category) {
         this.title = title;
         this.body = body;
         this.tags.addAll(tags.stream()
                 .map(Tag::new)
                 .collect(Collectors.toSet()));
-        this.category = category;
+        if (category != null) {
+            category.getArticles().add(this);
+            this.updateCategory(category);
+        }
     }
 
     public void updateTitle(String title) {
@@ -64,7 +74,8 @@ public class Article {
         this.body = body;
     }
 
-    public void updateCategory(String category) {
+    public void updateCategory(Category category) {
+        category.getArticles().add(this);
         this.category = category;
     }
 

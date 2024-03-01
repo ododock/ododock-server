@@ -1,9 +1,13 @@
 package ododock.webserver.repository;
 
 import ododock.webserver.domain.article.Article;
+import ododock.webserver.domain.profile.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.UUID;
+import java.util.List;
 
-public interface ArticleRepository extends JpaRepository<Article, UUID> {
+public interface ArticleRepository extends JpaRepository<Article, Long> {
+
+    List<Article> findArticleByCategory(final Category category);
+
 }
