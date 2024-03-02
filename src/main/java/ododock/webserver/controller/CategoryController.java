@@ -3,6 +3,7 @@ package ododock.webserver.controller;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ododock.webserver.request.CategoryCreate;
+import ododock.webserver.request.CategoryListUpdate;
 import ododock.webserver.request.CategoryUpdate;
 import ododock.webserver.response.CategoryDetailsResponse;
 import ododock.webserver.response.ListResponse;
@@ -38,11 +39,21 @@ public class CategoryController {
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}/categories")
-    public ResponseEntity<Void> updatCategory(
+    public ResponseEntity<Void> updateCategoryList(
             final @PathVariable Long profileId,
+            final @Valid @RequestBody CategoryListUpdate request
+    ) {
+        categoryService.updateCategoryList(profileId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")
+    public ResponseEntity<Void> updateCategory(
+            final @PathVariable Long profileId,
+            final @PathVariable Long categoryId,
             final @Valid @RequestBody CategoryUpdate request
     ) {
-        categoryService.updateCategories(profileId, request);
+        categoryService.updateCategory(profileId, categoryId, request);
         return ResponseEntity.ok().build();
     }
 

@@ -9,6 +9,7 @@ import ododock.webserver.repository.ArticleRepository;
 import ododock.webserver.repository.CategoryRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.CategoryCreate;
+import ododock.webserver.request.CategoryListUpdate;
 import ododock.webserver.request.CategoryUpdate;
 import ododock.webserver.response.CategoryDetailsResponse;
 import ododock.webserver.response.ListResponse;
@@ -51,16 +52,26 @@ public class CategoryService {
     }
 
     @Transactional
-    public void updateCategories(final Long profileId, final CategoryUpdate request) {
+    public void updateCategoryList(final Long profileId, final CategoryListUpdate request) {
         profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
 
-        for (CategoryUpdate.CategoryDto targetCategory : request.categories()) {
+        for (CategoryListUpdate.CategoryDto targetCategory : request.categories()) {
             Category foundCategory = categoryRepository.findById(targetCategory.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(Category.class, targetCategory.getCategoryId()));
             foundCategory.updateName(targetCategory.getName());
             foundCategory.updateVisibility(targetCategory.isVisibility());
         }
+    }
+
+    @Transactional
+    public void updateCategory(final Long profileId, final Long categoryId, final CategoryUpdate request) {
+        profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(Category.class, categoryId));
+        category.updateName(request.name());
+        category.updateVisibility(request.visibility());
     }
 
     @Transactional
