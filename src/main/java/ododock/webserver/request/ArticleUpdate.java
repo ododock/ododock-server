@@ -11,14 +11,13 @@ import java.util.Set;
 public record ArticleUpdate(
         @NotBlank
         String title,
-
         @NotNull
         String body,
-
         @NotNull
         Set<String> tags,
-
         @Nullable
-        Long categoryId
+        Long categoryId,
+        @Nullable
+        Boolean visibility
 ) {
 }

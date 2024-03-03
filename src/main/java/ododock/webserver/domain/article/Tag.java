@@ -1,19 +1,27 @@
 package ododock.webserver.domain.article;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Objects;
 
 @Getter
 @Embeddable
+@RequiredArgsConstructor
 public class Tag {
 
     @Column(name = "article_id", insertable = false, updatable = false)
     private Long articleId;
 
-    @Column(name = "tag_name", nullable = false) // TODO nullable을 넣는게 맞나?
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Builder
+    public Tag(String name) {
+        this.name = name;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -27,4 +35,5 @@ public class Tag {
     public int hashCode() {
         return Objects.hash(name);
     }
+
 }
