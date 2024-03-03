@@ -1,0 +1,11 @@
+= Ododock API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[ododock-article-create]]
+== Article 생성
+operation::article/create-article[snippets='http-request,request-fields,http-response,response-fields']
