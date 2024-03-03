@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import ododock.webserver.request.CategoryCreate;
 import ododock.webserver.request.CategoryListUpdate;
 import ododock.webserver.request.CategoryUpdate;
+import ododock.webserver.response.ApiResponse;
 import ododock.webserver.response.CategoryDetailsResponse;
 import ododock.webserver.response.ListResponse;
 import ododock.webserver.service.CategoryService;
@@ -31,11 +32,11 @@ public class CategoryController {
     }
 
     @PostMapping("/api/v1/profiles/{profileId}/categories")
-    public void createCategory(
+    public ApiResponse createCategory(
             final @PathVariable Long profileId,
             final @Valid @RequestBody CategoryCreate request
     ) {
-        categoryService.createCategory(profileId, request);
+        return ApiResponse.of("categoryId", categoryService.createCategory(profileId, request));
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}/categories")

@@ -1,24 +1,13 @@
 package ododock.webserver.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.util.List;
 
 @Builder
 public record CategoryListUpdate(
-        @NotBlank
-        List<CategoryDto> categories
+        @NotNull
+        List<CategoryUpdate> categories
 ) {
-        @Getter
-        public class CategoryDto {
-                @NotBlank
-                private Long categoryId;
-                @NotBlank
-                private String name;
-                @NotBlank
-                private boolean visibility;
-        }
-
 }

@@ -33,6 +33,7 @@ public class CategoryService {
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
         List<Category> categories = categoryRepository.findByOwnerProfile(ownerProfile);
         return ListResponse.of(
+                profileId,
                 categories.stream()
                         .map(CategoryDetailsResponse::of)
                         .collect(Collectors.toList())
@@ -40,15 +41,19 @@ public class CategoryService {
     }
 
     @Transactional
-    public void createCategory(final Long profileId, final CategoryCreate request) {
+    public Long createCategory(final Long profileId, final CategoryCreate request) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
+        boolean defaultVisibility = true;
+        if (request.visibility() == null) {
+            defaultVisibility = request.visibility();
+        }
         Category category = Category.builder()
                 .ownerProfile(profile)
                 .name(request.name())
-                .visibility(request.visibility())
+                .visibility(defaultVisibility)
                 .build();
-        categoryRepository.save(category);
+        return categoryRepository.save(category).getId();
     }
 
     @Transactional
@@ -56,11 +61,11 @@ public class CategoryService {
         profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
 
-        for (CategoryListUpdate.CategoryDto targetCategory : request.categories()) {
-            Category foundCategory = categoryRepository.findById(targetCategory.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException(Category.class, targetCategory.getCategoryId()));
-            foundCategory.updateName(targetCategory.getName());
-            foundCategory.updateVisibility(targetCategory.isVisibility());
+        for (CategoryUpdate singleCategory : request.categories()) {
+            Category foundCategory = categoryRepository.findById(singleCategory.categoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException(Category.class, singleCategory.categoryId()));
+            foundCategory.updateName(singleCategory.name());
+            foundCategory.updateVisibility(singleCategory.visibility());
         }
     }
 

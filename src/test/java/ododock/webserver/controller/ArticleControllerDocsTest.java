@@ -119,7 +119,7 @@ public class ArticleControllerDocsTest {
                                 fieldWithPath("body").description("글 본문"),
                                 fieldWithPath("tags").description("글 태그").optional(),
                                 fieldWithPath("categoryId").description("글 카테고리 ID").optional(),
-                                fieldWithPath("visibility").description("글 공개여부")
+                                fieldWithPath("visibility").description("글 공개여부").optional()
                         ),
                         responseFields(
                                 fieldWithPath("type").description("생성된 자원 타입"),
