@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    // TODO figure out what is this field for
+    RESOURCE_ALREADY_EXISTS("RES-01", "Resource already exists", 404),
+    RESOURCE_NOT_FOUNDS("RES-02", "Resource not found", 404),
     ;
 
     private final String code;

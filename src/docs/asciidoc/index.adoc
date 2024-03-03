@@ -1,0 +1,23 @@
+= Ododock API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[ododock-article-get]]
+== Article 단건 조회
+operation::article/get-article[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[ododock-article-create]]
+== Article 생성
+operation::article/create-article[snippets='http-request,request-fields,http-response,response-fields']
+
+[[ododock-article-update]]
+== Article 수정
+operation::article/update-article[snippets='http-request,request-fields,http-response,response-fields']
+
+[[ododock-article-delete]]
+== Article 수정
+operation::article/delete-article[snippets='http-request,request-fields,http-response']
