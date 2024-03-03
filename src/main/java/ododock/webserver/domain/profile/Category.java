@@ -29,7 +29,7 @@ public class Category extends BaseEntity {
 
     @OneToMany(
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH}
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH} // TODO 캐스케이딩 타입 확인
     )
     @JoinColumn(
             name = "article_id",

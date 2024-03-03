@@ -1,5 +1,6 @@
 package ododock.webserver.security;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  * JwtAuthenticationFilter를 활용하는것으로 보임.
  */
 @Slf4j
+@RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
     private AccountService accountService;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -50,4 +50,5 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         log.info(String.valueOf(UsernamePasswordAuthenticationFilter.class.isAssignableFrom(authentication)));
         return UsernamePasswordAuthenticationFilter.class.isAssignableFrom(authentication);
     }
+
 }

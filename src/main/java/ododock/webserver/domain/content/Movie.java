@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-//@DiscriminatorColumn(discriminatorType = DiscriminatorType.STRING)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DiscriminatorValue("movie")
 public class Movie extends Content {
+
+    @Column(name = "director", updatable = false)
     private String director;
 
 }

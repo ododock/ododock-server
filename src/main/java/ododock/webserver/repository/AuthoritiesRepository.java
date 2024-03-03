@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AuthoritiesRepository extends JpaRepository<Authority, Long> {
     public List<Authority> findByUserId(Long userId);
+
 }

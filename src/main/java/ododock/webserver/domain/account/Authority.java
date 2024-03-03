@@ -18,6 +18,10 @@ public class Authority {
     @Nullable
     private Long seq;
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     private Long userId;
 
     @Column(name = "authority")
