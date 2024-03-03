@@ -7,10 +7,13 @@ import java.util.Set;
 
 @Builder
 public record ArticleDetailsResponse(
+        Long articleId,
         String title,
-        String category,
         String body,
+        Long categoryId,
+        String categoryName,
         Set<String> tags,
+        boolean visibility,
         LocalDateTime createdDate,
         LocalDateTime lastModifiedDate
 ) {
