@@ -7,6 +7,5 @@ import java.time.LocalDateTime;
 
 @Getter
 @MappedSuperclass
-@Access(AccessType.FIELD)
 public abstract class BaseEntity extends BaseTimeEntity {
 }
