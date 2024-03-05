@@ -13,6 +13,7 @@ java {
 }
 
 configurations {
+    asciidoctorExt
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -22,13 +23,7 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-}
 
-configurations {
-    asciidoctorExt
-}
 
 dependencies {
     // Spring Boot
@@ -58,25 +53,51 @@ dependencies {
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
-
-test {
-    outputs.dir snippetsDir
-    useJUnitPlatform()
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
-asciidoctor {
-    inputs.dir snippetsDir
+tasks.named('testClasses') {
+    doFirst {
+        delete file('build/docs/asciidoc')
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+    finalizedBy asciidoctor
+
+}
+
+tasks.named('asciidoctor') {
     dependsOn test
     configurations 'asciidoctorExt'
+    inputs.dir snippetsDir
+    finalizedBy copyDocument
+    doFirst {
+        delete file('src/main/resources/static/docs')
+    }
 }
+
+
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file('build/docs/asciidoc')
+    into file('src/main/resources/static/docs')
+}
+
 
 bootJar {
     dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}/html5") {
+    doFirst {
+        delete file('static/docs')
+    }
+    from("${asciidoctor.outputDir}") {
         into 'static/docs'
     }
 }
 
-clean {
-    delete file('src/main/generated')
+build {
+    finalizedBy copyDocument
 }
