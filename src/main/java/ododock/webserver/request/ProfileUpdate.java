@@ -6,8 +6,6 @@ import lombok.Builder;
 
 @Builder
 public record ProfileUpdate(
-        @NotNull
-        Long profileId,
         @NotBlank
         String nickname,
         @NotBlank

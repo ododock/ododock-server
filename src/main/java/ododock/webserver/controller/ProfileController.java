@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import ododock.webserver.request.ProfileImageUpdate;
 import ododock.webserver.request.ProfileUpdate;
 import ododock.webserver.response.ProfileDetailsResponse;
+import ododock.webserver.response.ValidateResponse;
 import ododock.webserver.service.ProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,18 +21,18 @@ public class ProfileController {
 
     private final ProfileService profileService;
 
-    @GetMapping("/api/v1/profiles/profileId")
+    @GetMapping("/api/v1/profiles/{profileId}")
     public ProfileDetailsResponse getProfile(
             @PathVariable final Long profileId
     ) {
         return profileService.getProfile(profileId);
     }
 
-    @GetMapping("/api/v1/profile/nickname")
-    public Boolean validateNickname(
-            @RequestParam final  String nickname
+    @GetMapping("/api/v1/profiles")
+    public ValidateResponse validateNickname(
+            @RequestParam("nickname") final  String nickname
     ) {
-        return profileService.validateNickname(nickname);
+        return ValidateResponse.of(profileService.validateNickname(nickname));
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}")
