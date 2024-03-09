@@ -3,9 +3,7 @@ package ododock.webserver.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
-import jakarta.xml.bind.DatatypeConverter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +12,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -24,23 +22,13 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-    private final SecretKey key;
-
-    public JwtTokenProvider(@Value("${jwt.secret}")String secretKey) {
-        System.out.println("check injection:"+secretKey);
-        byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
-
-        SecretKey temp = Keys.hmacShaKeyFor(secretByteKey);
-        System.out.println(secretByteKey);
-        this.key = Keys.hmacShaKeyFor(secretByteKey);
-    }
+    private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public JwtToken generateToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        // generate Access Token
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("auth", authorities)
@@ -61,14 +49,11 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String accessToken) {
-        // 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
-        if (claims.get("auth") == null) {
-            throw new RuntimeException("authentication information not exists");
-        }
-
-        System.out.println(claims);
+//        if (claims.get("auth") == null) {
+//            throw new RuntimeException("authentication information not exists");
+//        }
 
         Collection<? extends GrantedAuthority> authorities = Arrays.stream(claims.get("auth").toString().split(","))
                 .map(SimpleGrantedAuthority::new)
@@ -80,7 +65,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(this.key).build().parse(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parse(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             log.info("Invalid JWT Token", e);
@@ -96,7 +81,6 @@ public class JwtTokenProvider {
 
     private Claims parseClaims(String accessToken) {
         try {
-//            return (Claims) Jwts.parser().verifyWith(key).build().parse(accessToken).getPayload();
             return (Claims) Jwts.parserBuilder().setSigningKey(key).build().parse(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
