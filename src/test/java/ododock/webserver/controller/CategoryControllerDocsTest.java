@@ -71,7 +71,7 @@ public class CategoryControllerDocsTest {
                                 .visibility(true)
                                 .build()
                 ));
-        given(this.categoryService.getCategoryByProfileId(1L)).willReturn(response);
+        given(this.categoryService.getCategoriesByProfileId(1L)).willReturn(response);
 
         // expected
         mockMvc.perform(

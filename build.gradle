@@ -30,6 +30,7 @@ configurations {
     asciidoctorExt
 }
 
+
 dependencies {
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -66,13 +67,13 @@ test {
 
 asciidoctor {
     inputs.dir snippetsDir
-    dependsOn test
     configurations 'asciidoctorExt'
+    dependsOn test
 }
 
 bootJar {
     dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}/html5") {
+    from ("${asciidoctor.outputDir}") {
         into 'static/docs'
     }
 }

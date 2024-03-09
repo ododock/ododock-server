@@ -25,10 +25,10 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping("/api/v1/profiles/{profileId}/categories")
-    public ListResponse<CategoryDetailsResponse> getCategoryByProfileId(
+    public ListResponse<CategoryDetailsResponse> getCategoriesByProfileId(
             final @PathVariable Long profileId
     ) {
-        return categoryService.getCategoryByProfileId(profileId);
+        return categoryService.getCategoriesByProfileId(profileId);
     }
 
     @PostMapping("/api/v1/profiles/{profileId}/categories")
