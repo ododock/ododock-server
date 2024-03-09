@@ -16,6 +16,7 @@ import ododock.webserver.response.ListResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class CategoryService {
     private final ArticleRepository articleRepository;
 
     @Transactional(readOnly = true)
-    public ListResponse<CategoryDetailsResponse> getCategoryByProfileId(final Long profileId) {
+    public ListResponse<CategoryDetailsResponse> getCategoriesByProfileId(final Long profileId) {
         Profile ownerProfile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
         List<Category> categories = categoryRepository.findByOwnerProfile(ownerProfile);
@@ -58,15 +59,17 @@ public class CategoryService {
 
     @Transactional
     public void updateCategoryList(final Long profileId, final CategoryListUpdate request) {
-        profileRepository.findById(profileId)
+        Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
-
+        List<Category> categories = new ArrayList<>();
         for (CategoryUpdate singleCategory : request.categories()) {
             Category foundCategory = categoryRepository.findById(singleCategory.categoryId())
                     .orElseThrow(() -> new ResourceNotFoundException(Category.class, singleCategory.categoryId()));
+            categories.add(foundCategory);
             foundCategory.updateName(singleCategory.name());
             foundCategory.updateVisibility(singleCategory.visibility());
         }
+        profile.updateCategories(categories);
     }
 
     @Transactional

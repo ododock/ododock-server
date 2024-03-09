@@ -1,13 +1,19 @@
 package ododock.webserver.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.AccountDto;
 import ododock.webserver.domain.account.Authority;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.exception.ResourceAlreadyExistsException;
+import ododock.webserver.exception.ResourceNotFoundException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.AuthoritiesRepository;
+import ododock.webserver.repository.ProfileRepository;
+import ododock.webserver.request.AccountCreate;
+import ododock.webserver.request.AccountPasswordUpdate;
+import ododock.webserver.response.AccountCreateResponse;
+import ododock.webserver.response.AccountDetailsResponse;
 import ododock.webserver.security.AccountContext;
 import ododock.webserver.security.JwtToken;
 import ododock.webserver.security.JwtTokenProvider;
@@ -21,14 +27,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 @Slf4j
 public class AccountService implements UserDetailsService {
@@ -36,71 +41,97 @@ public class AccountService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final AuthoritiesRepository authoritiesRepository;
     private final AccountRepository accountRepository;
+    private final ProfileRepository profileRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("UserDetailsService's loadUserByUsername executed");
-        Account foundMember = accountRepository.findByEmail(email);
-
-        if (foundMember == null) {
-            log.info(email + " not found");
-            throw new UsernameNotFoundException(email + "not exists");
-        }
-
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add(new SimpleGrantedAuthority("ROLE_USER"));
-
-        AccountContext memberContext = new AccountContext(foundMember, roles);
-
-        return memberContext;
-    }
-
-    public JwtToken login(String email, String password) {
-        log.info("CustomUserDetailsService's login() executed");
+    public JwtToken login(final String email, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-        // UsernamePasswordAuthenticationToken은 request DTO의 정보를 전달해서 생성함
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
         return jwtToken;
     }
 
-    // TODO need to implement user authority related things
-    public Account signup(AccountDto memberDto) {
-        log.info("CustomUserDetailsService executed");
-
-        Account newAccount = Account.builder()
-                .username(memberDto.getUsername())
-                .password(passwordEncoder.encode(memberDto.getPassword()))
-                .email(memberDto.getEmail())
-                .build();
-        Account registeredAccount = accountRepository.save(newAccount);
-        Authority authority = new Authority(
-                registeredAccount.getId(),
-                "ROLE_USER");
-        authoritiesRepository.save(authority);
-        log.info(registeredAccount.getUsername() + " has been registered");
-        return registeredAccount;
+    @Transactional(readOnly = true)
+    public AccountDetailsResponse getAccount(final Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        return AccountDetailsResponse.of(account);
     }
 
-    public Account findUserByUsername(String username) {
-        Account foundUser = accountRepository.findByUsername(username);
-        if (foundUser == null) {
-            log.info(username + " user not found");
-            return null;
+    @Transactional
+    public AccountCreateResponse createAccount(final AccountCreate request) {
+        if (validateEmail(request.email())) {
+            throw new ResourceAlreadyExistsException(Account.class, request.email());
+        };
+        if (validateUsername(request.username())) {
+            throw new ResourceAlreadyExistsException(Account.class, request.username());
         }
-        return foundUser;
+        if (profileRepository.existsByNickname(request.nickname())) {
+            throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
+        }
+        Account newAccount = Account.builder()
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .email(request.email())
+                .birthDate(request.birthDate())
+                .nickname(request.nickname()) // profile repository
+                .fullname(request.fullname())
+                .imageSource(request.imageSource())
+                .fileType(request.fileType())
+                .build();
+        Account createdAccount = accountRepository.save(newAccount);
+
+//        Authority authority = new Authority(
+//                createdAccount.getId(),
+//                "ROLE_USER");
+//        authoritiesRepository.save(authority);
+        return AccountCreateResponse.builder()
+                .accountId(createdAccount.getId())
+                .profileId(createdAccount.getOwnProfile().getId())
+                .build();
     }
 
-    // TODO need to implement authority populate
-    private Collection<GrantedAuthority> getAuthorities(Long userId) {
+    @Transactional
+    public void updateAccountPassword(final Long accountId, final AccountPasswordUpdate request) {
+        Account account = accountRepository.findById(accountId)
+                        .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        account.updatePassword(passwordEncoder.encode(request.password()));
+    }
+
+    @Transactional
+    public void deleteAccount(final Long accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        accountRepository.delete(account);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean validateUsername(final String username) {
+        return accountRepository.existsByUsername(username);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean validateEmail(final String email) {
+        return accountRepository.existsByEmail(email);
+    }
+
+    private Collection<GrantedAuthority> getAuthorities(final Long userId) {
         List<Authority> authList = authoritiesRepository.findByUserId(userId);
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Authority authority : authList) {
             authorities.add(new SimpleGrantedAuthority(authority.getAuthority()));
         }
         return authorities;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+        Account foundMember = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, email));
+        List<GrantedAuthority> roles = new ArrayList<>();
+        AccountContext memberContext = new AccountContext(foundMember, roles);
+        return memberContext;
     }
 }
