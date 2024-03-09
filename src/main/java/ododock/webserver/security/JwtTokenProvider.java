@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
+
     private final SecretKey key;
 
     public JwtTokenProvider(@Value("${jwt.secret}")String secretKey) {
@@ -101,4 +102,5 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
 }

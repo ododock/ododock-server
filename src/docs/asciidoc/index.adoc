@@ -6,6 +6,20 @@
 :toclevels: 2
 :sectlinks:
 
+
+[[ododock-profile-get]]
+== Profile 조회
+operation::profile/get-profile[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[ododock-profile-update]]
+== Profile 수정
+operation::profile/update-profile[snippets='http-request,path-parameters,request-fields,http-response']
+
+[[ododock-profile-image-update]]
+== Profile Image 수정
+operation::profile/update-profile-image[snippets='http-request,path-parameters,request-fields,http-response']
+
+
 [[ododock-article-get]]
 == Article 단건 조회
 operation::article/get-article[snippets='http-request,path-parameters,http-response,response-fields']
@@ -37,3 +51,4 @@ operation::category/update-category[snippets='http-request,path-parameters,reque
 [[ododock-category-delete]]
 == Category 삭제
 operation::category/delete-category[snippets='http-request,path-parameters,http-response']
+

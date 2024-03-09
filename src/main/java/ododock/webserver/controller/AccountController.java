@@ -6,6 +6,7 @@ import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
+import ododock.webserver.response.ValidateResponse;
 import ododock.webserver.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,10 +39,10 @@ public class AccountController {
     }
 
     @GetMapping("/api/v1/accounts/email")
-    public Boolean validateEmail(
+    public ValidateResponse validateEmail(
             @RequestParam("email") final String email
     ) {
-        return accountService.validateEmail(email);
+        return ValidateResponse.of(accountService.validateEmail(email));
     }
 
     @PostMapping("/api/v1/accounts")
