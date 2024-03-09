@@ -26,14 +26,14 @@ public class ArticleController {
 
     @GetMapping("/api/v1/articles/{articleId}")
     public ArticleDetailsResponse getArticle(
-            final @PathVariable Long articleId
+            @PathVariable final Long articleId
     ) {
         return articleService.getArticle(articleId);
     }
 
     @PostMapping(value = "/api/v1/articles", produces = APPLICATION_JSON_VALUE)
     public ApiResponse createArticle(
-            final @Valid @RequestBody ArticleCreate request
+            @Valid @RequestBody final ArticleCreate request
     ) {
         Long articleId = articleService.createArticle(request);
         System.out.println(articleId);
@@ -42,8 +42,8 @@ public class ArticleController {
 
     @PatchMapping("/api/v1/articles/{articleId}")
     public ResponseEntity<Void> updateArticle(
-            final @PathVariable Long articleId,
-            final @Valid @RequestBody ArticleUpdate request
+            @PathVariable final Long articleId,
+            @Valid @RequestBody final ArticleUpdate request
     ) {
         articleService.updateArticle(articleId, request);
         return ResponseEntity.ok().build();
@@ -51,7 +51,7 @@ public class ArticleController {
 
     @DeleteMapping("/api/v1/articles/{articleId}")
     public ResponseEntity<Void> deleteArticle(
-            final @PathVariable Long articleId
+            @PathVariable final Long articleId
     ) {
         articleService.deleteArticle(articleId);
         return ResponseEntity.ok().build();

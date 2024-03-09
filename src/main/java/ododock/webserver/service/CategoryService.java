@@ -28,7 +28,7 @@ public class CategoryService {
     private final ArticleRepository articleRepository;
 
     @Transactional(readOnly = true)
-    public ListResponse<CategoryDetailsResponse> getCategoryByProfileId(final Long profileId) {
+    public ListResponse<CategoryDetailsResponse> getCategoriesByProfileId(final Long profileId) {
         Profile ownerProfile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
         List<Category> categories = categoryRepository.findByOwnerProfile(ownerProfile);

@@ -45,7 +45,7 @@ public class AccountService implements UserDetailsService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public JwtToken login(String email, String password) {
+    public JwtToken login(final String email, final String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password, List.of(new SimpleGrantedAuthority("ROLE_USER")));
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         JwtToken jwtToken = jwtTokenProvider.generateToken(authentication);
@@ -116,7 +116,7 @@ public class AccountService implements UserDetailsService {
         return accountRepository.existsByEmail(email);
     }
 
-    private Collection<GrantedAuthority> getAuthorities(Long userId) {
+    private Collection<GrantedAuthority> getAuthorities(final Long userId) {
         List<Authority> authList = authoritiesRepository.findByUserId(userId);
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Authority authority : authList) {
@@ -127,7 +127,7 @@ public class AccountService implements UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         Account foundMember = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, email));
         List<GrantedAuthority> roles = new ArrayList<>();

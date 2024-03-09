@@ -26,23 +26,23 @@ public class CategoryController {
 
     @GetMapping("/api/v1/profiles/{profileId}/categories")
     public ListResponse<CategoryDetailsResponse> getCategoriesByProfileId(
-            final @PathVariable Long profileId
+            @PathVariable final Long profileId
     ) {
         return categoryService.getCategoriesByProfileId(profileId);
     }
 
     @PostMapping("/api/v1/profiles/{profileId}/categories")
     public ApiResponse createCategory(
-            final @PathVariable Long profileId,
-            final @Valid @RequestBody CategoryCreate request
+            @PathVariable final Long profileId,
+            @Valid @RequestBody final CategoryCreate request
     ) {
         return ApiResponse.of("categoryId", categoryService.createCategory(profileId, request));
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}/categories")
     public ResponseEntity<Void> updateCategoryList(
-            final @PathVariable Long profileId,
-            final @Valid @RequestBody CategoryListUpdate request
+            @PathVariable final Long profileId,
+            @Valid @RequestBody final CategoryListUpdate request
     ) {
         categoryService.updateCategoryList(profileId, request);
         return ResponseEntity.ok().build();
@@ -50,9 +50,9 @@ public class CategoryController {
 
     @PatchMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")
     public ResponseEntity<Void> updateCategory(
-            final @PathVariable Long profileId,
-            final @PathVariable Long categoryId,
-            final @Valid @RequestBody CategoryUpdate request
+            @PathVariable final Long profileId,
+            @PathVariable final Long categoryId,
+            @Valid @RequestBody final CategoryUpdate request
     ) {
         categoryService.updateCategory(profileId, categoryId, request);
         return ResponseEntity.ok().build();
@@ -60,8 +60,8 @@ public class CategoryController {
 
     @DeleteMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")
     public ResponseEntity<Void> deleteCategory(
-            final @PathVariable Long profileId,
-            final @PathVariable Long categoryId
+            @PathVariable final Long profileId,
+            @PathVariable final Long categoryId
     ) {
         categoryService.deleteCategory(profileId, categoryId);
         return ResponseEntity.ok().build();
