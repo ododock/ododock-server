@@ -3,12 +3,13 @@ package ododock.webserver.security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -18,11 +19,8 @@ public class JwtUtil {
     private final ObjectMapper objectMapper;
     private final SecretKey secretKey;
 
-    public JwtUtil(@Value("${spring.jwt.secret") final String secret) {
-        this.secretKey = new SecretKeySpec(
-                secret.getBytes(StandardCharsets.UTF_8),
-                Jwts.SIG.HS256.key().build().getAlgorithm()
-        );
+    public JwtUtil(@Value("${spring.jwt.secret}") final String secret) {
+        secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
         this.objectMapper = new ObjectMapper();
     }
 
@@ -52,7 +50,7 @@ public class JwtUtil {
                 .issuedAt(new Date())
                 // 보통 30분 ~ 1시간
                 .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_ACCESS_EXPIRATION))
-                .signWith(secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
 
         String refreshToken = Jwts.builder()
@@ -61,7 +59,7 @@ public class JwtUtil {
                 .issuedAt(new Date())
                 // 보통 30분 ~ 1시간
                 .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_REFRESH_EXPIRATION))
-                .signWith(secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
 
         return JwtToken.builder()
@@ -70,6 +68,5 @@ public class JwtUtil {
                 .refreshToken(refreshToken)
                 .build();
     }
-
 
 }

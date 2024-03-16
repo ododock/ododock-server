@@ -3,7 +3,6 @@ package ododock.webserver.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
@@ -14,16 +13,11 @@ import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +52,9 @@ public class AccountService {
                 .fullname(request.fullname())
                 .imageSource(request.imageSource())
                 .fileType(request.fileType())
+                .roles(List.of("ROLE_USER"))
                 .build();
         Account createdAccount = accountRepository.save(newAccount);
-
         return AccountCreateResponse.builder()
                 .accountId(createdAccount.getId())
                 .profileId(createdAccount.getOwnProfile().getId())
@@ -84,17 +78,6 @@ public class AccountService {
     @Transactional(readOnly = true)
     public boolean validateEmail(final String email) {
         return accountRepository.existsByEmail(email);
-    }
-
-    private Collection<GrantedAuthority> getAuthorities(final Long accountId) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        List<Role> roles = account.getRoles();
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
-        }
-        return authorities;
     }
 
 }
