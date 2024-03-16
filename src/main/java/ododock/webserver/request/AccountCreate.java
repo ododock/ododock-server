@@ -11,8 +11,6 @@ public record AccountCreate (
         @NotBlank
         String email,
         @NotBlank
-        String username,
-        @NotBlank
         String password,
         @NotBlank
         String fullname,

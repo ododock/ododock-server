@@ -20,9 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -46,14 +47,10 @@ public class AccountService {
         if (validateEmail(request.email())) {
             throw new ResourceAlreadyExistsException(Account.class, request.email());
         };
-        if (validateUsername(request.username())) {
-            throw new ResourceAlreadyExistsException(Account.class, request.username());
-        }
         if (profileRepository.existsByNickname(request.nickname())) {
             throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
         Account newAccount = Account.builder()
-                .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
                 .email(request.email())
                 .birthDate(request.birthDate())
@@ -85,11 +82,6 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public boolean validateUsername(final String username) {
-        return accountRepository.existsByUsername(username);
-    }
-
-    @Transactional(readOnly = true)
     public boolean validateEmail(final String email) {
         return accountRepository.existsByEmail(email);
     }
@@ -98,7 +90,7 @@ public class AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         List<Role> roles = account.getRoles();
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
         for (Role role : roles) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }

@@ -28,7 +28,10 @@ import ododock.webserver.domain.common.BaseEntity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -37,11 +40,10 @@ import java.util.List;
 @Table(
         name = "account",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_account__email", columnNames = "email"),
-                @UniqueConstraint(name = "uk_account__username", columnNames = "username")
+                @UniqueConstraint(name = "uk_account__email", columnNames = "email")
         }
 )
-@ToString(of = {"username", "fullname"})
+@ToString(of = {"email", "fullname"})
 public class Account extends BaseEntity {
 
     @Id
@@ -69,26 +71,26 @@ public class Account extends BaseEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "username", nullable = false)
-    private String username;
-
     @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "fullname", nullable = false, updatable = false)
     private String fullname;
 
-    @Column(name = "birthDate", nullable = false, updatable = false)
+    @Column(name = "birth_date", nullable = false, updatable = false)
     private LocalDate birthDate;
 
+    @Column(name = "account_non_expired", nullable = false)
+    private Boolean accountNonExpired;
+
+    @Column(name = "account_non_locked", nullable = false)
+    private Boolean accountNonLocked;
+
+    @Column(name = "credentials_non_expired", nullable = false)
+    private Boolean credentialNonExpired;
+
     @Column(name = "enabled", nullable = false)
-    private Boolean enabled;
-
-    @Column(name = "accountLocked", nullable = false)
-    private Boolean accountLocked;
-
-    @Column(name = "accountExpired", nullable = false)
-    private Boolean accountExpired;
+    private Boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "account_role",
@@ -98,27 +100,34 @@ public class Account extends BaseEntity {
     private List<Role> roles = new ArrayList<>();
 
     @Builder
-    public Account(final String email,
-                   final String username,
-                   final String password,
-                   final String fullname,
-                   final LocalDate birthDate,
-                   final String nickname,
-                   final String imageSource,
-                   final String fileType) {
+    public Account(
+            final String nickname,
+            final String imageSource,
+            final String fileType,
+            final String email,
+            final String password,
+            final String fullname,
+            final LocalDate birthDate,
+            final List<String> roles
+    ) {
+        this.ownProfile = new Profile(this, nickname, imageSource,fileType);
         this.email = email;
-        this.username = username;
         this.password = password;
         this.fullname = fullname;
         this.birthDate = birthDate;
+        this.accountNonExpired = true;
+        this.accountNonLocked = true;
+        this.credentialNonExpired = true;
         this.enabled = true;
-        this.accountLocked = false;
-        this.accountExpired = false;
-        this.ownProfile = new Profile(this, nickname, imageSource,fileType);
+        this.roles.addAll(roles.stream().map(Role::new).toList());
     }
 
     public void updatePassword(final String password) {
         this.password = password;
+    }
+
+    public void updateRoles(final List<Role> updateRoles) {
+        this.roles = roles;
     }
 
 }

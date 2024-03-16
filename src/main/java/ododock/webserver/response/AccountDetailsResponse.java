@@ -10,27 +10,27 @@ import java.time.LocalDateTime;
 public record AccountDetailsResponse(
         Long id,
         String email,
-        String username,
         String fullname,
         LocalDate birthDate,
+        boolean accountNonExpired,
+        boolean accountNonLocked,
+        boolean credentialNonExpired,
         boolean enabled,
-        boolean accountLocked,
-        boolean accountExpired,
         LocalDateTime createdDate,
         LocalDateTime lastModifiedDate
 ) {
     public static AccountDetailsResponse of(final Account account) {
         return AccountDetailsResponse.builder()
                 .id(account.getId())
-                .username(account.getUsername())
                 .email(account.getEmail())
                 .birthDate(account.getBirthDate())
                 .fullname(account.getFullname())
                 .createdDate(account.getCreatedDate())
                 .lastModifiedDate(account.getLastModifiedDate())
+                .accountNonExpired(account.getAccountNonExpired())
+                .accountNonLocked(account.getAccountNonLocked())
+                .credentialNonExpired(account.getCredentialNonExpired())
                 .enabled(account.getEnabled())
-                .accountExpired(account.getAccountExpired())
-                .accountLocked(account.getAccountLocked())
                 .build();
     }
 }

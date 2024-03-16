@@ -31,16 +31,9 @@ public class AccountController {
         return accountService.getAccount(accountId);
     }
 
-    @GetMapping("/api/v1/accounts/username")
-    public Boolean validateUsername(
-            @RequestParam("username") final String username
-    ) {
-        return accountService.validateUsername(username);
-    }
-
-    @GetMapping("/api/v1/accounts/email")
-    public ValidateResponse validateEmail(
-            @RequestParam("email") final String email
+    @GetMapping("/api/v1/accounts")
+    public ValidateResponse validateUsername(
+            @RequestParam(value = "email", required = false) final String email
     ) {
         return ValidateResponse.of(accountService.validateEmail(email));
     }
