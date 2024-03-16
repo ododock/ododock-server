@@ -1,29 +1,27 @@
 package ododock.webserver.service;
 
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.request.Login;
-import ododock.webserver.security.JwtToken;
-import ododock.webserver.security.JwtTokenProvider;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import ododock.webserver.domain.account.Account;
+import ododock.webserver.repository.AccountRepository;
+import ododock.webserver.security.CustomUserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthService implements UserDetailsService {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AccountRepository accountRepository;
 
-    public JwtToken login(final Login request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        JwtToken token = jwtTokenProvider.generateToken(authentication);
-        return jwtTokenProvider.generateToken(authentication);
+    @Override
+    @Transactional(readOnly = true)
+    public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("email " + email + " not found"));
+        return new CustomUserDetails(account);
     }
 
 }
