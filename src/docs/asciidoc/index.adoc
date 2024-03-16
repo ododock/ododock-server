@@ -6,6 +6,26 @@
 :toclevels: 2
 :sectlinks:
 
+[[ododock-account-get]]
+== Account 조회
+operation::account/get-account[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[ododock-account-email-validte]]
+== Account 이메일 검증
+operation::account/validate-email[snippets='http-request,http-response,response-fields']
+
+[[ododock-account-create]]
+== Account 생성
+operation::account/create-account[snippets='http-request,request-fields,http-response,response-fields']
+
+[[ododock-account-password-update]]
+== Account 비밀번호 수정
+operation::account/update-account-password[snippets='http-request,request-fields,http-response']
+
+[[ododock-account-delete]]
+== Account 삭제
+operation::account/delete-account[snippets='http-request,path-parameters,http-response']
+
 
 [[ododock-profile-get]]
 == Profile 조회
