@@ -1,39 +1,65 @@
 package ododock.webserver.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
 
-public class JwtAuthenticationFilter implements Filter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
+    public JwtAuthenticationFilter(
+            final AuthenticationManager authenticationManager,
+            final JwtUtil jwtUtil
+    ) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        Optional<String> token = resolveToken((HttpServletRequest) request);
-
-        // 토큰 유효성 검사
-        if (token.isPresent() && jwtTokenProvider.validateToken(token.get())) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        chain.doFilter(request, response);
+    public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) throws AuthenticationException {
+        final String email = obtainUsername(request);
+        final String password = obtainPassword(request);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password, null);
+        return authenticationManager.authenticate(authToken);
     }
 
-    private Optional<String> resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-            return Optional.of(bearerToken.substring(7));
-        }
-        return Optional.empty();
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
+        String username = userDetails.getUsername();
+        String password = userDetails.getPassword();
+
+        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).toList();
+
+        JwtToken jwtToken = jwtUtil.generateToken(username, roles);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
+        response.getWriter().write(objectMapper.writeValueAsString(jwtToken));
+        response.getWriter().flush();
     }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+    }
+
 }
