@@ -38,7 +38,7 @@ public class AccountService {
 
     @Transactional
     public AccountCreateResponse createAccount(final AccountCreate request) {
-        if (validateEmail(request.email())) {
+        if (!isAvailableEmail(request.email())) {
             throw new ResourceAlreadyExistsException(Account.class, request.email());
         };
         if (profileRepository.existsByNickname(request.nickname())) {
@@ -76,8 +76,8 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public boolean validateEmail(final String email) {
-        return accountRepository.existsByEmail(email);
+    public boolean isAvailableEmail(final String email) {
+        return !accountRepository.existsByEmail(email);
     }
 
 }

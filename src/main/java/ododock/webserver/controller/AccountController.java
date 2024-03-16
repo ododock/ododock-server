@@ -32,10 +32,10 @@ public class AccountController {
     }
 
     @GetMapping("/api/v1/accounts")
-    public ValidateResponse validateUsername(
+    public ValidateResponse validateEmail(
             @RequestParam(value = "email", required = false) final String email
     ) {
-        return ValidateResponse.of(accountService.validateEmail(email));
+        return ValidateResponse.of(accountService.isAvailableEmail(email));
     }
 
     @PostMapping("/api/v1/accounts")
