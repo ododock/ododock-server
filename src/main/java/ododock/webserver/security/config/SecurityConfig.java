@@ -2,9 +2,9 @@ package ododock.webserver.security.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import ododock.webserver.repository.TokenRecordRepository;
-import ododock.webserver.security.JwtLogoutFilter;
-import ododock.webserver.security.JwtAuthenticationFilter;
-import ododock.webserver.security.JwtTokenValidationFilter;
+import ododock.webserver.security.filter.JwtLogoutFilter;
+import ododock.webserver.security.filter.JwtAuthenticationFilter;
+import ododock.webserver.security.filter.JwtTokenValidationFilter;
 import ododock.webserver.security.JwtUtil;
 import ododock.webserver.service.AuthService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

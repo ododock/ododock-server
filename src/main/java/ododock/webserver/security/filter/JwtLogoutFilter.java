@@ -1,4 +1,4 @@
-package ododock.webserver.security;
+package ododock.webserver.security.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import ododock.webserver.security.JwtUtil;
 import ododock.webserver.service.AuthService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.filter.GenericFilterBean;
