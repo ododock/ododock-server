@@ -49,22 +49,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String refreshToken = jwtUtil.generateToken("refreshToken", username, roles, 86400000L);
 
         response.setHeader("access", accessToken);
-        response.addCookie(createCookie("refresh", refreshToken));
+        response.addCookie(jwtUtil.createCookie("refresh", refreshToken));
         response.setStatus(HttpStatus.OK.value());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         super.unsuccessfulAuthentication(request, response, failed);
-    }
-
-    private Cookie createCookie(final String key, final String value) {
-        Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
-//        cookie.setSecure(true); // https 통신인경우
-//        cookie.setPath("/"); // 쿠키가 적용될 범위
-        cookie.setHttpOnly(true);
-        return cookie;
     }
 
 }

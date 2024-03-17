@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +62,16 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_ACCESS_EXPIRATION))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    // TODO jwt관련 util클래스에 cookie 생성 메소드를 두는게 맞나?
+    public Cookie createCookie(final String type, final String token) {
+        Cookie cookie = new Cookie(type, token);
+        cookie.setMaxAge(24*60*60);
+//        cookie.setSecure(true); // https 통신인경우
+//        cookie.setPath("/"); // 쿠키가 적용될 범위
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 
 }

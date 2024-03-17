@@ -59,10 +59,16 @@ public class AuthService implements UserDetailsService {
         }
 
         try {
+            String type = jwtUtil.getType(refresh);
+            if (!type.equals("refresh")) {
+                return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
+            }
             String email = jwtUtil.getUsername(refresh);
             List<String> roles = jwtUtil.getRoles(refresh);
             String newAccess = jwtUtil.generateToken("access", email, roles, 600000L);
+            String newRefresh = jwtUtil.generateToken("refresh", email, roles, 86400000L);
             response.setHeader("access", newAccess);
+            response.addCookie(jwtUtil.createCookie("refresh", newRefresh));
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
