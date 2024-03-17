@@ -36,7 +36,6 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         String token = authorization.split(" ")[1];
 
         if (jwtUtil.isExpired(token)) {
-            log.info("token expired");
             filterChain.doFilter(request, response);
             return;
         }
