@@ -36,7 +36,6 @@ public class ArticleController {
             @Valid @RequestBody final ArticleCreate request
     ) {
         Long articleId = articleService.createArticle(request);
-        System.out.println(articleId);
         return ApiResponse.of("articleId", articleId);
     }
 
