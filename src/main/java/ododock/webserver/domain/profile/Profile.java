@@ -50,6 +50,7 @@ public class Profile extends BaseEntity {
             name = "category_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
+    @OrderColumn(name = "order")
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(

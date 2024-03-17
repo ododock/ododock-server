@@ -1,9 +1,9 @@
 package ododock.webserver.domain.profile;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ododock.webserver.domain.article.Article;
@@ -29,7 +29,7 @@ public class Category extends BaseEntity {
 
     @OneToMany(
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH}
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH} // TODO 캐스케이딩 타입 확인
     )
     @JoinColumn(
             name = "article_id",
@@ -40,14 +40,19 @@ public class Category extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @PositiveOrZero
+    @Column(name = "order", nullable = false)
+    private Integer order;
+
     @Column(name = "visibility", nullable = false)
     private boolean visibility;
 
     @Builder
-    public Category(final Profile ownerProfile, final String name, final boolean visibility) {
+    public Category(final Profile ownerProfile, final String name, final Integer order, final boolean visibility) {
         ownerProfile.getCategories().add(this);
         this.ownerProfile = ownerProfile;
         this.name = name;
+        this.order = order;
         this.visibility = visibility;
     }
 
@@ -56,12 +61,12 @@ public class Category extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Category category = (Category) o;
-        return visibility == category.visibility && Objects.equals(name, category.name);
+        return visibility == category.visibility && Objects.equals(name, category.name) && Objects.equals(order, category.order);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, visibility);
+        return Objects.hash(name, order, visibility);
     }
 
     public void updateName(String name) {

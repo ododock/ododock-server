@@ -12,6 +12,8 @@ public record CategoryUpdate(
         @NotBlank
         String name,
         @NotNull
+        Integer order,
+        @NotNull
         boolean visibility
 ) {
 }

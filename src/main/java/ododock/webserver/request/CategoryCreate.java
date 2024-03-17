@@ -9,6 +9,8 @@ import org.springframework.lang.Nullable;
 public record CategoryCreate (
         @NotBlank
         String name,
+        @NotNull
+        Integer order,
         @Nullable
         Boolean visibility
 ) {
