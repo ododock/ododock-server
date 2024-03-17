@@ -1,10 +1,12 @@
 package ododock.webserver.security.config;
 
 import jakarta.servlet.http.HttpServletRequest;
-import ododock.webserver.repository.AuthorizationRepository;
+import ododock.webserver.repository.TokenRecordRepository;
+import ododock.webserver.security.JwtLogoutFilter;
 import ododock.webserver.security.JwtAuthenticationFilter;
 import ododock.webserver.security.JwtTokenValidationFilter;
 import ododock.webserver.security.JwtUtil;
+import ododock.webserver.service.AuthService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -27,16 +30,19 @@ import static org.springframework.http.HttpMethod.GET;
 @Configuration
 public class SecurityConfig {
 
-    private final AuthorizationRepository authorizationRepository;
+    private final TokenRecordRepository tokenRecordRepository;
+    private final AuthService authService;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
 
     public SecurityConfig(
-            final AuthorizationRepository authorizationRepository,
+            final TokenRecordRepository tokenRecordRepository,
+            final AuthService authService,
             final AuthenticationConfiguration authenticationConfiguration,
             final JwtUtil jwtUtil
     ) {
-        this.authorizationRepository = authorizationRepository;
+        this.tokenRecordRepository = tokenRecordRepository;
+        this.authService = authService;
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
     }
@@ -84,7 +90,8 @@ public class SecurityConfig {
                                         "/api/v1/accounts/email",
                                         "/api/v1/accounts/**",
                                         "/api/v1/auth/**",
-                                        "/api/v1/auth/token"
+                                        "/api/v1/auth/token",
+                                        "/api/v1/auth/logout"
                                 ).permitAll()
 
                                 .requestMatchers(
@@ -99,12 +106,13 @@ public class SecurityConfig {
         http
                 .addFilterAt(
                         new JwtAuthenticationFilter(
-                                authorizationRepository,
+                                tokenRecordRepository,
                                 authenticationManager(authenticationConfiguration),
                                 jwtUtil
                         ),
                         UsernamePasswordAuthenticationFilter.class
-                ).addFilterBefore(new JwtTokenValidationFilter(jwtUtil), JwtAuthenticationFilter.class);
+                ).addFilterBefore(new JwtTokenValidationFilter(jwtUtil), JwtAuthenticationFilter.class)
+                .addFilterBefore(new JwtLogoutFilter(jwtUtil, authService), LogoutFilter.class);
 
         http
                 .logout((auth) -> auth
