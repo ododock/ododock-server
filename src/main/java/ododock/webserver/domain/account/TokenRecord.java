@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,16 +19,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
-        name = "authorization",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_authorization__username", columnNames = "username")
-        }
+        name = "token_record"
 )
-public class Authorization {
+public class TokenRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "authorization_id")
+    @Column(name = "token_record_id")
     private Long id;
 
     @Column(name = "username")
@@ -56,7 +52,7 @@ public class Authorization {
     private LocalDateTime refreshTokenExpiresAt;
 
     @Builder
-    public Authorization(
+    public TokenRecord(
             final String username,
             @Nullable final String accessTokenValue,
             @Nullable final LocalDateTime accessTokenIssuedAt,

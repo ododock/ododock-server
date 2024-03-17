@@ -1,11 +1,11 @@
 package ododock.webserver.repository;
 
-import ododock.webserver.domain.account.Authorization;
+import ododock.webserver.domain.account.TokenRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface AuthorizationRepository extends JpaRepository<Authorization, Long> {
+public interface TokenRecordRepository extends JpaRepository<TokenRecord, Long> {
 
     Boolean existsByUsername(final String username);
 
@@ -13,8 +13,8 @@ public interface AuthorizationRepository extends JpaRepository<Authorization, Lo
 
     void deleteByRefreshTokenValue(final String token);
 
-    Optional<Authorization> findByUsername(final String username);
+    Optional<TokenRecord> findByUsername(final String username);
 
-    Optional<Authorization> findByRefreshTokenValue(final String refreshToken);
+    Optional<TokenRecord> findByRefreshTokenValue(final String refreshToken);
 
 }
