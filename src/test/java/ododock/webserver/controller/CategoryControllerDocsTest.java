@@ -58,16 +58,19 @@ public class CategoryControllerDocsTest {
                 List.of(CategoryDetailsResponse.builder()
                                 .categoryId(11L)
                                 .name("essay")
+                                .order(0)
                                 .visibility(true)
                                 .build(),
                         CategoryDetailsResponse.builder()
                                 .categoryId(12L)
                                 .name("journal")
+                                .order(1)
                                 .visibility(true)
                                 .build(),
                         CategoryDetailsResponse.builder()
                                 .categoryId(13L)
                                 .name("transcribing")
+                                .order(2)
                                 .visibility(true)
                                 .build()
                 ));
@@ -90,6 +93,7 @@ public class CategoryControllerDocsTest {
                                 subsectionWithPath("content").description("카테고리 목록"),
                                 fieldWithPath("content[].categoryId").description("조회된 카테고리 ID"),
                                 fieldWithPath("content[].name").description("조회된 카테고리 이름"),
+                                fieldWithPath("content[].order").description("조회된 카테고리 순서 index"),
                                 fieldWithPath("content[].visibility").description("카테고리 공개설정")
                         )
                 ));
@@ -100,6 +104,7 @@ public class CategoryControllerDocsTest {
         //given
         final CategoryCreate request = CategoryCreate.builder()
                 .name("new category")
+                .order(0)
                 .visibility(true)
                 .build();
         given(this.categoryService.createCategory(1L, request)).willReturn(20L);
@@ -119,6 +124,7 @@ public class CategoryControllerDocsTest {
                         ),
                         requestFields(
                                 fieldWithPath("name").description("생성할 카테고리 이름"),
+                                fieldWithPath("order").description("생성할 카테고리 순서 index"),
                                 fieldWithPath("visibility").description("생성할 카테고리의 공개 여부").optional()
                         ),
                         responseFields(
@@ -136,16 +142,19 @@ public class CategoryControllerDocsTest {
                         CategoryUpdate.builder()
                                 .categoryId(10L)
                                 .name("category1")
+                                .order(0)
                                 .visibility(true)
                                 .build(),
                         CategoryUpdate.builder()
                                 .categoryId(11L)
                                 .name("category2")
+                                .order(1)
                                 .visibility(true)
                                 .build(),
                         CategoryUpdate.builder()
                                 .categoryId(13L)
                                 .name("category3")
+                                .order(2)
                                 .visibility(false)
                                 .build()
                 ))
@@ -168,6 +177,7 @@ public class CategoryControllerDocsTest {
                                 subsectionWithPath("categories").description("업데이트할 카테고리 리스트"),
                                 fieldWithPath("categories[].categoryId").description("수정할 카테고리 ID"),
                                 fieldWithPath("categories[].name").description("수정할 카테고리 이름"),
+                                fieldWithPath("categories[].order").description("수정할 카테고리 순서 index"),
                                 fieldWithPath("categories[].visibility").description("수정할 카테고리의 공개 여부").optional()
                         )
                 ));
@@ -178,6 +188,7 @@ public class CategoryControllerDocsTest {
         // given
         final CategoryUpdate request = CategoryUpdate.builder()
                 .name("category1")
+                .order(1)
                 .visibility(true)
                 .build();
 
@@ -198,6 +209,7 @@ public class CategoryControllerDocsTest {
                         requestFields(
                                 fieldWithPath("categoryId").description("수정할 카테고리 ID").ignored(),
                                 fieldWithPath("name").description("수정할 카테고리 이름"),
+                                fieldWithPath("order").description("수정할 카테고리 순서 index"),
                                 fieldWithPath("visibility").description("수정할 카테고리의 공개 여부").optional()
                         )
                 ));
@@ -215,8 +227,8 @@ public class CategoryControllerDocsTest {
                 .andExpect(status().isOk())
                 .andDo(document("category/delete-category",
                         pathParameters(
-                                parameterWithName("profileId").description("업데이트할 카테고리의 소유자 프로필 ID"),
-                                parameterWithName("categoryId").description("업데이트할 카테고리 ID")
+                                parameterWithName("profileId").description("삭제할 카테고리의 소유자 프로필 ID"),
+                                parameterWithName("categoryId").description("삭제할 카테고리 ID")
                         )
                 ));
     }
