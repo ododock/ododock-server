@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +45,18 @@ public class JwtUtil {
                 .parseSignedClaims(token).getPayload().get("type", String.class);
     }
 
+    public LocalDateTime getIssuedTime(final String token) {
+        return Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(token).getPayload()
+                .getIssuedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public LocalDateTime getExpiredTime(final String token) {
+        return Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(token).getPayload()
+                .getExpiration().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
     public boolean isExpired(final String token) {
         return Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(token)
@@ -53,13 +67,14 @@ public class JwtUtil {
             final String type,
             final String username,
             final List<String> roles,
-            final Long expiration) throws JsonProcessingException {
+            final Date issuedAt,
+            final Date expiredAt) throws JsonProcessingException {
         return Jwts.builder()
                 .claim("username", username)
                 .claim("roles", objectMapper.writeValueAsString(roles))
                 .claim("type", type)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_ACCESS_EXPIRATION))
+                .issuedAt(issuedAt)
+                .expiration(expiredAt)
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }

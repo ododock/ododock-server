@@ -1,6 +1,7 @@
 package ododock.webserver.security.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import ododock.webserver.repository.AuthorizationRepository;
 import ododock.webserver.security.JwtAuthenticationFilter;
 import ododock.webserver.security.JwtTokenValidationFilter;
 import ododock.webserver.security.JwtUtil;
@@ -26,13 +27,16 @@ import static org.springframework.http.HttpMethod.GET;
 @Configuration
 public class SecurityConfig {
 
+    private final AuthorizationRepository authorizationRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
 
     public SecurityConfig(
+            final AuthorizationRepository authorizationRepository,
             final AuthenticationConfiguration authenticationConfiguration,
             final JwtUtil jwtUtil
     ) {
+        this.authorizationRepository = authorizationRepository;
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
     }
@@ -59,7 +63,7 @@ public class SecurityConfig {
                         }));
 
         http
-                .csrf((auth)-> auth.disable());
+                .csrf((auth) -> auth.disable());
 
         http
                 .formLogin((auth) -> auth.disable());
@@ -94,7 +98,11 @@ public class SecurityConfig {
 
         http
                 .addFilterAt(
-                        new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil),
+                        new JwtAuthenticationFilter(
+                                authorizationRepository,
+                                authenticationManager(authenticationConfiguration),
+                                jwtUtil
+                        ),
                         UsernamePasswordAuthenticationFilter.class
                 ).addFilterBefore(new JwtTokenValidationFilter(jwtUtil), JwtAuthenticationFilter.class);
 
