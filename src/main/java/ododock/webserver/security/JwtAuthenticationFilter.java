@@ -1,10 +1,10 @@
 package ododock.webserver.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,8 +13,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -44,23 +42,29 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
         String username = userDetails.getUsername();
         String password = userDetails.getPassword();
+        List<String> roles = authResult.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).toList();
 
-        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
-        List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).toList();
+        String accessToken = jwtUtil.generateToken("accessToken", username, roles, 600000L);
+        String refreshToken = jwtUtil.generateToken("refreshToken", username, roles, 86400000L);
 
-        JwtToken jwtToken = jwtUtil.generateToken(username, roles);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
-        response.getWriter().write(objectMapper.writeValueAsString(jwtToken));
-        response.getWriter().flush();
+        response.setHeader("access", accessToken);
+        response.addCookie(createCookie("refresh", refreshToken));
+        response.setStatus(HttpStatus.OK.value());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         super.unsuccessfulAuthentication(request, response, failed);
+    }
+
+    private Cookie createCookie(final String key, final String value) {
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+//        cookie.setSecure(true); // https 통신인경우
+//        cookie.setPath("/"); // 쿠키가 적용될 범위
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 
 }

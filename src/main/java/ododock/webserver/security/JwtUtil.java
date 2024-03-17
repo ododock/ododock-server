@@ -37,36 +37,30 @@ public class JwtUtil {
         return objectMapper.readValue(roles, List.class);
     }
 
+    public String getType(final String token) throws JsonProcessingException {
+        return Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(token).getPayload().get("type", String.class);
+    }
+
     public boolean isExpired(final String token) {
         return Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(token)
                 .getPayload().getExpiration().before(new Date());
     }
 
-    public JwtToken generateToken(final String username, List<String> roles) throws JsonProcessingException {
-        String accessToken = Jwts.builder()
+    public String generateToken(
+            final String type,
+            final String username,
+            final List<String> roles,
+            final Long expiration) throws JsonProcessingException {
+        return Jwts.builder()
                 .claim("username", username)
                 .claim("roles", objectMapper.writeValueAsString(roles))
+                .claim("type", type)
                 .issuedAt(new Date())
-                // 보통 30분 ~ 1시간
                 .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_ACCESS_EXPIRATION))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
-
-        String refreshToken = Jwts.builder()
-                .claim("username", username)
-                .claim("roles", roles)
-                .issuedAt(new Date())
-                // 보통 30분 ~ 1시간
-                .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_REFRESH_EXPIRATION))
-                .signWith(secretKey, SignatureAlgorithm.HS256)
-                .compact();
-
-        return JwtToken.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
     }
 
 }
