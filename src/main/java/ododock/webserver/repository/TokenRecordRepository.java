@@ -13,6 +13,8 @@ public interface TokenRecordRepository extends JpaRepository<TokenRecord, Long> 
 
     void deleteByRefreshTokenValue(final String token);
 
+    void deleteAllByUsername(final String username);
+
     Optional<TokenRecord> findByUsername(final String username);
 
     Optional<TokenRecord> findByRefreshTokenValue(final String refreshToken);

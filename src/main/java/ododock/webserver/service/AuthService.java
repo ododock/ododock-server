@@ -89,6 +89,11 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional
+    public void revokeAllTokensByEmail(final String email) {
+        tokenRecordRepository.deleteAllByUsername(email);
+    }
+
+    @Transactional
     protected void saveToken(final HttpServletResponse response, final String username, final List<String> roles) throws JsonProcessingException {
         Date issuedAt = new Date();
         Date accessExp = new Date(System.currentTimeMillis() + JWT_ACCESS_EXPIRATION);

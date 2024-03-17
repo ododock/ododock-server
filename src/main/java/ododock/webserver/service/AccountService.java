@@ -28,6 +28,7 @@ public class AccountService {
     private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
+    private final AuthService authService;
 
     @Transactional(readOnly = true)
     public AccountDetailsResponse getAccount(final Long accountId) {
@@ -72,6 +73,7 @@ public class AccountService {
     public void deleteAccount(final Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        authService.revokeAllTokensByEmail(account.getEmail());
         accountRepository.delete(account);
     }
 
