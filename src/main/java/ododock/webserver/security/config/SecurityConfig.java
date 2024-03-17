@@ -79,7 +79,8 @@ public class SecurityConfig {
                                         "/api/v1/accounts/username",
                                         "/api/v1/accounts/email",
                                         "/api/v1/accounts/**",
-                                        "/api/v1/auth/**"
+                                        "/api/v1/auth/**",
+                                        "/api/v1/auth/token"
                                 ).permitAll()
 
                                 .requestMatchers(

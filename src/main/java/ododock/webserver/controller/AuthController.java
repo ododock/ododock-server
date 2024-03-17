@@ -21,15 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    @PostMapping("/api/v1/auth/login")
-    public JwtToken signin(@Valid @RequestBody Login request) {
-        return null;
+    @PostMapping("/api/v1/auth/logout")
+    public ResponseEntity<Void> logout(final HttpServletRequest request, final HttpServletResponse response) {
+//        authService.logout(request, response);
+        return ResponseEntity.ok().build();
     }
 
-//    @PostMapping("/api/v1/auth/logout")
-//    public ResponseEntity<Void> logout(final HttpServletRequest request, final HttpServletResponse response) {
-//        authService.logout(request, response);
-//        return ResponseEntity.ok().build();
-//    }
+    @PostMapping("/api/v1/auth/token")
+    public ResponseEntity<?> reissueToken(final HttpServletRequest request, final HttpServletResponse response) {
+        return authService.reissueToken(request, response);
+    }
 
 }
