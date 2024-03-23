@@ -1,0 +1,31 @@
+spring:
+  ## Spring data source
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test-mem-db;MODE=MySQL;
+    username: sa
+    password:
+
+  ## Spring jpa
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      open-in-view: false
+      properties:
+        hibernate:
+          format_sql: true
+          use_sql_comments: true
+          default_batch_fetch_size: 500
+
+  ## Logging
+  logging:
+    level:
+      org:
+        hibernate:
+          sql: debug
+          orm.jdbc.bind: trace
+        apache.coyote.http11: debug
+
+  # jwt config
+  jwt:
+    secret: ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2dsafsdaf
