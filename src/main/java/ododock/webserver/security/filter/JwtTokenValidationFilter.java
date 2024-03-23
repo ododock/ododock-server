@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.Role;
 import ododock.webserver.security.CustomUserDetails;
 import ododock.webserver.security.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 public class JwtTokenValidationFilter extends OncePerRequestFilter {
@@ -43,7 +44,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         }
 
         String email = jwtUtil.getUsername(token);
-        List<String> roles = jwtUtil.getRoles(token);
+        Set<Role> roles = jwtUtil.getRoles(token);
 
         Account account = Account.builder()
                 .email(email)

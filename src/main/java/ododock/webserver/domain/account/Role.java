@@ -1,28 +1,16 @@
 package ododock.webserver.domain.account;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Entity
-@Table(name = "role")
-@NoArgsConstructor
-public class Role {
+@RequiredArgsConstructor
+public enum Role {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Long id;
+    ADMIN("ROLE_ADMIN"),
+    USER("ROLE_USER"),
+    MANAGER("ROLE_MANAGER");
 
-    private String name;
+    private final String roleName;
 
-    public Role(String name) {
-        this.name = name;
-    }
 }

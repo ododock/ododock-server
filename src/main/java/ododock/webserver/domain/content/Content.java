@@ -7,8 +7,8 @@ import lombok.NonNull;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "content")
 @Getter
-//@MappedSuperclass
 @Access(AccessType.FIELD)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
@@ -19,13 +19,14 @@ public abstract class Content {
     @Column(name = "content_id")
     private Long id;
 
-    @Column(name = "content_name", nullable = false)
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "content_genre", nullable = false)
-    private String genre;
-
-    @Column(name = "content_published_date", nullable = false)
+    @Column(name = "published_date", nullable = false)
     private LocalDate publishedDate;
 
 }

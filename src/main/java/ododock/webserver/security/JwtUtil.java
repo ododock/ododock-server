@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
+import ododock.webserver.domain.account.Role;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Component
 public class JwtUtil {
@@ -33,11 +34,12 @@ public class JwtUtil {
                 .getPayload().get("username", String.class);
     }
 
-    public List<String> getRoles(final String token) throws JsonProcessingException {
+    public Set<Role> getRoles(final String token) throws JsonProcessingException {
         String roles = Jwts.parser().verifyWith(secretKey).build()
                 .parseSignedClaims(token)
                 .getPayload().get("roles", String.class);
-        return objectMapper.readValue(roles, List.class);
+
+        return objectMapper.readValue(roles, Set.class);
     }
 
     public String getType(final String token) throws JsonProcessingException {
@@ -66,12 +68,12 @@ public class JwtUtil {
     public String generateToken(
             final String type,
             final String username,
-            final List<String> roles,
+            final Set<Role> roles,
             final Date issuedAt,
             final Date expiredAt) throws JsonProcessingException {
         return Jwts.builder()
                 .claim("username", username)
-                .claim("roles", objectMapper.writeValueAsString(roles))
+                .claim("roles", roles)
                 .claim("type", type)
                 .issuedAt(issuedAt)
                 .expiration(expiredAt)

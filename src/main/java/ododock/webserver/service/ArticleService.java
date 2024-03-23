@@ -38,7 +38,7 @@ public class ArticleService {
                 .tags(article.getTags())
                 .visibility(article.isVisibility())
                 .createdDate(article.getCreatedDate())
-                .lastModifiedDate(article.getLastModifiedDate())
+                .lastModifiedDate(article.getLastModifiedAt())
                 .build();
     }
 

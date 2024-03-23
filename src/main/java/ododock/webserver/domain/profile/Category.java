@@ -15,6 +15,11 @@ import java.util.Objects;
 
 @Getter
 @Entity
+@Table(name = "category",
+        indexes = {
+            @Index(name = "idx_category__profile_id_last_modified_at", columnList = "profile_id, last_modified_at desc")
+        }
+)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends BaseEntity {
 
@@ -23,8 +28,8 @@ public class Category extends BaseEntity {
     @Column(name = "category_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "profile_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "profile_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Profile ownerProfile;
 
     @OneToMany(
@@ -32,8 +37,7 @@ public class Category extends BaseEntity {
             cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH} // TODO 캐스케이딩 타입 확인
     )
     @JoinColumn(
-            name = "article_id",
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+            name = "article_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
     private List<Article> articles = new ArrayList<>();
 
@@ -41,7 +45,7 @@ public class Category extends BaseEntity {
     private String name;
 
     @PositiveOrZero
-    @Column(name = "order", nullable = false)
+    @Column(name = "category_order")
     private Integer order;
 
     @Column(name = "visibility", nullable = false)

@@ -26,7 +26,7 @@ public record AccountDetailsResponse(
                 .birthDate(account.getBirthDate())
                 .fullname(account.getFullname())
                 .createdDate(account.getCreatedDate())
-                .lastModifiedDate(account.getLastModifiedDate())
+                .lastModifiedDate(account.getLastModifiedAt())
                 .accountNonExpired(account.getAccountNonExpired())
                 .accountNonLocked(account.getAccountNonLocked())
                 .credentialNonExpired(account.getCredentialNonExpired())

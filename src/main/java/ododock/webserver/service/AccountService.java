@@ -3,12 +3,12 @@ package ododock.webserver.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
-import ododock.webserver.repository.RoleRepository;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
 import ododock.webserver.response.AccountCreateResponse;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +25,14 @@ import java.util.List;
 public class AccountService {
 
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
     private final AuthService authService;
+
+    @Transactional(readOnly = true)
+    public boolean isAvailableEmail(final String email) {
+        return !accountRepository.existsByEmail(email);
+    }
 
     @Transactional(readOnly = true)
     public AccountDetailsResponse getAccount(final Long accountId) {
@@ -41,7 +45,7 @@ public class AccountService {
     public AccountCreateResponse createAccount(final AccountCreate request) {
         if (!isAvailableEmail(request.email())) {
             throw new ResourceAlreadyExistsException(Account.class, request.email());
-        };
+        }
         if (profileRepository.existsByNickname(request.nickname())) {
             throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
@@ -53,7 +57,7 @@ public class AccountService {
                 .fullname(request.fullname())
                 .imageSource(request.imageSource())
                 .fileType(request.fileType())
-                .roles(List.of("ROLE_USER"))
+                .roles(Set.of(Role.USER))
                 .build();
         Account createdAccount = accountRepository.save(newAccount);
         return AccountCreateResponse.builder()
@@ -65,7 +69,7 @@ public class AccountService {
     @Transactional
     public void updateAccountPassword(final Long accountId, final AccountPasswordUpdate request) {
         Account account = accountRepository.findById(accountId)
-                        .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         account.updatePassword(passwordEncoder.encode(request.password()));
     }
 
@@ -75,11 +79,6 @@ public class AccountService {
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         authService.revokeAllTokensByEmail(account.getEmail());
         accountRepository.delete(account);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isAvailableEmail(final String email) {
-        return !accountRepository.existsByEmail(email);
     }
 
 }

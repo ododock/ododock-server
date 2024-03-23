@@ -12,10 +12,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class Tag {
 
-    @Column(name = "article_id", insertable = false, updatable = false)
-    private Long articleId;
+//    @Column(name = "article_id", insertable = false, updatable = false)
+//    private Long articleId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "tag_name", nullable = false)
     private String name;
 
     @Builder

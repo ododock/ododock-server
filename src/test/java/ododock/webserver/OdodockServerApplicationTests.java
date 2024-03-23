@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class OdodockServerApplicationTests {
 
-//	@Test
+	@Test
 	void contextLoads() {
 	}
 

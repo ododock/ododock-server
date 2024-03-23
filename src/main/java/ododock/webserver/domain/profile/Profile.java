@@ -18,7 +18,10 @@ import java.util.List;
 @Table(
         name = "profile",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_profile__nickname", columnNames = "nickname")
+                @UniqueConstraint(name = "uk_profile__account_nickname", columnNames = {"account_id", "nickname"}),
+        },
+        indexes = {
+                @Index(name = "idx_profile__last_modified_at", columnList = "last_modified_at desc")
         }
 )
 public class Profile extends BaseEntity {
@@ -32,7 +35,8 @@ public class Profile extends BaseEntity {
     @Column(name = "version", nullable = false)
     private Long version;
 
-    @OneToOne(mappedBy = "ownProfile")
+    @OneToOne
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Account ownerAccount;
 
     @Column(name = "nickname", nullable = false)
@@ -47,10 +51,9 @@ public class Profile extends BaseEntity {
             cascade = CascadeType.ALL
     )
     @JoinColumn(
-            name = "category_id",
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+            name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
-    @OrderColumn(name = "order")
+//    @OrderColumn(name = "order")
     private List<Category> categories = new ArrayList<>();
 
     @OneToMany(
@@ -59,8 +62,7 @@ public class Profile extends BaseEntity {
             cascade = CascadeType.ALL
     )
     @JoinColumn(
-            name = "article_id",
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
+            name = "article_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
     private List<Article> articles = new ArrayList<>();
 

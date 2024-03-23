@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.account.TokenRecord;
 import ododock.webserver.repository.TokenRecordRepository;
 import ododock.webserver.security.CustomUserDetails;
@@ -19,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ododock.webserver.security.SecurityConstants.JWT_ACCESS_EXPIRATION;
 import static ododock.webserver.security.SecurityConstants.JWT_REFRESH_EXPIRATION;
@@ -54,8 +56,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
         String username = userDetails.getUsername();
         String password = userDetails.getPassword();
-        List<String> roles = authResult.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).toList();
+        Set<Role> roles = authResult.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
 
         saveToken(response, username, roles);
 
@@ -68,7 +72,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Transactional
-    protected void saveToken(final HttpServletResponse response, final String username, final List<String> roles) throws JsonProcessingException {
+    protected void saveToken(final HttpServletResponse response, final String username, final Set<Role> roles) throws JsonProcessingException {
         Date issuedAt = new Date();
         Date accessExp = new Date(System.currentTimeMillis() + JWT_ACCESS_EXPIRATION);
         Date refreshExp = new Date(System.currentTimeMillis() + JWT_REFRESH_EXPIRATION);

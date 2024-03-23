@@ -18,9 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(
-        name = "token_record"
-)
+@Table(name = "token_record")
 public class TokenRecord {
 
     @Id

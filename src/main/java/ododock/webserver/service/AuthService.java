@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.account.TokenRecord;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.TokenRecordRepository;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static ododock.webserver.security.SecurityConstants.JWT_ACCESS_EXPIRATION;
 import static ododock.webserver.security.SecurityConstants.JWT_REFRESH_EXPIRATION;
@@ -70,7 +72,7 @@ public class AuthService implements UserDetailsService {
                 return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
             }
             String username = jwtUtil.getUsername(refreshToken);
-            List<String> roles = jwtUtil.getRoles(refreshToken);
+            Set<Role> roles = jwtUtil.getRoles(refreshToken);
 
             revokeToken(refreshToken);
             saveToken(response, username, roles);
@@ -94,7 +96,7 @@ public class AuthService implements UserDetailsService {
     }
 
     @Transactional
-    protected void saveToken(final HttpServletResponse response, final String username, final List<String> roles) throws JsonProcessingException {
+    protected void saveToken(final HttpServletResponse response, final String username, final Set<Role> roles) throws JsonProcessingException {
         Date issuedAt = new Date();
         Date accessExp = new Date(System.currentTimeMillis() + JWT_ACCESS_EXPIRATION);
         Date refreshExp = new Date(System.currentTimeMillis() + JWT_REFRESH_EXPIRATION);

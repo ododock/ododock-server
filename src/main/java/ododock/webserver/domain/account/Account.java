@@ -3,17 +3,23 @@ package ododock.webserver.domain.account;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -40,7 +46,11 @@ import java.util.stream.Collectors;
 @Table(
         name = "account",
         uniqueConstraints = {
+                @UniqueConstraint(name = "uk_account__profile", columnNames = "profile_id"),
                 @UniqueConstraint(name = "uk_account__email", columnNames = "email")
+        },
+        indexes = {
+                @Index(name = "idx_account__last_modified_at", columnList = "last_modified_at desc")
         }
 )
 @ToString(of = {"email", "fullname"})
@@ -92,12 +102,13 @@ public class Account extends BaseEntity {
     @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "account_role",
+    @ElementCollection
+    @CollectionTable(name = "account_roles",
             joinColumns = @JoinColumn(name = "account_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
-    private List<Role> roles = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    private Set<Role> roles = new HashSet<>();
 
     @Builder
     public Account(
@@ -108,7 +119,7 @@ public class Account extends BaseEntity {
             final String password,
             final String fullname,
             final LocalDate birthDate,
-            final List<String> roles
+            final Set<Role> roles
     ) {
         this.ownProfile = new Profile(this, nickname, imageSource,fileType);
         this.email = email;
@@ -119,15 +130,16 @@ public class Account extends BaseEntity {
         this.accountNonLocked = true;
         this.credentialNonExpired = true;
         this.enabled = true;
-        this.roles.addAll(roles.stream().map(Role::new).toList());
+        this.roles.addAll(roles);
     }
 
     public void updatePassword(final String password) {
         this.password = password;
     }
 
-    public void updateRoles(final List<Role> updateRoles) {
-        this.roles = roles;
+    public void updateRoles(final Set<Role> updatedRoles) {
+        this.roles.clear();
+        this.roles.addAll(updatedRoles);
     }
 
 }
