@@ -3,7 +3,7 @@ spring:
     activate:
       on-profile: dev
 
-## Spring data source
+  ## Spring data source
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ododock
@@ -14,21 +14,25 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-      properties:
-        hibernate:
-          format_sql: true
-          use_sql_comments: true
-          default_batch_fetch_size: 500
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 500
 
-  ## Logging
-  logging:
-    level:
-      org:
-        hibernate:
-          sql: debug
-          orm.jdbc.bind: trace
-        apache.coyote.http11: debug
+
+
 
 # jwt config
   jwt:
     secret: ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2ksjfiekfdjsf2dsafsdaf
+
+## Logging
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+        type:
+          descriptor:
+            sql: trace
