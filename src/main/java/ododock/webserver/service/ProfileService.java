@@ -18,6 +18,11 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
 
     @Transactional(readOnly = true)
+    public boolean isAvailableNickname(final String nickname) {
+        return !profileRepository.existsByNickname(nickname);
+    }
+
+    @Transactional(readOnly = true)
     public ProfileDetailsResponse getProfile(final Long profileId) {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
@@ -26,7 +31,7 @@ public class ProfileService {
 
     @Transactional
     public void createProfile(final Profile profile) {
-        if (validateNickname(profile.getNickname())) {
+        if (isAvailableNickname(profile.getNickname())) {
             throw new ResourceAlreadyExistsException(Profile.class, profile.getNickname());
         }
         profileRepository.save(profile);
@@ -34,7 +39,7 @@ public class ProfileService {
 
     @Transactional
     public void updateProfile(final Long profileId, final ProfileUpdate request) {
-        if (validateNickname(request.nickname())) {
+        if (isAvailableNickname(request.nickname())) {
             throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
         Profile profile = profileRepository.findById(profileId)
@@ -48,11 +53,6 @@ public class ProfileService {
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));
         profile.updateProfileImage(request.imageSource(), request.fileType());
-    }
-
-    @Transactional(readOnly = true)
-    public boolean validateNickname(final String nickname) {
-        return profileRepository.existsByNickname(nickname);
     }
 
 }

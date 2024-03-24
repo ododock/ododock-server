@@ -32,7 +32,7 @@ public class ProfileController {
     public ValidateResponse validateNickname(
             @RequestParam("nickname") final  String nickname
     ) {
-        return ValidateResponse.of(profileService.validateNickname(nickname));
+        return ValidateResponse.of(profileService.isAvailableNickname(nickname));
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}")
