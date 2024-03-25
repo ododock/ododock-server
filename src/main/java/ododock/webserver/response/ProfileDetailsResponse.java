@@ -24,7 +24,7 @@ public record ProfileDetailsResponse(
                 .categories(profile.getCategories().stream()
                         .map(CategoryDetailsResponse::of)
                         .collect(Collectors.toList()))
-                .imageSource(profile.getProfileImage().getFileType())
+                .imageSource(profile.getProfileImage().getImageSource())
                 .fileType(profile.getProfileImage().getFileType())
                 .build();
     }
