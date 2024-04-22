@@ -33,11 +33,9 @@ public class Category extends BaseEntity {
     private Profile ownerProfile;
 
     @OneToMany(
+            mappedBy = "category",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH} // TODO 캐스케이딩 타입 확인
-    )
-    @JoinColumn(
-            name = "article_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
     private List<Article> articles = new ArrayList<>();
 
