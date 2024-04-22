@@ -1,6 +1,7 @@
 package ododock.webserver.domain.article;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +12,6 @@ import java.util.Objects;
 @Embeddable
 @RequiredArgsConstructor
 public class Tag {
-
-//    @Column(name = "article_id", insertable = false, updatable = false)
-//    private Long articleId;
 
     @Column(name = "tag_name", nullable = false)
     private String name;

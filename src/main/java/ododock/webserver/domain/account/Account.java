@@ -17,8 +17,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -31,13 +29,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.domain.common.BaseEntity;
+import ododock.webserver.domain.profile.ProfileImage;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -66,17 +65,21 @@ public class Account extends BaseEntity {
     private Long version;
 
     @OneToOne(
+            mappedBy = "ownerAccount",
             fetch = FetchType.LAZY,
-            optional = false,
             orphanRemoval = true,
             cascade = CascadeType.ALL
     )
-    @JoinColumn(
-            name = "profile_id",
-            nullable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
-    )
     private Profile ownProfile;
+
+    @OneToMany(
+            mappedBy = "ownerAccount",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL
+    )
+    private List<OAuth2Account> socialAccounts = new ArrayList<>();
+
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -84,10 +87,12 @@ public class Account extends BaseEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "fullname", nullable = false, updatable = false)
+    @Nullable
+    @Column(name = "fullname")
     private String fullname;
 
-    @Column(name = "birth_date", nullable = false, updatable = false)
+    @Nullable
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     @Column(name = "account_non_expired", nullable = false)
@@ -102,26 +107,25 @@ public class Account extends BaseEntity {
     @Column(name = "enabled", nullable = false)
     private Boolean enabled = true;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "account_roles",
             joinColumns = @JoinColumn(name = "account_id"),
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT)
     )
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Set<Role> roles = new HashSet<>();
 
     @Builder
     public Account(
-            final String nickname,
-            final String imageSource,
-            final String fileType,
             final String email,
             final String password,
             final String fullname,
             final LocalDate birthDate,
-            final Set<Role> roles
-    ) {
-        this.ownProfile = new Profile(this, nickname, imageSource,fileType);
+            final Set<Role> roles,
+            final String nickname,
+            final ProfileImage profileImage
+            ) {
         this.email = email;
         this.password = password;
         this.fullname = fullname;
@@ -131,15 +135,29 @@ public class Account extends BaseEntity {
         this.credentialNonExpired = true;
         this.enabled = true;
         this.roles.addAll(roles);
+        this.ownProfile = Profile.builder()
+                .nickname(nickname)
+                .profileImage(profileImage)
+                .build();
+        this.ownProfile.setOwnerAccount(this);
     }
 
     public void updatePassword(final String password) {
         this.password = password;
     }
 
+    public void setProfile(final Profile profile) {
+        this.ownProfile = profile;
+        this.ownProfile.setOwnerAccount(this);
+    }
+
     public void updateRoles(final Set<Role> updatedRoles) {
         this.roles.clear();
         this.roles.addAll(updatedRoles);
+    }
+
+    public void addSocialAccount(final OAuth2Account oAuth2Account) {
+        this.socialAccounts.add(oAuth2Account);
     }
 
 }

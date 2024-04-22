@@ -15,13 +15,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.common.BaseEntity;
 import ododock.webserver.domain.profile.Category;
 import ododock.webserver.domain.profile.Profile;
@@ -62,15 +60,16 @@ public class Article extends BaseEntity {
     @JoinColumn(name = "profile_id",
             nullable = false, updatable = false, insertable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Profile OwnerProfile;
+    private Profile ownerProfile;
 
     @ElementCollection
     @CollectionTable(name = "article_tags",
             joinColumns = @JoinColumn(name = "article_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
-    private Set<Tag> tags = new HashSet<Tag>();
+    private Set<Tag> tags = new HashSet<>();
 
-    @ManyToOne
+    @Nullable
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Category category;
 
