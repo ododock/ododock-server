@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
 import ododock.webserver.repository.AccountRepository;
+import ododock.webserver.repository.OAuth2AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
@@ -26,12 +28,13 @@ public class AccountService {
 
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
+    private final OAuth2AccountRepository oAuth2AccountRepository;
     private final ProfileRepository profileRepository;
-    private final AuthService authService;
+    private final ProfileService profileService;
 
     @Transactional(readOnly = true)
     public boolean isAvailableEmail(final String email) {
-        return !accountRepository.existsByEmail(email);
+        return !accountRepository.existsByEmail(email) && !oAuth2AccountRepository.existsByEmail(email);
     }
 
     @Transactional(readOnly = true)
@@ -53,16 +56,18 @@ public class AccountService {
                 .password(passwordEncoder.encode(request.password()))
                 .email(request.email())
                 .birthDate(request.birthDate())
-                .nickname(request.nickname()) // profile
                 .fullname(request.fullname())
-                .imageSource(request.imageSource())
-                .fileType(request.fileType())
                 .roles(Set.of(Role.USER))
+                .nickname(request.nickname())
+                .profileImage(ProfileImage.builder()
+                        .imageSource(request.imageSource())
+                        .fileType(request.fileType())
+                        .build())
                 .build();
-        Account createdAccount = accountRepository.save(newAccount);
+        accountRepository.save(newAccount);
         return AccountCreateResponse.builder()
-                .accountId(createdAccount.getId())
-                .profileId(createdAccount.getOwnProfile().getId())
+                .accountId(newAccount.getId())
+                .profileId(newAccount.getOwnProfile().getId())
                 .build();
     }
 
@@ -77,7 +82,6 @@ public class AccountService {
     public void deleteAccount(final Long accountId) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        authService.revokeAllTokensByEmail(account.getEmail());
         accountRepository.delete(account);
     }
 
