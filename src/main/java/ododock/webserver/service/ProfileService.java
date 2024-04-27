@@ -1,10 +1,13 @@
 package ododock.webserver.service;
 
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
 import ododock.webserver.repository.ProfileRepository;
+import ododock.webserver.request.ProfileCreate;
 import ododock.webserver.request.ProfileImageUpdate;
 import ododock.webserver.request.ProfileUpdate;
 import ododock.webserver.response.ProfileDetailsResponse;
@@ -30,11 +33,18 @@ public class ProfileService {
     }
 
     @Transactional
-    public void createProfile(final Profile profile) {
-        if (isAvailableNickname(profile.getNickname())) {
-            throw new ResourceAlreadyExistsException(Profile.class, profile.getNickname());
+    public void createProfile(final Account ownerAccount, final ProfileCreate request) {
+        if (!isAvailableNickname(request.nickname())) {
+            throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
-        profileRepository.save(profile);
+        Profile newProfile = Profile.builder()
+                .nickname(request.nickname())
+                .profileImage(ProfileImage.builder()
+                        .imageSource(request.imageSource())
+                        .fileType(request.fileType())
+                        .build())
+                .build();
+        profileRepository.save(newProfile);
     }
 
     @Transactional
