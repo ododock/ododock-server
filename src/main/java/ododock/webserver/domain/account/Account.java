@@ -43,9 +43,8 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Access(AccessType.FIELD)
 @Table(
-        name = "account",
+        name = "\"account\"",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_account__profile", columnNames = "profile_id"),
                 @UniqueConstraint(name = "uk_account__email", columnNames = "email")
         },
         indexes = {
