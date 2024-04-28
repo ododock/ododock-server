@@ -1,6 +1,7 @@
 package ododock.webserver.security.service;
 
 import lombok.Builder;
+import lombok.Getter;
 import ododock.webserver.domain.account.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class DaoUserDetails implements UserDetails {
 
+    @Getter
     private final Long id;
     private final String username;
     private final String password;

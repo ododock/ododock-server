@@ -2,15 +2,16 @@ package ododock.webserver.security.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.domain.account.TokenRecord;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
@@ -21,6 +22,7 @@ public class DaoAuthenticationSuccessHandler implements AuthenticationSuccessHan
     private final ObjectMapper objectMapper;
 
     @Override
+    @Transactional
     public void onAuthenticationSuccess(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -36,10 +38,11 @@ public class DaoAuthenticationSuccessHandler implements AuthenticationSuccessHan
     }
 
     private String convertToken(final Authentication authentication) throws JsonProcessingException {
+        final TokenRecord tokenRecord = jwtService.generateToken(authentication);
         return objectMapper.writeValueAsString(
                 Token.builder()
-                        .accessToken(jwtService.generateAccessToken(authentication))
-                        .refreshToken(jwtService.generateRefreshToken(authentication))
+                        .accessToken(tokenRecord.getAccessTokenValue())
+                        .refreshToken(tokenRecord.getRefreshTokenValue())
                         .build()
         );
     }

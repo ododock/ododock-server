@@ -162,8 +162,11 @@ create table template
 
 create table token_record
 (
-    token_record_id          varchar(128)                           not null,
+    token_record_id          bigint                                 not null auto_increment,
     account_id               bigint                                 not null,
+    access_token_value       varchar(1000)                          null,
+    access_token_expires_at  datetime(6)                            null,
+    access_token_issued_at   datetime(6)                            null,
     refresh_token_value      varchar(1000)                          null,
     refresh_token_expires_at datetime(6)                            null,
     refresh_token_issued_at  datetime(6)                            null,
