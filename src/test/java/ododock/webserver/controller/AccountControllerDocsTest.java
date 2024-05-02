@@ -2,6 +2,7 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.domain.account.Role;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
 import ododock.webserver.response.AccountCreateResponse;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -32,13 +35,16 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = AccountController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+//@WebMvcTest(controllers = AccountController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
+@WebMvcTest(controllers = AccountController.class)
 @Import(RestDocsConfig.class)
-@AutoConfigureRestDocs()
+@AutoConfigureRestDocs
 public class AccountControllerDocsTest {
 
     @Autowired
@@ -70,6 +76,7 @@ public class AccountControllerDocsTest {
         // expected
         mockMvc.perform(
                         get("/api/v1/accounts/{accountId}", 1L)
+                                .with(user("tester@ododock.io").password("password").roles(Role.USER.toString()))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -101,6 +108,7 @@ public class AccountControllerDocsTest {
         // expected
         mockMvc.perform(
                         get("/api/v1/accounts")
+                                .with(csrf())
                                 .param("email", "tester@ododock.io")
                 )
                 .andDo(print())
@@ -136,6 +144,7 @@ public class AccountControllerDocsTest {
                         post("/api/v1/accounts")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requset))
+                                .with(csrf())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -166,6 +175,8 @@ public class AccountControllerDocsTest {
         // expected
         mockMvc.perform(
                         patch("/api/v1/accounts/{accountId}/password", 1L)
+                                .with(user("tester@ododock.io").password("password").roles(Role.USER.toString()))
+                                .with(csrf())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requset))
                 )
@@ -185,6 +196,8 @@ public class AccountControllerDocsTest {
         // expected
         mockMvc.perform(
                         delete("/api/v1/accounts/{accountId}", 1L)
+                        .with(user("tester@ododock.io").password("password").roles(Role.USER.toString()))
+                        .with(csrf())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())

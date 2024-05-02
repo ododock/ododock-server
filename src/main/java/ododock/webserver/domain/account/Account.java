@@ -6,6 +6,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
+import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -27,6 +27,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ododock.webserver.domain.AttributesMapConverter;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.domain.common.BaseEntity;
 import ododock.webserver.domain.profile.ProfileImage;
@@ -34,8 +35,10 @@ import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -71,14 +74,11 @@ public class Account extends BaseEntity {
     )
     private Profile ownProfile;
 
-    @OneToMany(
-            mappedBy = "ownerAccount",
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            cascade = CascadeType.ALL
+    @ElementCollection
+    @CollectionTable(name = "social_account",
+        joinColumns = @JoinColumn(name = "account_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
-    private List<OAuth2Account> socialAccounts = new ArrayList<>();
-
+    private List<SocialAccount> socialAccounts = new ArrayList<>();
 
     @Column(name = "email", nullable = false)
     private String email;
@@ -93,6 +93,11 @@ public class Account extends BaseEntity {
     @Nullable
     @Column(name = "birth_date")
     private LocalDate birthDate;
+
+    @Nullable
+    @Column(name = "attributes")
+    @Convert(converter = AttributesMapConverter.class)
+    private Map<String, List<String>> attributes = new HashMap<>();
 
     @Column(name = "account_non_expired", nullable = false)
     private Boolean accountNonExpired;
@@ -123,7 +128,8 @@ public class Account extends BaseEntity {
             final LocalDate birthDate,
             final Set<Role> roles,
             final String nickname,
-            final ProfileImage profileImage
+            final ProfileImage profileImage,
+            final Map<String, List<String>> attributes
             ) {
         this.email = email;
         this.password = password;
@@ -134,6 +140,7 @@ public class Account extends BaseEntity {
         this.credentialNonExpired = true;
         this.enabled = true;
         this.roles.addAll(roles);
+        this.attributes = attributes;
         this.ownProfile = Profile.builder()
                 .nickname(nickname)
                 .profileImage(profileImage)
@@ -143,6 +150,10 @@ public class Account extends BaseEntity {
 
     public void updatePassword(final String password) {
         this.password = password;
+    }
+
+    public void updateAttributes(final Map<String, List<String>> attributes) {
+        this.attributes = attributes;
     }
 
     public void setProfile(final Profile profile) {
@@ -155,8 +166,12 @@ public class Account extends BaseEntity {
         this.roles.addAll(updatedRoles);
     }
 
-    public void addSocialAccount(final OAuth2Account oAuth2Account) {
-        this.socialAccounts.add(oAuth2Account);
+    public void addSocialAccount(final SocialAccount socialAccount) {
+        this.socialAccounts.add(socialAccount);
+    }
+
+    public void removeSocialAccount(final SocialAccount socialAccount) {
+        this.socialAccounts.remove(socialAccount);
     }
 
 }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 @Builder
 public record ProfileDetailsResponse(
         Long profileId,
+        Long ownerAccountId,
         String nickname,
         String imageSource,
         List<CategoryDetailsResponse> categories,
@@ -20,6 +21,7 @@ public record ProfileDetailsResponse(
     public static ProfileDetailsResponse of(final Profile profile) {
         return ProfileDetailsResponse.builder()
                 .profileId(profile.getId())
+                .ownerAccountId(profile.getOwnerAccount().getId())
                 .nickname(profile.getNickname())
                 .categories(profile.getCategories().stream()
                         .map(CategoryDetailsResponse::of)

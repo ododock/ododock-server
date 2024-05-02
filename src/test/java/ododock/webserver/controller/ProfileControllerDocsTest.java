@@ -96,7 +96,7 @@ public class ProfileControllerDocsTest {
     @Test
     void validateNickname_Docs() throws Exception {
         // given
-        given(profileService.validateNickname("admin")).willReturn(true);
+        given(profileService.isAvailableNickname("admin")).willReturn(true);
 
         // expected
         mockMvc.perform(

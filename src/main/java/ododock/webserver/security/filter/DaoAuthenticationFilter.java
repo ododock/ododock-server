@@ -17,13 +17,11 @@ import java.io.IOException;
 public class DaoAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
 
-    public DaoAuthenticationFilter(AuthenticationManager authenticationManager, JwtService jwtService) {
+    public DaoAuthenticationFilter(AuthenticationManager authenticationManager, DaoAuthenticationSuccessHandler successHandler) {
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtService;
         this.setFilterProcessesUrl("/api/v1/auth/login");
-        this.setAuthenticationSuccessHandler(new DaoAuthenticationSuccessHandler(jwtService, new ObjectMapper()));
+        this.setAuthenticationSuccessHandler(successHandler);
     }
 
     @Override

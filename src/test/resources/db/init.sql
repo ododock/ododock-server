@@ -6,13 +6,13 @@ create table account
     password                varchar(255) not null,
     fullname                varchar(255) null,
     birth_date              date         null,
-    attributes              text         null,
     enabled                 boolean      not null,
     account_non_expired     boolean      not null,
     account_non_locked      boolean      not null,
     credentials_non_expired boolean      not null,
     created_at              datetime(6)  not null,
     last_modified_at        datetime(6)  not null,
+    profile_id              bigint       not null,
     primary key (account_id)
 ) engine = InnoDB;
 
@@ -28,7 +28,7 @@ create index idx_account__last_modified_at
 create table account_roles
 (
     account_id     bigint       not null,
-    role           enum ('ADMIN','USER','MANAGER') not null
+    role           enum ('admin','user','manager') not null
 ) engine = InnoDB;
 
 
@@ -37,25 +37,25 @@ create table profile
 (
     profile_id         bigint       not null auto_increment,
     version            bigint       not null,
-    nickname           varchar(255) not null,
-    file_type          varchar(255) null,
-    image_source       varchar(255) null,
+    nickname           varchar(255) null,
+    file_type          varchar(255) not null,
+    image_source       varchar(255) not null,
     created_at         datetime(6)  not null,
     last_modified_at   datetime(6)  not null,
     account_id         bigint       null,
     primary key (profile_id)
 ) engine = InnoDB;
 
-#
-#
-# alter table account
-#     add constraint uk_account__profile unique (profile_id);
+
+
+alter table account
+    add constraint uk_account__profile unique (profile_id);
 
 create index idx_profile__last_modified_at
     on profile (last_modified_at desc);
 
 
-create table social_account
+create table oauth2_account
 (
     oauth2_account_id   bigint          not null auto_increment,
     version             bigint          not null,
@@ -160,18 +160,16 @@ create table template
     primary key (template_id)
 ) engine = InnoDB;
 
-
 create table token_record
 (
-    token_record_id          bigint                                 not null auto_increment,
-    account_id               bigint                                 not null,
-    access_token_value       varchar(1000)                          null,
-    access_token_expires_at  datetime(6)                            null,
-    access_token_issued_at   datetime(6)                            null,
-    refresh_token_value      varchar(1000)                          null,
-    refresh_token_expires_at datetime(6)                            null,
-    refresh_token_issued_at  datetime(6)                            null,
-    token_status             enum('active', 'revoked', 'expired')   null,
+    token_record_id          bigint        not null auto_increment,
+    username                 varchar(255)  not null,
+    access_token_value       varchar(1000) null,
+    refresh_token_value      varchar(1000) null,
+    access_token_expires_at  datetime(6)   null,
+    access_token_issued_at   datetime(6)   null,
+    refresh_token_expires_at datetime(6)   null,
+    refresh_token_issued_at  datetime(6)   null,
     primary key (token_record_id)
 ) engine = InnoDB;
 

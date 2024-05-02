@@ -9,13 +9,16 @@ import org.springframework.lang.Nullable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-@Builder
-public record AccountCreate (
+@Builder(toBuilder = true)
+public record SocialAccountCreate (
+        @NotBlank
+        String provider,
+        @NotBlank
+        String providerId,
         @NotBlank
         String email,
-        @NotBlank
-        String password,
         @Nullable
         String fullname,
         @Nullable
@@ -30,4 +33,9 @@ public record AccountCreate (
         @Nullable
         String fileType
 ) {
+        public SocialAccountCreate {
+                if (nickname == null) {
+                        nickname = UUID.randomUUID().toString().split("-")[0];
+                }
+        }
 }

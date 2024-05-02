@@ -5,6 +5,7 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.AccountCreate;
@@ -56,8 +57,10 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .imageSource("http://storage.ododock.io/sample.png")
-                .fileType("png")
+                .profileImage(ProfileImage.builder()
+                        .imageSource("http://storage.ododock.io/sample.png")
+                        .fileType("png")
+                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
@@ -79,8 +82,10 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .imageSource("http://storage.ododock.io/sample.png")
-                .fileType("png")
+                .profileImage(ProfileImage.builder()
+                        .imageSource("http://storage.ododock.io/sample.png")
+                        .fileType("png")
+                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
@@ -132,8 +137,10 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .imageSource("http://storage.ododock.io/sample.png")
-                .fileType("png")
+                .profileImage(ProfileImage.builder()
+                        .imageSource("http://storage.ododock.io/sample.png")
+                        .fileType("png")
+                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
@@ -159,8 +166,10 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .imageSource("http://storage.ododock.io/sample.png")
-                .fileType("png")
+                .profileImage(ProfileImage.builder()
+                        .imageSource("http://storage.ododock.io/sample.png")
+                        .fileType("png")
+                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")

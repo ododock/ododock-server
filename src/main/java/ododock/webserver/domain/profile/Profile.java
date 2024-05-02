@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import ododock.webserver.domain.article.Article;
 import ododock.webserver.domain.common.BaseEntity;
 import ododock.webserver.domain.account.Account;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class Profile extends BaseEntity {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
+    @Nullable
     @Embedded
     private ProfileImage profileImage;
 

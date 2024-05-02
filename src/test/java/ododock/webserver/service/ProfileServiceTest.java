@@ -5,8 +5,10 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
+import ododock.webserver.response.ProfileDetailsResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +53,10 @@ public class ProfileServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .imageSource("http://storage.ododock.io/sample.png")
-                .fileType("png")
+                .profileImage(ProfileImage.builder()
+                        .imageSource("123")
+                        .fileType("jpg")
+                        .build())
                 .email("test-user@ododock.io")
                 .password("password")
                 .fullname("John Doe")
@@ -72,4 +76,45 @@ public class ProfileServiceTest {
         assertThat(result).isFalse();
     }
 
+    @Test
+    void get_profile() {
+        // given
+        final Account account = Account.builder()
+                .nickname("test-user")
+                .profileImage(ProfileImage.builder()
+                        .imageSource("http://storage.ododock.io/sample.png")
+                        .fileType("png")
+                        .build())
+                .email("test-user@ododock.io")
+                .password("password")
+                .fullname("John Doe")
+                .birthDate(LocalDate.of(1991, 5, 22))
+                .roles(Set.of(Role.USER))
+                .build();
+        Account save = accountRepository.save(account);
+        System.out.println(save.getId());
+        System.out.println(save.getOwnProfile().getId());
+
+
+        // when
+        ProfileDetailsResponse result = profileService.getProfile(1L);
+
+        // then
+        assertThat(result.nickname()).isEqualTo("test-user");
+        assertThat(result.imageSource()).isEqualTo("http://storage.ododock.io/sample.png");
+        assertThat(result.fileType()).isEqualTo("png");
+    }
+
+
+    @Test
+    void update_profile() {
+        System.out.println("ROLE NAME");
+        System.out.println(Role.USER);
+        System.out.println(Role.USER.getRoleName());
+    }
+
+    @Test
+    void update_profile_image() {
+
+    }
 }
