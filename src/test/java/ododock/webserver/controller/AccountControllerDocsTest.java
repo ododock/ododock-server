@@ -60,7 +60,7 @@ public class AccountControllerDocsTest {
     void getAccount_Docs() throws Exception {
         // given
         final AccountDetailsResponse response = AccountDetailsResponse.builder()
-                .id(1l)
+                .sub(1l)
                 .email("tester@ododock.io")
                 .fullname("John doe")
                 .birthDate(LocalDate.of(1999, 05, 23))
@@ -85,7 +85,7 @@ public class AccountControllerDocsTest {
                                 parameterWithName("accountId").description("조회할 Account ID")
                         ),
                         responseFields(
-                                fieldWithPath("id").description("조회한 Account ID"),
+                                fieldWithPath("sub").description("조회한 Account ID"),
                                 fieldWithPath("email").description("조회한 Account 이메일"),
                                 fieldWithPath("fullname").description("조회한 Account 이름"),
                                 fieldWithPath("birthDate").description("조회한 Account 생년월일"),
@@ -133,7 +133,7 @@ public class AccountControllerDocsTest {
                 .fileType("png")
                 .build();
         final AccountCreateResponse response = AccountCreateResponse.builder()
-                .accountId(1L)
+                .sub(1L)
                 .profileId(10L)
                 .build();
 
@@ -159,7 +159,7 @@ public class AccountControllerDocsTest {
                                 fieldWithPath("fileType").description("생성할 Account의 Profile 이미지 포맷")
                         ),
                         responseFields(
-                                fieldWithPath("accountId").description("생성된 Account ID"),
+                                fieldWithPath("sub").description("생성된 Account ID"),
                                 fieldWithPath("profileId").description("생성된 Profile ID")
                         )
                 ));

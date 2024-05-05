@@ -18,18 +18,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ododock.webserver.domain.AttributesMapConverter;
-import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.domain.common.BaseEntity;
+import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.domain.profile.ProfileImage;
 import org.springframework.lang.Nullable;
 
@@ -54,6 +56,7 @@ import java.util.Set;
                 @Index(name = "idx_account__last_modified_at", columnList = "last_modified_at desc")
         }
 )
+@EqualsAndHashCode(of = {"id", "version"})
 @ToString(of = {"email", "fullname"})
 public class Account extends BaseEntity {
 
@@ -74,16 +77,18 @@ public class Account extends BaseEntity {
     )
     private Profile ownProfile;
 
-    @ElementCollection
-    @CollectionTable(name = "social_account",
-        joinColumns = @JoinColumn(name = "account_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @OneToMany(
+            mappedBy = "daoAccount",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            cascade = CascadeType.ALL
     )
     private List<SocialAccount> socialAccounts = new ArrayList<>();
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Nullable
@@ -98,6 +103,9 @@ public class Account extends BaseEntity {
     @Column(name = "attributes")
     @Convert(converter = AttributesMapConverter.class)
     private Map<String, List<String>> attributes = new HashMap<>();
+
+    @Column(name = "is_dao_signed_up", nullable = false)
+    private Boolean isDaoSignedUp = false;
 
     @Column(name = "account_non_expired", nullable = false)
     private Boolean accountNonExpired;
@@ -130,7 +138,7 @@ public class Account extends BaseEntity {
             final String nickname,
             final ProfileImage profileImage,
             final Map<String, List<String>> attributes
-            ) {
+    ) {
         this.email = email;
         this.password = password;
         this.fullname = fullname;
@@ -159,6 +167,10 @@ public class Account extends BaseEntity {
     public void setProfile(final Profile profile) {
         this.ownProfile = profile;
         this.ownProfile.setOwnerAccount(this);
+    }
+
+    public void daoSignedUp() {
+        this.isDaoSignedUp = true;
     }
 
     public void updateRoles(final Set<Role> updatedRoles) {

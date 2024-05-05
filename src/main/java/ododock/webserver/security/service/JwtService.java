@@ -6,6 +6,7 @@ import ododock.webserver.domain.account.TokenStatus;
 import ododock.webserver.repository.TokenRecordRepository;
 import ododock.webserver.security.DaoUserDetails;
 import ododock.webserver.security.config.JwtProperties;
+import ododock.webserver.security.util.OAuth2UserMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -18,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class JwtService {
@@ -27,33 +29,32 @@ public class JwtService {
     private final TokenRecordRepository tokenRecordRepository;
 
     public TokenRecord generateToken(final Authentication authentication) {
-        TokenRecord tokenRecord = new TokenRecord();
+        final TokenRecord tokenRecord = new TokenRecord();
         generateAccessToken(authentication, tokenRecord);
         generateRefreshToken(authentication, tokenRecord);
         return tokenRecordRepository.save(tokenRecord);
     }
 
     public TokenRecord generateToken(final OAuth2AuthenticationToken authentication) {
-        TokenRecord tokenRecord = new TokenRecord();
+        final TokenRecord tokenRecord = new TokenRecord();
         generateAccessToken(authentication, tokenRecord);
         generateRefreshToken(authentication, tokenRecord);
         return tokenRecordRepository.save(tokenRecord);
     }
 
     private void generateAccessToken(final Authentication authentication, final TokenRecord tokenRecord) {
-        Instant now = Instant.now();
-        DaoUserDetails userDetails = (DaoUserDetails) authentication.getPrincipal();
-        Long accountId = userDetails.getAccountId();
-        String email = userDetails.getUsername();
-        tokenRecord.setAccountId(accountId);
+        final Instant now = Instant.now();
+        final DaoUserDetails userDetails = (DaoUserDetails) authentication.getPrincipal();
+        final String sub = String.valueOf(userDetails.getAccountId());
+        tokenRecord.setAccountId(sub);
 
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiresAt(now.plus(jwtProperties.getAccessTokenExpiry(), ChronoUnit.MINUTES))
-                .subject(email) // username
+                .subject(sub) // username
                 .claim("roles", authentication.getAuthorities().stream().map(Object::toString).toList())
-                .claim("accId", accountId)
+                .claim("provider", "ododock")
                 .build();
         tokenRecord.setAccessToken(claims);
         tokenRecord.setTokenStatus(TokenStatus.ACTIVE);
@@ -61,20 +62,20 @@ public class JwtService {
     }
 
     private void generateAccessToken(final OAuth2AuthenticationToken authentication, final TokenRecord tokenRecord) {
-        Instant now = Instant.now();
-        Map<String, String> attributes = (Map<String, String>) authentication.getPrincipal().getAttributes().get("response");
-        String email = attributes.get("email");
-        String accountId = attributes.get("accountId");
-        List<String> roles = authentication.getAuthorities().stream().map(Object::toString).toList();
-        tokenRecord.setAccountId(Long.valueOf(accountId));
+        final Instant now = Instant.now();
+        final Map<String, String> attributes = OAuth2UserMapper.resolveAttributes(authentication);
 
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        final List<String> roles = authentication.getAuthorities().stream().map(Object::toString).toList();
+        tokenRecord.setAccountId(attributes.get("accountId"));
+        tokenRecord.setProvider(authentication.getAuthorizedClientRegistrationId());
+
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiresAt(now.plus(jwtProperties.getAccessTokenExpiry(), ChronoUnit.MINUTES))
-                .subject(email) // username
+                .subject(tokenRecord.getAccountId()) // username
                 .claim("roles", roles)
-                .claim("accId", accountId)
+                .claim("provider", tokenRecord.getProvider())
                 .build();
         tokenRecord.setAccessToken(claims);
         tokenRecord.setTokenStatus(TokenStatus.ACTIVE);
@@ -82,8 +83,10 @@ public class JwtService {
     }
 
     private void generateRefreshToken(final Authentication authentication, final TokenRecord tokenRecord) {
-        Instant now = Instant.now();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
+        final Instant now = Instant.now();
+        // TODO 리프레시 토큰 정보 수정
+        // 토큰id, 사용자id, 클라이언트id, scope
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiresAt(now.plus(jwtProperties.getRefreshTokenExpiry(), ChronoUnit.MINUTES))

@@ -99,7 +99,7 @@ public class AccountServiceTest {
         System.out.println(result);
 
         // then
-        assertThat(result.id()).isEqualTo(id);
+        assertThat(result.sub()).isEqualTo(id);
         assertThat(result.email()).isEqualTo("test-user@ododock.io");
         assertThat(result.fullname()).isEqualTo("John Doe");
         assertThat(result.birthDate()).isEqualTo("1991-05-22");
@@ -127,7 +127,7 @@ public class AccountServiceTest {
         Optional<Profile> profile = profileRepository.findByNickname("test-user");
 
         assertThat(account.isPresent()).isTrue();
-        assertThat(result.accountId()).isEqualTo(account.get().getId());
+        assertThat(result.sub()).isEqualTo(account.get().getId());
         assertThat(profile.isPresent()).isTrue();
         assertThat(result.profileId()).isEqualTo(profile.get().getId());
     }

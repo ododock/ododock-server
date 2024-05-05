@@ -13,6 +13,7 @@ import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
+import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
 import ododock.webserver.security.response.OAuth2UserInfo;
@@ -20,12 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +34,6 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
-    private final ProfileService profileService;
 
     @Transactional(readOnly = true)
     public boolean isAvailableEmail(final String email) {
@@ -44,30 +42,37 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     public AccountDetailsResponse getAccount(final Long accountId) {
-        Account account = accountRepository.findById(accountId)
+        final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        final Set<String> registeredSocialAccounts = account.getSocialAccounts().stream()
+                .map(SocialAccount::getProvider).collect(Collectors.toSet());
+        final Profile ownProfile = account.getOwnProfile();
+        ownProfile.getId();
+        ownProfile.getProfileImage();
+        ownProfile.getNickname();
+        final ProfileImage profileImage = ownProfile.getProfileImage();
         return AccountDetailsResponse.of(account);
     }
 
     // TODO move on query service later when QueryDSL gets ready.
     @Transactional(readOnly = true)
-    public Optional<Account> getAccountWithSocialAccountEmail(final String email) {
-        Optional<Account> found = accountRepository.findBySocialAccountsEmail(email);
+    public Optional<Account> getAccountBySocialProviderId(final String providerId) {
+        Optional<Account> found = accountRepository.findBySocialAccountsProviderId(providerId);
         if (found.isPresent()) {
-            System.out.println(found.get().getRoles());
+            System.out.println(found.get().getRoles()); // for query
         }
         return found;
     }
 
     @Transactional
-    public AccountCreateResponse createAccount(final AccountCreate request) {
+    public AccountCreateResponse createDaoAccount(final AccountCreate request) {
         if (!isAvailableEmail(request.email())) {
             throw new ResourceAlreadyExistsException(Account.class, request.email());
         }
         if (profileRepository.existsByNickname(request.nickname())) {
             throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
-        Account newAccount = Account.builder()
+        final Account newAccount = Account.builder()
                 .password(passwordEncoder.encode(request.password()))
                 .email(request.email())
                 .birthDate(request.birthDate())
@@ -80,80 +85,80 @@ public class AccountService {
                         .fileType(request.fileType())
                         .build())
                 .build();
+        newAccount.daoSignedUp();
         accountRepository.save(newAccount);
         return AccountCreateResponse.builder()
-                .accountId(newAccount.getId())
+                .sub(newAccount.getId())
                 .profileId(newAccount.getOwnProfile().getId())
                 .build();
     }
 
     @Transactional
     public Account createSocialAccount(final OAuth2UserInfo userInfo) {
-        System.out.println(userInfo);
-        Account newAccount = Account.builder()
-                .password(UUID.randomUUID().toString())
-                .email(userInfo.getEmail())
-                .birthDate(resolveDate(userInfo.getBirthYear(), userInfo.getBirthday()))
-                .fullname(userInfo.getName())
-                .roles(Set.of(Role.USER))
-                .nickname(userInfo.getNickname() == null
-                        ? UUID.randomUUID().toString().split("-")[0]
-                        : userInfo.getNickname()
-                )
-                .attributes(
-                        userInfo.getGender() == null
-                                ? null
-                                : Map.of("gender", List.of(userInfo.getGender()))
-                )
-                .profileImage(resolveProfileImage(userInfo.getProfileImage()))
-                .build();
-        newAccount.addSocialAccount(SocialAccount.builder()
-                .ownerAccount(newAccount)
-                .email(userInfo.getEmail())
-                .provider(userInfo.getProvider())
+        final Account account = accountRepository.findBySocialAccountsProviderId(userInfo.getProviderId())
+                .orElse(Account.builder()
+                        .email(UUID.randomUUID().toString())
+                        .password(UUID.randomUUID().toString())
+                        .nickname(UUID.randomUUID().toString())
+                        .roles(Set.of(Role.USER))
+                        .build());
+        account.addSocialAccount(SocialAccount.builder()
+                .daoAccount(account)
                 .providerId(userInfo.getProviderId())
+                .provider(userInfo.getProvider())
+                .email(userInfo.getEmail())
                 .build());
-        return accountRepository.save(newAccount);
-//        return AccountCreateResponse.builder()
-//                .accountId(newAccount.getId())
-//                .profileId(newAccount.getOwnProfile().getId())
-//                .build();
+        return accountRepository.save(account);
+    }
+
+    @Transactional
+    public Account connectSocialAccount(final Long accountId, final OAuthAccountConnect request) {
+        final Account originAccount = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("account with id " + accountId + " not found"));
+        final String targetProvider = request.oauthProvider();
+        originAccount.getSocialAccounts().stream()
+                .filter(a -> a.getProvider().equals(targetProvider))
+                .findAny()
+                .ifPresent(ex -> {
+                    throw new IllegalArgumentException("already registered social provider");
+                });
+        final Account targetDaoAccount = accountRepository.findById(request.targetAccountId())
+                .orElseThrow(() -> new IllegalArgumentException("target account not exists"));
+        final SocialAccount targetSocialAccount = targetDaoAccount.getSocialAccounts().stream()
+                .filter(a -> a.getProvider().equals(targetProvider))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("Illegal social account connect request"));
+        originAccount.addSocialAccount(SocialAccount.builder()
+                .providerId(targetSocialAccount.getProviderId())
+                .provider(targetProvider)
+                .daoAccount(originAccount)
+                .email(targetSocialAccount.getEmail())
+                .build());
+        accountRepository.delete(targetDaoAccount);
+        return originAccount;
+    }
+
+    @Transactional
+    public void deleteConnectedSocialAccount(final Long accountId, final Long socialAccountId) {
+        final Account foundAccount = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("account not found"));
+        final SocialAccount socialAccount = foundAccount.getSocialAccounts().stream()
+                .filter(a -> a.getId().equals(socialAccountId))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("social account not found"));
+        foundAccount.getSocialAccounts().remove(socialAccount);
     }
 
     @Transactional
     public void updateAccountPassword(final Long accountId, final AccountPasswordUpdate request) {
-        Account account = accountRepository.findById(accountId)
+        final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         account.updatePassword(passwordEncoder.encode(request.password()));
     }
 
     @Transactional
     public void deleteAccount(final Long accountId) {
-        Account account = accountRepository.findById(accountId)
+        final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         accountRepository.delete(account);
-    }
-
-    private LocalDate resolveDate(final String birthYear, final String birthday) {
-        if (birthYear == null || birthday == null) {
-            return null;
-        }
-        return LocalDate.of(
-                Integer.valueOf(birthYear),
-                Integer.valueOf(birthday.split("-")[0]),
-                Integer.valueOf(birthday.split("-")[1])
-        );
-    }
-
-    private ProfileImage resolveProfileImage(final String profileImageUrl) {
-        return profileImageUrl == null
-                ? null
-                : ProfileImage.builder()
-                .imageSource(profileImageUrl)
-                .fileType(profileImageUrl.substring(
-                        profileImageUrl.lastIndexOf('.') + 1)
-                )
-                .build();
     }
 
 }

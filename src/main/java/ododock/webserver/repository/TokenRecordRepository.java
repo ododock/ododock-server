@@ -8,17 +8,17 @@ import java.util.Optional;
 
 public interface TokenRecordRepository extends JpaRepository<TokenRecord, Long> {
 
-    Boolean existsByAccountId(final Long accountId);
+    Boolean existsByAccountId(final String accountId);
 
     Boolean existsByRefreshTokenValue(final String token);
 
     void deleteByRefreshTokenValue(final String token);
 
-    void deleteByAccountId(final Long accountId);
+    void deleteByAccountId(final String accountId);
 
-    void deleteAllByAccountId(final Long accountId);
+    void deleteAllByAccountId(final String accountId);
 
-    List<TokenRecord> findByAccountId(final Long accountId);
+    List<TokenRecord> findByAccountId(final String accountId);
 
     Optional<TokenRecord> findByRefreshTokenValue(final String refreshToken);
 

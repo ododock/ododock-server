@@ -1,18 +1,23 @@
 package ododock.webserver.security.response;
 
+import lombok.Getter;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class NaverUserInfo implements OAuth2UserInfo {
 
+    @Getter
     private Map<String, Object> attributes;
 
-    public NaverUserInfo(Map<String, Object> attributes) {
-        this.attributes = attributes;
+    public NaverUserInfo(final Map<String, Object> attributes) {
+        this.attributes = new HashMap<>(attributes);
+        Map<String, Object> map = (Map<String, Object>) attributes.get("response");
     }
 
     @Override
     public String getAccountId() {
-        return (String) attributes.get("accountId");
+        return ((Map<String, Object>) attributes.get("response")).get("accountId").toString();
     }
 
     @Override
@@ -22,30 +27,30 @@ public class NaverUserInfo implements OAuth2UserInfo {
 
     @Override
     public String getProviderId() {
-        return (String) attributes.get("id");
+        return ((Map<String, Object>) attributes.get("response")).get("id").toString();
     }
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("email");
+        return obj == null ? null : obj.toString();
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("name");
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("name");
+        return obj == null ? null : obj.toString();
     }
 
     @Override
     public String getNickname() {
-        String nickname = (String) attributes.get("nickname");
-        return nickname == null
-                ? null
-                : nickname;
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("nickname");
+        return obj == null ? null : obj.toString();
     }
 
     @Override
     public String getAge() {
-        return (String) attributes.get("age");
+        return ((Map<String, Object>) attributes.get("response")).get("age").toString();
     }
 
     /**
@@ -55,8 +60,8 @@ public class NaverUserInfo implements OAuth2UserInfo {
      */
     @Override
     public String getGender() {
-        String gender = (String) attributes.get("gender");
-        return gender == null ? null : gender;
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("gender");
+        return obj == null ? null : obj.toString();
     }
 
     /**
@@ -66,7 +71,8 @@ public class NaverUserInfo implements OAuth2UserInfo {
      */
     @Override
     public String getBirthday() {
-        return (String) attributes.get("birthday");
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("birthday");
+        return obj == null ? null : obj.toString();
     }
 
     /**
@@ -76,7 +82,8 @@ public class NaverUserInfo implements OAuth2UserInfo {
      */
     @Override
     public String getBirthYear() {
-        return (String) attributes.get("birthyear");
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("birthyear");
+        return obj == null ? null : obj.toString();
     }
 
     /**
@@ -86,12 +93,14 @@ public class NaverUserInfo implements OAuth2UserInfo {
      */
     @Override
     public String getProfileImage() {
-        return (String) attributes.get("profileImage");
+        Object obj = ((Map<String, Object>) attributes.get("response")).get("profile_image");
+        return obj == null ? null : obj.toString();
     }
 
     @Override
     public void addAttribute(String key, Object value) {
-        attributes.put(key, value);
+        Map<String, Object> map = (Map<String, Object>) attributes.get("response");
+        map.put(key, value);
     }
 
 }

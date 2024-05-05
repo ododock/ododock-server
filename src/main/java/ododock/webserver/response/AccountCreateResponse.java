@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public record AccountCreateResponse(
         @Getter
-        Long accountId,
+        Long sub,
         @Getter
         Long profileId
 ) {

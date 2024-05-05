@@ -37,7 +37,6 @@ spring:
             scope:
               - https://www.googleapis.com/auth/userinfo.email
               - https://www.googleapis.com/auth/userinfo.profile
-              - openid
               # TODO google scope 확인 필요
               # velog 확인했을때 이름, 이메일주소, 언어설정, 프로필사진
           naver:
@@ -57,7 +56,7 @@ spring:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/auth
             token-uri: https://oauth2.googleapis.com/token
-            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
             user-name-attribute: email
           naver:
             authorization-uri: https://nid.naver.com/oauth2.0/authorize # 서비스 로그인 창 주소
@@ -70,14 +69,18 @@ spring:
 logging:
   level:
     p6spy: debug
+    org.apache.coyote: DEBUG
 
 # app config
 app:
+  security:
+    base-redirect-uri: "http://localhost:8080/login/oauth2/code/"
+    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&access_token=%s&refresh_token=%s}"
+    app-callback-uri: "http://localhost:8080/auth/social-accounts/code/"
+
   jwt:
-    secret: th!s!stemp0r@rysecretkey4devenv.!tvvillberep1@cedw!thre@1one!nproduct!0nenv!r0nnnent
-    algorithm: HS256
     issuer: "http://localhost:8080"
-    access_token_expiry: 60
-    refresh_token_expiry: 1440
+    access-token-expiry: 60
+    refresh-token-expiry: 1440
 
 

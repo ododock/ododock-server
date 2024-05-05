@@ -27,7 +27,10 @@ public class TokenRecord {
     private Long id;
 
     @Column(name = "account_id")
-    private Long accountId;
+    private String accountId;
+
+    @Column(name = "provider")
+    private String provider;
 
     @Nullable
     @Column(name = "access_token_value", length = 1000)

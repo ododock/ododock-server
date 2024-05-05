@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.account.TokenRecord;
+import ododock.webserver.security.DaoUserDetails;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     }
 
     private void writeAuthenticationToken(HttpServletResponse response, final Authentication authentication) throws IOException {
+        ((DaoUserDetails) authentication.getPrincipal()).getAccountId();
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json");
         response.getWriter().write(convertToken(authentication));
@@ -38,8 +40,11 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
 
     private String convertToken(final Authentication authentication) throws JsonProcessingException {
         final TokenRecord tokenRecord = jwtService.generateToken(authentication);
+        Long accountId = ((DaoUserDetails)authentication.getPrincipal()).getAccountId();
+
         return objectMapper.writeValueAsString(
                 Token.builder()
+                        .sub(String.valueOf(accountId))
                         .accessToken(tokenRecord.getAccessTokenValue())
                         .refreshToken(tokenRecord.getRefreshTokenValue())
                         .build()

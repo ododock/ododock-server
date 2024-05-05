@@ -82,6 +82,7 @@ public class Profile extends BaseEntity {
 
     @Builder
     public Profile(final String nickname, final ProfileImage profileImage) {
+        // TODO 소셜 회원가입 한 경우, dao랑 oauth 계정 중 어느걸로 할것인가?
         this.nickname = nickname;
         this.profileImage = profileImage;
     }

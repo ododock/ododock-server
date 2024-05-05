@@ -27,3 +27,8 @@ jwt:
 logging:
   level:
     ododock.webserver: info
+
+app:
+  security:
+    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&access_token=%s&refresh_token=%s}"
+    app-callback-uri: "http://localhost:8080/auth/social-accounts/code/"
