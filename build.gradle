@@ -61,6 +61,11 @@ dependencies {
 
 }
 
+tasks.named("bootBuildImage") {
+    builder = "dashaun/builder:tiny"
+    environment = ["BP_NATIVE_IMAGE" : "true"]
+}
+
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
