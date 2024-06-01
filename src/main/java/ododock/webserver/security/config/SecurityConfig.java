@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
+import ododock.webserver.security.request.RequestParameterMatcher;
 import ododock.webserver.security.service.AuthService;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.context.annotation.Bean;
@@ -19,11 +20,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -39,7 +43,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http, final MvcRequestMatcher.Builder mvc) throws Exception {
+        final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setMatchingRequestParameterName(null);
         http
+                .requestCache(config -> config.requestCache(requestCache))
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(config -> config.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -48,6 +55,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/api/v1/accounts/{accountId}")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/accounts")).permitAll()
+                        .requestMatchers(new RequestParameterMatcher(
+                                HttpMethod.GET, "/api/v1/accounts", List.of("email"))).permitAll()
+                        .requestMatchers(new RequestParameterMatcher(
+                                HttpMethod.GET, "/api/v1/profiles", List.of("nickname"))).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/login")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/logout")).permitAll()
                         .anyRequest().authenticated()
@@ -75,7 +86,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+    MvcRequestMatcher.Builder mvc(final HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
     }
 
