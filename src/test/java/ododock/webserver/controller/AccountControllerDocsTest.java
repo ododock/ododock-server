@@ -150,7 +150,7 @@ public class AccountControllerDocsTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("account/create-account",
+                .andDo(document("account/create-dao-account",
                         requestFields(
                                 fieldWithPath("email").description("생성할 Account 이메일"),
                                 fieldWithPath("password").description("생성할 Account 비밀번호"),
@@ -184,7 +184,7 @@ public class AccountControllerDocsTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("account/create-account",
+                .andDo(document("account/connect-social-account",
                         pathParameters(
                                 parameterWithName("accountId").description("연동을 요청한 account ID")
                         ),
@@ -252,7 +252,7 @@ public class AccountControllerDocsTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("account/delete-account",
+                .andDo(document("account/delete-social-account",
                         pathParameters(
                                 parameterWithName("accountId").description("삭제할 Account ID"),
                                 parameterWithName("socialAccountId").description("삭제할 Social Account ID")
