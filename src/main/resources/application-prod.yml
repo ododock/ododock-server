@@ -6,9 +6,9 @@ spring:
 ## Spring data source
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ### will be patched ###
-    username: ### will be patched ###
-    password: ### will be patched ###
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   ## Spring jpa
   jpa:
@@ -24,6 +24,12 @@ logging:
   level:
     ododock.webserver: info
 
+# app config
 app:
   security:
-    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"
+    oauth-callback-uri: "http://${HOST_DOMAIN_URI}:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"
+
+  jwt:
+    issuer: "http://${HOST_DOMAIN_URI}:8080"
+    access-token-expiry: 60
+    refresh-token-expiry: 1440
