@@ -4,12 +4,13 @@ import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
+@Transactional
 public class CategoryServiceTest {
 
     @Autowired
@@ -29,11 +30,6 @@ public class CategoryServiceTest {
 
     @Autowired
     private AccountRepository accountRepository;
-
-    @AfterEach
-    void tearDown() {
-        cleanup.all();
-    }
 
     @Test
     void ex() {

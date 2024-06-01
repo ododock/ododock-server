@@ -5,24 +5,22 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
-import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.response.ProfileDetailsResponse;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 public class ProfileServiceTest {
 
     @Autowired
@@ -42,11 +40,6 @@ public class ProfileServiceTest {
 
     @Autowired
     private AccountRepository accountRepository;
-
-    @AfterEach
-    void tearDown() {
-        cleanup.all();
-    }
 
     @Test
     void validate_nickname() {

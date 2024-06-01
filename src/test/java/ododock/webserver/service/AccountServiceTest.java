@@ -11,11 +11,11 @@ import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 //@Sql(scripts = "classpath:db/teardown.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @SpringBootTest
+@Transactional
 public class AccountServiceTest {
 
     @Autowired
@@ -44,11 +45,6 @@ public class AccountServiceTest {
 
     @Autowired
     private CleanUp cleanUp;
-
-    @AfterEach
-    void cleanUp() {
-        cleanUp.all();
-    }
 
     @Test
     void isAvailableEmail() {
