@@ -2,6 +2,7 @@ package ododock.webserver.security.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -25,22 +26,27 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     @Transactional
     @Override
     public void onAuthenticationSuccess(
-            HttpServletRequest request,
-            HttpServletResponse response,
+            final HttpServletRequest request,
+            final HttpServletResponse response,
             final Authentication authentication) throws IOException {
         writeAuthenticationToken(response, authentication);
     }
 
-    private void writeAuthenticationToken(HttpServletResponse response, final Authentication authentication) throws IOException {
-        ((DaoUserDetails) authentication.getPrincipal()).getAccountId();
+    private void writeAuthenticationToken(final HttpServletResponse response, final Authentication authentication) throws IOException {
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json");
-        response.getWriter().write(convertToken(authentication));
+        response.getWriter().write(convertToken(response, authentication));
     }
 
-    private String convertToken(final Authentication authentication) throws JsonProcessingException {
+    private String convertToken(final HttpServletResponse response, final Authentication authentication) throws JsonProcessingException {
         final TokenRecord tokenRecord = jwtService.generateToken(authentication);
-        Long accountId = ((DaoUserDetails)authentication.getPrincipal()).getAccountId();
+        final Long accountId = ((DaoUserDetails)authentication.getPrincipal()).getAccountId();
+        final Cookie cookie = new Cookie("access_token", tokenRecord.getAccessTokenValue());
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "None");
+
+        response.addCookie(cookie);
 
         return objectMapper.writeValueAsString(
                 Token.builder()
