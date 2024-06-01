@@ -1,4 +1,4 @@
-package ododock.webserver.config;
+package ododock.webserver.common;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
