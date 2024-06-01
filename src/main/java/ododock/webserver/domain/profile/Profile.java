@@ -99,8 +99,10 @@ public class Profile extends BaseEntity {
         this.categories = categories;
     }
     public void updateProfileImage(final String imageSource, final String filetype) {
-        this.profileImage.updateImageSource(imageSource);
-        this.profileImage.updateFileType(filetype);
+        this.profileImage = ProfileImage.builder()
+                .imageSource(imageSource)
+                .fileType(filetype)
+                .build();
     }
 
 }

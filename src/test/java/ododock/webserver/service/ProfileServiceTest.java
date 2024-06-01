@@ -76,26 +76,27 @@ public class ProfileServiceTest {
                 .birthDate(LocalDate.of(1991, 5, 22))
                 .roles(Set.of(Role.USER))
                 .build();
-        Account save = accountRepository.save(account);
-        System.out.println(save.getId());
-        System.out.println(save.getOwnProfile().getId());
-
+        Account createdAccount = accountRepository.save(account);
+        Profile createdProfile = createdAccount.getOwnProfile();
+        em.flush();
+        createdProfile.updateProfileImage("http://test.com/temp.png", "png");
+        em.flush();
+        Long profileId = createdProfile.getId();
 
         // when
-        ProfileDetailsResponse result = profileService.getProfile(1L);
+        ProfileDetailsResponse result = profileService.getProfile(profileId);
 
         // then
         assertThat(result.nickname()).isEqualTo("test-user");
-        assertThat(result.imageSource()).isEqualTo("http://storage.ododock.io/sample.png");
+        assertThat(result.imageSource()).isEqualTo("http://test.com/temp.png");
         assertThat(result.fileType()).isEqualTo("png");
+
     }
 
 
     @Test
     void update_profile() {
-        System.out.println("ROLE NAME");
-        System.out.println(Role.USER);
-        System.out.println(Role.USER.getRoleName());
+
     }
 
     @Test
