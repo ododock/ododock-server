@@ -2,6 +2,7 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.request.CategoryCreate;
 import ododock.webserver.request.CategoryListUpdate;
 import ododock.webserver.request.CategoryUpdate;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -36,8 +38,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = CategoryController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
-@Import(RestDocsConfig.class)
+@WebMvcTest(controllers = CategoryController.class)
+@Import({RestDocsConfig.class, TestSecurityConfig.class})
 @AutoConfigureRestDocs()
 public class CategoryControllerDocsTest {
 
@@ -51,6 +53,7 @@ public class CategoryControllerDocsTest {
     private CategoryService categoryService;
 
     @Test
+    @WithMockUser
     void getCategoryByProfileId_Docs() throws Exception {
         //given
         final ListResponse<CategoryDetailsResponse> response = ListResponse.of(
@@ -100,6 +103,7 @@ public class CategoryControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void createCategory_Docs() throws Exception {
         //given
         final CategoryCreate request = CategoryCreate.builder()
@@ -135,6 +139,7 @@ public class CategoryControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void updateCategoryList_Docs() throws Exception {
         // given
         final CategoryListUpdate request = CategoryListUpdate.builder()
@@ -184,6 +189,7 @@ public class CategoryControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void updateCategory_Docs() throws Exception {
         // given
         final CategoryUpdate request = CategoryUpdate.builder()
@@ -216,6 +222,7 @@ public class CategoryControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void deleteCategory_Docs() throws Exception {
         // expected
         mockMvc.perform(

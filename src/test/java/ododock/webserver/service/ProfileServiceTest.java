@@ -53,10 +53,6 @@ public class ProfileServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("123")
-                        .fileType("jpg")
-                        .build())
                 .email("test-user@ododock.io")
                 .password("password")
                 .fullname("John Doe")
@@ -81,10 +77,6 @@ public class ProfileServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("http://storage.ododock.io/sample.png")
-                        .fileType("png")
-                        .build())
                 .email("test-user@ododock.io")
                 .password("password")
                 .fullname("John Doe")

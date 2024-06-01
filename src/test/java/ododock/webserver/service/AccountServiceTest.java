@@ -5,7 +5,6 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
-import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.AccountCreate;
@@ -17,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -57,10 +55,6 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("http://storage.ododock.io/sample.png")
-                        .fileType("png")
-                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
@@ -82,10 +76,6 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("http://storage.ododock.io/sample.png")
-                        .fileType("png")
-                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
@@ -110,8 +100,6 @@ public class AccountServiceTest {
         // given
         final AccountCreate request = AccountCreate.builder()
                 .nickname("test-user")
-                .imageSource("http://storage.ododock.io/sample.png")
-                .fileType("png")
                 .email("test-user@ododock.io")
                 .password("password")
                 .fullname("John Doe")
@@ -119,7 +107,7 @@ public class AccountServiceTest {
                 .build();
 
         // when
-        AccountCreateResponse result = accountService.createAccount(request);
+        AccountCreateResponse result = accountService.createDaoAccount(request);
 
 
         // then
@@ -137,10 +125,6 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("http://storage.ododock.io/sample.png")
-                        .fileType("png")
-                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
@@ -166,10 +150,6 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("http://storage.ododock.io/sample.png")
-                        .fileType("png")
-                        .build())
                 .email("test-user@ododock.io")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
