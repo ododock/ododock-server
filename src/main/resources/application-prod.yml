@@ -19,10 +19,6 @@ spring:
     show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
 
-# jwt config
-jwt:
-  secret: ### will be patched ###
-
 ## Logging
 logging:
   level:
@@ -30,5 +26,4 @@ logging:
 
 app:
   security:
-    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&access_token=%s&refresh_token=%s}"
-    app-callback-uri: "http://localhost:8080/auth/social-accounts/code/"
+    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"

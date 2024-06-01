@@ -37,7 +37,6 @@ spring:
             scope:
               - https://www.googleapis.com/auth/userinfo.email
               - https://www.googleapis.com/auth/userinfo.profile
-              # TODO google scope 확인 필요
               # velog 확인했을때 이름, 이메일주소, 언어설정, 프로필사진
           naver:
             client-name: naver # naver or google
@@ -74,9 +73,7 @@ logging:
 # app config
 app:
   security:
-    base-redirect-uri: "http://localhost:8080/login/oauth2/code/"
-    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&access_token=%s&refresh_token=%s}"
-    app-callback-uri: "http://localhost:8080/auth/social-accounts/code/"
+    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"
 
   jwt:
     issuer: "http://localhost:8080"
