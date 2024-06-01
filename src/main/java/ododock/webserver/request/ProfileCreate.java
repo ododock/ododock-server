@@ -12,11 +12,4 @@ public record ProfileCreate(
         @NotBlank
         String fileType
 ) {
-        public static ProfileCreate of(final AccountCreate request) {
-                return ProfileCreate.builder()
-                        .nickname(request.nickname())
-                        .imageSource(request.imageSource())
-                        .fileType(request.fileType())
-                        .build();
-        }
 }

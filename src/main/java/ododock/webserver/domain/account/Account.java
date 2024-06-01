@@ -136,7 +136,6 @@ public class Account extends BaseEntity {
             final LocalDate birthDate,
             final Set<Role> roles,
             final String nickname,
-            final ProfileImage profileImage,
             final Map<String, List<String>> attributes
     ) {
         this.email = email;
@@ -151,13 +150,16 @@ public class Account extends BaseEntity {
         this.attributes = attributes;
         this.ownProfile = Profile.builder()
                 .nickname(nickname)
-                .profileImage(profileImage)
                 .build();
         this.ownProfile.setOwnerAccount(this);
     }
 
     public void updatePassword(final String password) {
         this.password = password;
+    }
+
+    public void updateFullname(final String fullname) {
+        this.fullname = fullname;
     }
 
     public void updateAttributes(final Map<String, List<String>> attributes) {

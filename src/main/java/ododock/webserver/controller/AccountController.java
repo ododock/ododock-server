@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
+import ododock.webserver.request.AccountUpdate;
 import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
@@ -47,12 +48,21 @@ public class AccountController {
     }
 
     @PostMapping("/api/v1/accounts/{accountId}/social-accounts")
-    public ResponseEntity<String> connectSocialAccount(
+    public ResponseEntity<Void> connectSocialAccount(
             final @PathVariable Long accountId,
             final @RequestBody OAuthAccountConnect request
     ) {
         accountService.connectSocialAccount(accountId, request);
-        return null;
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> updateAccount(
+            final @PathVariable Long accountId,
+            final @Valid @RequestBody AccountUpdate accountUpdate
+            ) {
+        accountService.updateAccount(accountId, accountUpdate);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/api/v1/accounts/{accountId}/password")

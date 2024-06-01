@@ -24,10 +24,6 @@ public record AccountCreate (
         @Nullable
         String nickname,
         @Nullable
-        Map<String, List<String>> attributes,
-        @Nullable
-        String imageSource,
-        @Nullable
-        String fileType
+        Map<String, List<String>> attributes
 ) {
 }

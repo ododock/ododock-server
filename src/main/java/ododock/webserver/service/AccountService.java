@@ -13,6 +13,7 @@ import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
+import ododock.webserver.request.AccountUpdate;
 import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
@@ -80,10 +81,6 @@ public class AccountService {
                 .roles(Set.of(Role.USER))
                 .nickname(request.nickname())
                 .attributes(request.attributes())
-                .profileImage(ProfileImage.builder()
-                        .imageSource(request.imageSource())
-                        .fileType(request.fileType())
-                        .build())
                 .build();
         newAccount.daoSignedUp();
         accountRepository.save(newAccount);
@@ -152,6 +149,19 @@ public class AccountService {
         final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         account.updatePassword(passwordEncoder.encode(request.password()));
+    }
+
+    @Transactional
+    public void updateAccount(final Long accountId, final AccountUpdate request) {
+        if (profileRepository.existsByNickname(request.nickname())) {
+            throw new IllegalArgumentException("nickname already exists");
+        }
+        final Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("account not found"));
+        account.getOwnProfile().updateNickname(request.nickname());
+        account.updateFullname(request.fullname());
+        account.updatePassword(passwordEncoder.encode(request.password()));
+        account.daoSignedUp();
     }
 
     @Transactional
