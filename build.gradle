@@ -28,10 +28,10 @@ repositories {
     mavenCentral()
 }
 
-tasks.named("bootBuildImage") {
-    builder = "dashaun/builder:tiny"
-    environment = ["BP_NATIVE_IMAGE" : "true"]
-}
+//tasks.named("bootBuildImage") {
+//    builder = "dashaun/builder:tiny"
+//    environment = ["BP_NATIVE_IMAGE" : "true"]
+//}
 
 
 dependencies {
