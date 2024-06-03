@@ -23,14 +23,14 @@ public class ProfileController {
 
     @GetMapping("/api/v1/profiles/{profileId}")
     public ProfileDetailsResponse getProfile(
-            @PathVariable final Long profileId
+            final @PathVariable Long profileId
     ) {
         return profileService.getProfile(profileId);
     }
 
     @GetMapping("/api/v1/profiles")
     public ValidateResponse validateNickname(
-            @RequestParam("nickname") final  String nickname
+            final @RequestParam("nickname") String nickname
     ) {
         return ValidateResponse.of(profileService.isAvailableNickname(nickname));
     }

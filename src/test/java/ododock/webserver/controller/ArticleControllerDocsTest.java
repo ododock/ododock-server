@@ -2,18 +2,19 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.request.ArticleCreate;
 import ododock.webserver.request.ArticleUpdate;
 import ododock.webserver.response.ArticleDetailsResponse;
 import ododock.webserver.service.ArticleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -34,8 +35,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ArticleController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
-@Import(RestDocsConfig.class)
+@WebMvcTest(controllers = ArticleController.class)
+@Import({RestDocsConfig.class, TestSecurityConfig.class})
 @AutoConfigureRestDocs()
 public class ArticleControllerDocsTest {
 
@@ -49,6 +50,7 @@ public class ArticleControllerDocsTest {
     private ArticleService articleService;
 
     @Test
+    @WithMockUser
     void getArticle_Docs() throws Exception {
         // given
         final ArticleDetailsResponse response = ArticleDetailsResponse.builder()
@@ -91,6 +93,7 @@ public class ArticleControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void createArticle_Docs() throws Exception {
         // given
         final ArticleCreate request = ArticleCreate.builder()
@@ -130,6 +133,7 @@ public class ArticleControllerDocsTest {
 
 
     @Test
+    @WithMockUser
     void updateArticle_Docs() throws Exception {
         // given
         final ArticleUpdate request = ArticleUpdate.builder()
@@ -164,6 +168,7 @@ public class ArticleControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void deleteArticle_Docs() throws Exception {
         // expected
         mockMvc.perform(

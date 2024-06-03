@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 import ododock.webserver.domain.article.Article;
 import ododock.webserver.domain.common.BaseEntity;
 import ododock.webserver.domain.account.Account;
+import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class Profile extends BaseEntity {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
+    @Nullable
     @Embedded
     private ProfileImage profileImage;
 
@@ -80,6 +82,7 @@ public class Profile extends BaseEntity {
 
     @Builder
     public Profile(final String nickname, final ProfileImage profileImage) {
+        // TODO 소셜 회원가입 한 경우, dao랑 oauth 계정 중 어느걸로 할것인가?
         this.nickname = nickname;
         this.profileImage = profileImage;
     }
@@ -96,8 +99,10 @@ public class Profile extends BaseEntity {
         this.categories = categories;
     }
     public void updateProfileImage(final String imageSource, final String filetype) {
-        this.profileImage.updateImageSource(imageSource);
-        this.profileImage.updateFileType(filetype);
+        this.profileImage = ProfileImage.builder()
+                .imageSource(imageSource)
+                .fileType(filetype)
+                .build();
     }
 
 }

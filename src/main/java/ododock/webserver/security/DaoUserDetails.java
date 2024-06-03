@@ -1,6 +1,7 @@
-package ododock.webserver.security.service;
+package ododock.webserver.security;
 
 import lombok.Builder;
+import lombok.Getter;
 import ododock.webserver.domain.account.Account;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,16 +12,19 @@ import java.util.stream.Collectors;
 
 public class DaoUserDetails implements UserDetails {
 
-    private final Long id;
+    @Getter
+    private final Long accountId;
     private final String username;
+    private final String name;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
 
     @Builder
     public DaoUserDetails(final Account account) {
-        this.id = account.getId();
+        this.accountId = account.getId();
         this.username = account.getEmail();
+        this.name = account.getEmail();
         this.password = account.getPassword();
         this.authorities = account.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
@@ -42,6 +46,7 @@ public class DaoUserDetails implements UserDetails {
     public String getUsername() {
         return username;
     }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

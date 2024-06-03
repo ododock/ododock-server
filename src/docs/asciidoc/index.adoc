@@ -15,16 +15,24 @@ operation::account/get-account[snippets='http-request,path-parameters,http-respo
 operation::account/validate-email[snippets='http-request,http-response,response-fields']
 
 [[ododock-account-create]]
-== Account 생성
-operation::account/create-account[snippets='http-request,request-fields,http-response,response-fields']
+== DB Account 생성
+operation::account/create-dao-account[snippets='http-request,request-fields,http-response,response-fields']
+
+[[ododock-connect-social-account]]
+== Social Account 연결
+operation::account/connect-social-account[snippets='http-request,path-parameters,request-fields,http-response']
 
 [[ododock-account-password-update]]
 == Account 비밀번호 수정
-operation::account/update-account-password[snippets='http-request,request-fields,http-response']
+operation::account/update-account-password[snippets='http-request,path-parameters,request-fields,http-response']
 
 [[ododock-account-delete]]
 == Account 삭제
 operation::account/delete-account[snippets='http-request,path-parameters,http-response']
+
+[[ododock-delete-social-account]]
+== Social Account 삭제
+operation::account/delete-social-account[snippets='http-request,path-parameters,http-response']
 
 
 [[ododock-profile-get]]

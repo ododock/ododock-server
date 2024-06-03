@@ -2,13 +2,18 @@ package ododock.webserver.response;
 
 import lombok.Builder;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.SocialAccount;
+import ododock.webserver.domain.profile.ProfileImage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Builder
 public record AccountDetailsResponse(
-        Long id,
+        Long sub,
+        Long profileId,
         String email,
         String fullname,
         LocalDate birthDate,
@@ -16,21 +21,32 @@ public record AccountDetailsResponse(
         boolean accountNonLocked,
         boolean credentialNonExpired,
         boolean enabled,
+        boolean isDaoSignedUp,
         LocalDateTime createdDate,
-        LocalDateTime lastModifiedDate
+        LocalDateTime lastModifiedDate,
+        Set<String> providers,
+        String nickname,
+        ProfileImage profileImage
 ) {
     public static AccountDetailsResponse of(final Account account) {
         return AccountDetailsResponse.builder()
-                .id(account.getId())
+                .sub(account.getId())
+                .profileId(account.getOwnProfile().getId())
                 .email(account.getEmail())
+                .nickname(account.getOwnProfile().getNickname())
                 .birthDate(account.getBirthDate())
                 .fullname(account.getFullname())
+                .profileImage(account.getOwnProfile().getProfileImage())
                 .createdDate(account.getCreatedDate())
                 .lastModifiedDate(account.getLastModifiedAt())
                 .accountNonExpired(account.getAccountNonExpired())
                 .accountNonLocked(account.getAccountNonLocked())
                 .credentialNonExpired(account.getCredentialNonExpired())
                 .enabled(account.getEnabled())
+                .isDaoSignedUp(account.getIsDaoSignedUp())
+                .providers(account.getSocialAccounts().stream()
+                        .map(SocialAccount::getProvider)
+                        .collect(Collectors.toSet()))
                 .build();
     }
 }

@@ -1,10 +1,14 @@
 package ododock.webserver.response;
 
 import lombok.Builder;
+import lombok.Getter;
+
 
 @Builder
 public record AccountCreateResponse(
-        Long accountId,
+        @Getter
+        Long sub,
+        @Getter
         Long profileId
 ) {
 }

@@ -2,6 +2,7 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.request.ProfileImageUpdate;
 import ododock.webserver.request.ProfileUpdate;
 import ododock.webserver.response.CategoryDetailsResponse;
@@ -9,12 +10,12 @@ import ododock.webserver.response.ProfileDetailsResponse;
 import ododock.webserver.service.ProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -34,8 +35,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.queryPar
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ProfileController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class})
-@Import(RestDocsConfig.class)
+@WebMvcTest(controllers = ProfileController.class)
+@Import({RestDocsConfig.class, TestSecurityConfig.class})
 @AutoConfigureRestDocs()
 public class ProfileControllerDocsTest {
 
@@ -49,6 +50,7 @@ public class ProfileControllerDocsTest {
     private ProfileService profileService;
 
     @Test
+    @WithMockUser
     void getProfile_Docs() throws Exception {
         // given
         final ProfileDetailsResponse response = ProfileDetailsResponse.builder()
@@ -79,12 +81,14 @@ public class ProfileControllerDocsTest {
                                 parameterWithName("profileId").description("조회할 프로필 ID")
                         ),
                         responseFields(
+                                fieldWithPath("ownerAccountId").description("조회한 프로필의 소유자 account ID"),
                                 fieldWithPath("profileId").description("조회한 프로필 ID"),
                                 fieldWithPath("nickname").description("조회한 프로필의 닉네임"),
                                 fieldWithPath("imageSource").description("조회한 프로필의 프로필 사진 리소스 주소"),
                                 fieldWithPath("fileType").description("조회한 프로필의 프로필 사진 파일 포맷"),
                                 fieldWithPath("categories").description("조회한 프로필의 카테고리 목록"),
                                 fieldWithPath("categories[].categoryId").description("카테고리 ID"),
+                                fieldWithPath("categories[].order").description("카테고리의 순서"),
                                 fieldWithPath("categories[].name").description("카테고리 이름"),
                                 fieldWithPath("categories[].visibility").description("카테고리 공개여부"),
                                 fieldWithPath("createdDate").description("조회한 프로필의 최초 생성일"),
@@ -94,9 +98,10 @@ public class ProfileControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void validateNickname_Docs() throws Exception {
         // given
-        given(profileService.validateNickname("admin")).willReturn(true);
+        given(profileService.isAvailableNickname("admin")).willReturn(true);
 
         // expected
         mockMvc.perform(
@@ -118,6 +123,7 @@ public class ProfileControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void updateProfile_Docs() throws Exception {
         // given
         final ProfileUpdate request = ProfileUpdate.builder()
@@ -162,6 +168,7 @@ public class ProfileControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void updateProfileImage_Docs() throws Exception {
         // given
         final ProfileImageUpdate request = ProfileImageUpdate.builder()

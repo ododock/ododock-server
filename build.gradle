@@ -12,23 +12,26 @@ java {
     sourceCompatibility = '17'
 }
 
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
+}
+
+
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+    asciidoctorExt
+//    compileOnly {
+//        extendsFrom annotationProcessor
+//    }
 }
 
 repositories {
     mavenCentral()
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-}
-
-configurations {
-    asciidoctorExt
-}
+//tasks.named("bootBuildImage") {
+//    builder = "dashaun/builder:tiny"
+//    environment = ["BP_NATIVE_IMAGE" : "true"]
+//}
 
 
 dependencies {
@@ -58,17 +61,26 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
 }
+
+
 
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
+task copyDocs(type: Copy) {
+    from 'build/docs/asciidoc'
+    into 'src/main/resources/static/docs'
+}
+
 asciidoctor {
     inputs.dir snippetsDir
     configurations 'asciidoctorExt'
     dependsOn test
+    finalizedBy copyDocs
 }
 
 bootJar {

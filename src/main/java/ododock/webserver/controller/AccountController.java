@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
+import ododock.webserver.request.CompleteAccountRegister;
+import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
 import ododock.webserver.response.ValidateResponse;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,32 +36,59 @@ public class AccountController {
 
     @GetMapping("/api/v1/accounts")
     public ValidateResponse validateEmail(
-            @RequestParam(value = "email", required = false) final String email
+            final @RequestParam(value = "email", required = false) String email
     ) {
         return ValidateResponse.of(accountService.isAvailableEmail(email));
     }
 
     @PostMapping("/api/v1/accounts")
-    public AccountCreateResponse createAccount(
-            @Valid @RequestBody final AccountCreate request
+    public AccountCreateResponse createDaoAccount(
+            final @Valid @RequestBody AccountCreate request
+    ) {
+        return accountService.createDaoAccount(request);
+    }
+
+    @PostMapping("/api/v1/accounts/{accountId}/social-accounts")
+    public ResponseEntity<Void> connectSocialAccount(
+            final @PathVariable Long accountId,
+            final @RequestBody OAuthAccountConnect request
+    ) {
+        accountService.connectSocialAccount(accountId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/api/v1/accounts/{accountId}")
+    public ResponseEntity<Void> accountRegisterComplete(
+            final @PathVariable Long accountId,
+            final @Valid @RequestBody CompleteAccountRegister request
             ) {
-        return accountService.createAccount(request);
+        accountService.completeAccountRegister(accountId, request);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/api/v1/accounts/{accountId}/password")
     public ResponseEntity<Void> updateAccountPassword(
-            @PathVariable final Long accountId,
-            @Valid @RequestBody final AccountPasswordUpdate request
-            ) {
+            final @PathVariable Long accountId,
+            final @Valid @RequestBody AccountPasswordUpdate request
+    ) {
         accountService.updateAccountPassword(accountId, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/api/v1/accounts/{accountId}")
     public ResponseEntity<Void> deleteAccount(
-            @PathVariable final Long accountId
+            final @PathVariable Long accountId
     ) {
         accountService.deleteAccount(accountId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/api/v1/accounts/{accountId}/social-accounts/{socialAccountId}")
+    public ResponseEntity<Void> deleteSocialAccounts(
+            final @PathVariable("accountId") Long accountId,
+            final @PathVariable("socialAccountId") Long socialAccountId
+    ) {
+        accountService.deleteConnectedSocialAccount(accountId, socialAccountId);
         return ResponseEntity.ok().build();
     }
 

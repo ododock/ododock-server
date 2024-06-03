@@ -6,6 +6,7 @@ create table account
     password                varchar(255) not null,
     fullname                varchar(255) null,
     birth_date              date         null,
+    attributes              text         null,
     enabled                 boolean      not null,
     account_non_expired     boolean      not null,
     account_non_locked      boolean      not null,
@@ -37,8 +38,8 @@ create table profile
     profile_id         bigint       not null auto_increment,
     version            bigint       not null,
     nickname           varchar(255) not null,
-    file_type          varchar(255) not null,
-    image_source       varchar(255) not null,
+    file_type          varchar(255) null,
+    image_source       varchar(255) null,
     created_at         datetime(6)  not null,
     last_modified_at   datetime(6)  not null,
     account_id         bigint       null,
@@ -54,7 +55,7 @@ create index idx_profile__last_modified_at
     on profile (last_modified_at desc);
 
 
-create table oauth2_account
+create table social_account
 (
     oauth2_account_id   bigint          not null auto_increment,
     version             bigint          not null,
@@ -162,8 +163,11 @@ create table template
 
 create table token_record
 (
-    token_record_id          varchar(128)                           not null,
+    token_record_id          bigint                                 not null auto_increment,
     account_id               bigint                                 not null,
+    access_token_value       varchar(1000)                          null,
+    access_token_expires_at  datetime(6)                            null,
+    access_token_issued_at   datetime(6)                            null,
     refresh_token_value      varchar(1000)                          null,
     refresh_token_expires_at datetime(6)                            null,
     refresh_token_issued_at  datetime(6)                            null,

@@ -7,6 +7,8 @@ import lombok.Builder;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Builder
 public record AccountCreate (
@@ -21,9 +23,7 @@ public record AccountCreate (
         LocalDate birthDate,
         @Nullable
         String nickname,
-        @NotBlank
-        String imageSource,
-        @NotBlank
-        String fileType
+        @Nullable
+        Map<String, List<String>> attributes
 ) {
 }

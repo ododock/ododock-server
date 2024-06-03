@@ -16,6 +16,8 @@ truncate table category;
 
 truncate table profile;
 
+truncate table oauth2_account;
+
 truncate table account;
 
 truncate table article;

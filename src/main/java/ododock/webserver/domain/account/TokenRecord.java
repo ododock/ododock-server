@@ -3,20 +3,20 @@ package ododock.webserver.domain.account;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.springframework.lang.Nullable;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Data
 @Entity
 @Table(name = "token_record")
 public class TokenRecord {
@@ -26,8 +26,11 @@ public class TokenRecord {
     @Column(name = "token_record_id")
     private Long id;
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "account_id")
+    private String accountId;
+
+    @Column(name = "provider")
+    private String provider;
 
     @Nullable
     @Column(name = "access_token_value", length = 1000)
@@ -49,34 +52,21 @@ public class TokenRecord {
     @Nullable
     private LocalDateTime refreshTokenExpiresAt;
 
-    @Builder
-    public TokenRecord(
-            final String username,
-            @Nullable final String accessTokenValue,
-            @Nullable final LocalDateTime accessTokenIssuedAt,
-            @Nullable final LocalDateTime accessTokenExpiresAt,
-            @Nullable final String refreshTokenValue,
-            @Nullable final LocalDateTime refreshTokenIssuedAt,
-            @Nullable final LocalDateTime refreshTokenExpiresAt) {
-        this.username = username;
-        this.accessTokenValue = accessTokenValue;
-        this.accessTokenIssuedAt = accessTokenIssuedAt;
-        this.accessTokenExpiresAt = accessTokenExpiresAt;
-        this.refreshTokenValue = refreshTokenValue;
-        this.refreshTokenIssuedAt = refreshTokenIssuedAt;
-        this.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    @Nullable
+    @Column(name = "token_status")
+    @Enumerated(EnumType.STRING)
+    private TokenStatus tokenStatus;
+
+    public TokenRecord setAccessToken(final JwtClaimsSet claimsSet) {
+        this.accessTokenIssuedAt = LocalDateTime.ofInstant(claimsSet.getIssuedAt(), ZoneId.systemDefault());
+        this.accessTokenExpiresAt = LocalDateTime.ofInstant(claimsSet.getExpiresAt(), ZoneId.systemDefault());
+        return this;
     }
 
-    public void updateAccessToken(final String accessToken, final LocalDateTime issuedAt, final LocalDateTime expiresAt) {
-        this.accessTokenValue = accessToken;
-        this.accessTokenIssuedAt = issuedAt;
-        this.accessTokenExpiresAt = expiresAt;
-    }
-
-    public void updateRefreshToken(final String refreshToken, final LocalDateTime issuedAt, final LocalDateTime expiresAt) {
-        this.refreshTokenValue = refreshToken;
-        this.refreshTokenIssuedAt = issuedAt;
-        this.refreshTokenExpiresAt = expiresAt;
+    public TokenRecord setRefreshToken(final JwtClaimsSet claimsSet) {
+        this.refreshTokenIssuedAt = LocalDateTime.ofInstant(claimsSet.getIssuedAt(), ZoneId.systemDefault());
+        this.refreshTokenExpiresAt = LocalDateTime.ofInstant(claimsSet.getExpiresAt(), ZoneId.systemDefault());
+        return this;
     }
 
 }

@@ -5,15 +5,18 @@ import jakarta.persistence.Embeddable;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Embeddable
 @RequiredArgsConstructor
 public class ProfileImage {
 
+    @Nullable
     @Column(name = "image_source")
     private String imageSource;
 
+    @Nullable
     @Column(name = "file_type")
     private String fileType;
 
