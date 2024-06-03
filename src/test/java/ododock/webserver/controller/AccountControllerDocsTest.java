@@ -6,6 +6,7 @@ import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
+import ododock.webserver.request.CompleteAccountRegister;
 import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -30,6 +32,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -193,6 +196,37 @@ public class AccountControllerDocsTest {
                                 fieldWithPath("targetAccountId").description("연동할 social account의 DB Account ID")
                         )
                 ));
+    }
+
+    @Test
+    @WithMockUser
+    void completeAccountRegister_Docs() throws Exception {
+        // given
+        final CompleteAccountRegister request = CompleteAccountRegister.builder()
+                .fullname("테스트유저")
+                .nickname("testuser")
+                .password("password")
+                .build();
+
+        // expected
+        mockMvc.perform(
+                put("/api/v1/accounts/{accountId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("account/complete-account-register",
+                        pathParameters(
+                                parameterWithName("accountId").description("회원가입 완료할 Account ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("fullname").description("회원가입 완료할 Account 이름"),
+                                fieldWithPath("nickname").description("회원가입 완료할 Account 닉네임"),
+                                fieldWithPath("password").description("회원가입 완료할 Account 비밀번호")
+                        )
+                        ));
+
     }
 
     @Test

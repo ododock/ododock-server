@@ -3,7 +3,7 @@ package ododock.webserver.request;
 import lombok.Builder;
 
 @Builder
-public record AccountUpdate(
+public record CompleteAccountRegister(
         String nickname,
         String fullname,
         String password

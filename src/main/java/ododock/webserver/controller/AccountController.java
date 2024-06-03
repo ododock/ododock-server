@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
-import ododock.webserver.request.AccountUpdate;
+import ododock.webserver.request.CompleteAccountRegister;
 import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,12 +57,12 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
-    @PatchMapping
-    public ResponseEntity<Void> updateAccount(
+    @PutMapping("/api/v1/accounts/{accountId}")
+    public ResponseEntity<Void> accountRegisterComplete(
             final @PathVariable Long accountId,
-            final @Valid @RequestBody AccountUpdate accountUpdate
+            final @Valid @RequestBody CompleteAccountRegister request
             ) {
-        accountService.updateAccount(accountId, accountUpdate);
+        accountService.completeAccountRegister(accountId, request);
         return ResponseEntity.ok().build();
     }
 

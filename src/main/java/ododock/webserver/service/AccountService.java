@@ -13,7 +13,7 @@ import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.AccountCreate;
 import ododock.webserver.request.AccountPasswordUpdate;
-import ododock.webserver.request.AccountUpdate;
+import ododock.webserver.request.CompleteAccountRegister;
 import ododock.webserver.request.OAuthAccountConnect;
 import ododock.webserver.response.AccountCreateResponse;
 import ododock.webserver.response.AccountDetailsResponse;
@@ -135,16 +135,6 @@ public class AccountService {
     }
 
     @Transactional
-    public void deleteConnectedSocialAccount(final Long accountId, final Long socialAccountId) {
-        final Account foundAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new IllegalArgumentException("account not found"));
-        final SocialAccount socialAccount = foundAccount.getSocialAccounts().stream()
-                .filter(a -> a.getId().equals(socialAccountId))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("social account not found"));
-        foundAccount.getSocialAccounts().remove(socialAccount);
-    }
-
-    @Transactional
     public void updateAccountPassword(final Long accountId, final AccountPasswordUpdate request) {
         final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
@@ -152,7 +142,7 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateAccount(final Long accountId, final AccountUpdate request) {
+    public void completeAccountRegister(final Long accountId, final CompleteAccountRegister request) {
         if (profileRepository.existsByNickname(request.nickname())) {
             throw new IllegalArgumentException("nickname already exists");
         }
@@ -162,6 +152,16 @@ public class AccountService {
         account.updateFullname(request.fullname());
         account.updatePassword(passwordEncoder.encode(request.password()));
         account.daoSignedUp();
+    }
+
+    @Transactional
+    public void deleteConnectedSocialAccount(final Long accountId, final Long socialAccountId) {
+        final Account foundAccount = accountRepository.findById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("account not found"));
+        final SocialAccount socialAccount = foundAccount.getSocialAccounts().stream()
+                .filter(a -> a.getId().equals(socialAccountId))
+                .findAny().orElseThrow(() -> new IllegalArgumentException("social account not found"));
+        foundAccount.getSocialAccounts().remove(socialAccount);
     }
 
     @Transactional
