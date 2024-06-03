@@ -47,6 +47,7 @@ public class AccountServiceTest {
     private CleanUp cleanUp;
 
     @Test
+    @Transactional
     void isAvailableEmail() {
         // given
         final Account account = Account.builder()
@@ -68,6 +69,7 @@ public class AccountServiceTest {
     }
 
     @Test
+    @Transactional
     void getAccount() {
         // given
         final Account account = Account.builder()
@@ -92,6 +94,7 @@ public class AccountServiceTest {
     }
 
     @Test
+    @Transactional
     void createAccount() {
         // given
         final AccountCreate request = AccountCreate.builder()
@@ -117,6 +120,7 @@ public class AccountServiceTest {
     }
 
     @Test
+    @Transactional
     void updateAccountPassword() {
         // given
         final Account account = Account.builder()
@@ -142,6 +146,7 @@ public class AccountServiceTest {
     }
 
     @Test
+    @Transactional
     void deleteAccount() {
         // given
         final Account account = Account.builder()

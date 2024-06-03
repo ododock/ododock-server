@@ -42,6 +42,7 @@ public class ProfileServiceTest {
     private AccountRepository accountRepository;
 
     @Test
+    @Transactional
     void validate_nickname() {
         // given
         final Account account = Account.builder()
@@ -66,6 +67,7 @@ public class ProfileServiceTest {
     }
 
     @Test
+    @Transactional
     void get_profile() {
         // given
         final Account account = Account.builder()
@@ -93,14 +95,4 @@ public class ProfileServiceTest {
 
     }
 
-
-    @Test
-    void update_profile() {
-
-    }
-
-    @Test
-    void update_profile_image() {
-
-    }
 }
