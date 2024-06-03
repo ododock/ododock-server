@@ -49,4 +49,5 @@ public class TestSecurityConfig {
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
     }
+
 }
