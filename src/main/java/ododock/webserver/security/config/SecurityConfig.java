@@ -53,7 +53,6 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/docs/**").permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.GET, "/api/v1/accounts/{accountId}")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/accounts")).permitAll()
