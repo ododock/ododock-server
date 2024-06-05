@@ -11,6 +11,7 @@ import ododock.webserver.security.service.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +20,8 @@ import org.springframework.security.config.annotation.web.configurers.HttpBasicC
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -54,7 +57,6 @@ public class SecurityConfig {
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/docs/**").permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.GET, "/api/v1/accounts/{accountId}")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/accounts")).permitAll()
                         .requestMatchers(new RequestParameterMatcher(
                                 HttpMethod.GET, "/api/v1/accounts", List.of("email"))).permitAll()
@@ -64,9 +66,11 @@ public class SecurityConfig {
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/logout")).permitAll()
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                        .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                )
                 .oauth2Login(oauth2 -> oauth2
-                        // TODO EntryPoint 설정: ododock 도메인의 로그인 페이지 url
-                        // TODO FailureHandler 설정: ododock 로그인 url
                         .userInfoEndpoint(oauth ->
                                 oauth.userService(authService)
                         )

@@ -66,7 +66,8 @@ spring:
 logging:
   level:
     p6spy: debug
-    org.apache.coyote: debug
+#    org.apache.coyote: debug
+    org.springframework.security: debug
 
 # app config
 app:
