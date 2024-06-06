@@ -1,4 +1,4 @@
-package ododock.webserver.request;
+package ododock.webserver.request.account;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;

@@ -1,0 +1,57 @@
+package ododock.webserver.service;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import ododock.webserver.domain.account.Account;
+import ododock.webserver.exception.ResourceNotFoundException;
+import ododock.webserver.request.account.AccountSocialConnectDetails;
+import ododock.webserver.response.account.AccountDetailsResponse;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+import static ododock.webserver.domain.account.QAccount.account;
+import static ododock.webserver.domain.account.QSocialAccount.socialAccount;
+
+@Service
+@Transactional(readOnly = true)
+public class AccountQueryService {
+
+    private final JPAQueryFactory queryFactory;
+
+    public AccountQueryService(EntityManager em) {
+        this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    public AccountDetailsResponse getAccountDetails(final Long accountId) {
+
+        Account foundAccount = Optional.ofNullable(queryFactory.selectFrom(account)
+                        .leftJoin(socialAccount).on(socialAccount.daoAccount.eq(account))
+                        .leftJoin(account.ownProfile).fetchJoin()
+                        .where(account.id.eq(accountId))
+                        .fetchOne())
+                .orElseThrow(() -> new ResourceNotFoundException("resource not found: ", accountId));
+
+        return AccountDetailsResponse.of(foundAccount);
+    }
+
+    public AccountSocialConnectDetails getAccountSocialConnectDetails(final Long accountId) {
+        Account foundAccount = Optional.ofNullable(queryFactory.selectFrom(account)
+                        .leftJoin(socialAccount).fetchJoin()
+                        .where(account.id.eq(accountId))
+                        .fetchOne())
+                .orElseThrow(() -> new ResourceNotFoundException("resource not found: ", accountId));
+        return AccountSocialConnectDetails.of(foundAccount);
+    }
+
+    public Optional<Account> getAccountBySocialProviderId(final String providerId) {
+        return Optional.ofNullable(queryFactory.selectFrom(account)
+                .leftJoin(socialAccount).fetchJoin()
+                .where(socialAccount.providerId.eq(providerId))
+                .fetchOne());
+    }
+
+
+
+}

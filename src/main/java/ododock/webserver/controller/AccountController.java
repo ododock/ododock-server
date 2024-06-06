@@ -2,13 +2,12 @@ package ododock.webserver.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import ododock.webserver.request.AccountCreate;
-import ododock.webserver.request.AccountPasswordUpdate;
-import ododock.webserver.request.CompleteAccountRegister;
-import ododock.webserver.request.OAuthAccountConnect;
-import ododock.webserver.response.AccountCreateResponse;
-import ododock.webserver.response.AccountDetailsResponse;
+import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.AccountPasswordUpdate;
+import ododock.webserver.request.account.CompleteAccountRegister;
+import ododock.webserver.request.account.OAuthAccountConnect;
 import ododock.webserver.response.ValidateResponse;
+import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,13 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountController {
 
     private final AccountService accountService;
-
-    @GetMapping("/api/v1/accounts/{accountId}")
-    public AccountDetailsResponse getAccount(
-            @PathVariable final Long accountId
-    ) {
-        return accountService.getAccount(accountId);
-    }
 
     @GetMapping("/api/v1/accounts")
     public ValidateResponse validateEmail(
@@ -61,7 +53,7 @@ public class AccountController {
     public ResponseEntity<Void> accountRegisterComplete(
             final @PathVariable Long accountId,
             final @Valid @RequestBody CompleteAccountRegister request
-            ) {
+    ) {
         accountService.completeAccountRegister(accountId, request);
         return ResponseEntity.ok().build();
     }

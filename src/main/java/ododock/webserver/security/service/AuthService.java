@@ -49,7 +49,7 @@ public class AuthService implements UserDetailsService, OAuth2UserService<OAuth2
         final String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         final OAuth2UserInfo userInfo = OAuth2UserMapper.resolveUserInfo(userRequest, oAuth2User);
-        final Optional<Account> foundDaoAccount = accountService.getAccountBySocialProviderId(userInfo.getEmail());
+        final Optional<Account> foundDaoAccount = accountRepository.findBySocialAccountsProviderId(userInfo.getProviderId());
 
         if (foundDaoAccount.isPresent()) {
             final Long accountId = foundDaoAccount.get().getId();
