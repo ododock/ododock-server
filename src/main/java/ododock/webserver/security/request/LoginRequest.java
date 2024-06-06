@@ -1,4 +1,4 @@
-package ododock.webserver.request;
+package ododock.webserver.security.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

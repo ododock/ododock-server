@@ -1,4 +1,4 @@
-package ododock.webserver.request;
+package ododock.webserver.request.account;
 
 import lombok.Builder;
 
