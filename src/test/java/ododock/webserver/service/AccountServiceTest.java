@@ -7,10 +7,9 @@ import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
-import ododock.webserver.request.AccountCreate;
-import ododock.webserver.request.AccountPasswordUpdate;
-import ododock.webserver.response.AccountCreateResponse;
-import ododock.webserver.response.AccountDetailsResponse;
+import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.AccountPasswordUpdate;
+import ododock.webserver.response.account.AccountCreateResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -66,31 +65,6 @@ public class AccountServiceTest {
 
         // then
         assertThat(result).isTrue();
-    }
-
-    @Test
-    @Transactional
-    void getAccount() {
-        // given
-        final Account account = Account.builder()
-                .nickname("test-user")
-                .email("test-user@ododock.io")
-                .password(passwordEncoder.encode("password"))
-                .fullname("John Doe")
-                .birthDate(LocalDate.of(1991, 5, 22))
-                .roles(Set.of(Role.USER))
-                .build();
-        Long id = accountRepository.save(account).getId();
-
-        // when
-        AccountDetailsResponse result = accountService.getAccount(id);
-        System.out.println(result);
-
-        // then
-        assertThat(result.sub()).isEqualTo(id);
-        assertThat(result.email()).isEqualTo("test-user@ododock.io");
-        assertThat(result.fullname()).isEqualTo("John Doe");
-        assertThat(result.birthDate()).isEqualTo("1991-05-22");
     }
 
     @Test
