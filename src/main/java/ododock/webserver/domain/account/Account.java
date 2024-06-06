@@ -1,5 +1,6 @@
 package ododock.webserver.domain.account;
 
+import com.querydsl.core.util.StringUtils;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.CascadeType;
@@ -32,7 +33,6 @@ import lombok.ToString;
 import ododock.webserver.domain.AttributesMapConverter;
 import ododock.webserver.domain.common.BaseEntity;
 import ododock.webserver.domain.profile.Profile;
-import ododock.webserver.domain.profile.ProfileImage;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
@@ -85,9 +85,11 @@ public class Account extends BaseEntity {
     )
     private List<SocialAccount> socialAccounts = new ArrayList<>();
 
-    @Column(name = "email", nullable = false)
+    @Nullable
+    @Column(name = "email")
     private String email;
 
+    @Nullable
     @Column(name = "password")
     private String password;
 
@@ -172,6 +174,15 @@ public class Account extends BaseEntity {
     }
 
     public void daoSignedUp() {
+        if (StringUtils.isNullOrEmpty(this.email)) {
+            throw new IllegalArgumentException("email cannot be null");
+        }
+        if (StringUtils.isNullOrEmpty(this.password)) {
+            throw new IllegalArgumentException("password cannot be null");
+        }
+        if (StringUtils.isNullOrEmpty(this.ownProfile.getNickname())) {
+            throw new IllegalArgumentException("nickname cannot be null");
+        }
         this.isDaoSignedUp = true;
     }
 
