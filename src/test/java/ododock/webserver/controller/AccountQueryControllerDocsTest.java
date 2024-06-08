@@ -1,9 +1,8 @@
 package ododock.webserver.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestSecurityConfig;
-import ododock.webserver.domain.account.Role;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.response.account.AccountDetailsResponse;
 import ododock.webserver.service.AccountQueryService;
 import org.junit.jupiter.api.Test;
@@ -12,23 +11,25 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
-import static org.mockito.BDDMockito.given;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = AccountQueryController.class)
+@WebMvcTest(AccountQueryController.class)
 @Import({RestDocsConfig.class, TestSecurityConfig.class})
 @AutoConfigureRestDocs
 public class AccountQueryControllerDocsTest {
@@ -36,35 +37,34 @@ public class AccountQueryControllerDocsTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private AccountQueryService accountQueryService;
 
-
     @Test
+    @WithMockUser
     void getAccount_Docs() throws Exception {
         // given
         final AccountDetailsResponse response = AccountDetailsResponse.builder()
-                .sub(1l)
+                .sub(1L)
+                .profileId(6L)
                 .email("tester@ododock.io")
+                .nickname("tester")
+                .birthDate(LocalDate.of(1999, 12, 31))
                 .fullname("John doe")
-                .birthDate(LocalDate.of(1999, 05, 23))
+                .profileImage(ProfileImage.builder()
+                        .imageSource("http://awesome.io/foo.png")
+                        .fileType("png")
+                        .build())
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
-                .credentialNonExpired(true)
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .enabled(true)
+                .isDaoSignedUp(true)
+                .providers(Set.of("google", "naver"))
                 .build();
-        given(accountQueryService.getAccountDetails(1L)).willReturn(response);
 
-        // expected
-        mockMvc.perform(
-                        get("/api/v1/accounts/{accountId}", 1L)
-                                .with(user("tester@ododock.io").password("password").roles(Role.USER.toString()))
-                )
+        when(accountQueryService.getAccountDetails(1L)).thenReturn(response);
+
+        mockMvc.perform(get("/api/v1/accounts/{accountId}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/get-account-details",
@@ -79,16 +79,16 @@ public class AccountQueryControllerDocsTest {
                                 fieldWithPath("birthDate").description("조회한 Account 생년월일"),
                                 fieldWithPath("createdDate").description("조회한 Account 최초 생성일"),
                                 fieldWithPath("lastModifiedDate").description("조회한 Account 최근 수정일"),
-                                fieldWithPath("credentialNonExpired").description("조회한 Account 비밀번호 만료 여부"),
-                                fieldWithPath("accountNonExpired").description("조회한 Account 만료 여부"),
-                                fieldWithPath("accountNonLocked").description("조회한 Account 잠금 여부"),
-                                fieldWithPath("enabled").description("조회한 Account 활성화 여부"),
                                 fieldWithPath("isDaoSignedUp").description("조회한 Account의 DB 설정 여부"),
                                 fieldWithPath("nickname").description("조회한 Account의 Profile 닉네임"),
                                 fieldWithPath("providers").description("조회한 Account의 연동된 Social Accounts"),
-                                fieldWithPath("profileImage").description("조회한 Account의 프로필 이미지")
-                        )
-                ));
+                                fieldWithPath("profileImage").description("조회한 Account의 프로필 이미지"),
+                                fieldWithPath("profileImage.imageSource").description("조회한 Account의 프로필 이미지"),
+                                fieldWithPath("profileImage.fileType").description("조회한 Account의 프로필 이미지")
+                        ))
+                );
+
+
     }
 
 
