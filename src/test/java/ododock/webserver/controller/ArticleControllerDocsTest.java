@@ -21,8 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.mockito.BDDMockito.given;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -88,7 +88,7 @@ public class ArticleControllerDocsTest {
                                 fieldWithPath("visibility").description("조회한 글 공개여부"),
                                 fieldWithPath("createdDate").description("조회한 글 생성일"),
                                 fieldWithPath("lastModifiedDate").description("조회한 글 최근 수정일")
-                                )
+                        )
                 ));
     }
 

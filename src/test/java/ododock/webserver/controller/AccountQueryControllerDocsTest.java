@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public class AccountQueryControllerDocsTest {
     private AccountQueryService accountQueryService;
 
     @Test
+    @WithMockUser
     void getAccount_Docs() throws Exception {
         // given
         final AccountDetailsResponse response = AccountDetailsResponse.builder()
