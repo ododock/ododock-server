@@ -17,10 +17,6 @@ public record AccountDetailsResponse(
         String email,
         String fullname,
         LocalDate birthDate,
-        boolean accountNonExpired,
-        boolean accountNonLocked,
-        boolean credentialNonExpired,
-        boolean enabled,
         boolean isDaoSignedUp,
         LocalDateTime createdDate,
         LocalDateTime lastModifiedDate,
@@ -39,10 +35,6 @@ public record AccountDetailsResponse(
                 .profileImage(account.getOwnProfile().getProfileImage())
                 .createdDate(account.getCreatedDate())
                 .lastModifiedDate(account.getLastModifiedAt())
-                .accountNonExpired(account.getAccountNonExpired())
-                .accountNonLocked(account.getAccountNonLocked())
-                .credentialNonExpired(account.getCredentialNonExpired())
-                .enabled(account.getEnabled())
                 .isDaoSignedUp(account.getIsDaoSignedUp())
                 .providers(account.getSocialAccounts().stream()
                         .map(SocialAccount::getProvider)
