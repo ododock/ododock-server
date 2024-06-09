@@ -3,6 +3,7 @@ package ododock.webserver.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
+import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
 import ododock.webserver.security.request.RequestParameterMatcher;
@@ -101,6 +102,10 @@ public class SecurityConfig {
                                 authenticationManagerBuilder.getOrBuild(),
                                 daoAuthenticationSuccessHandler(jwtService, objectMapper)
                         ),
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                .addFilterBefore(
+                        new RefreshTokenAuthenticationFilter(jwtDecoder, objectMapper),
                         UsernamePasswordAuthenticationFilter.class
                 );
 
