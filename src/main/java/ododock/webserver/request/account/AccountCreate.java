@@ -1,7 +1,5 @@
 package ododock.webserver.request.account;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import org.springframework.lang.Nullable;
@@ -11,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Builder
-public record AccountCreate (
+public record AccountCreate(
         @NotBlank
         String email,
         @NotBlank
@@ -19,7 +17,6 @@ public record AccountCreate (
         @Nullable
         String fullname,
         @Nullable
-        @JsonDeserialize(using = LocalDateDeserializer.class)
         LocalDate birthDate,
         @Nullable
         String nickname,
