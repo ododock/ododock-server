@@ -1,4 +1,7 @@
 spring:
+  web:
+    resources:
+      add-mappings: true
   config:
     activate:
       on-profile: dev

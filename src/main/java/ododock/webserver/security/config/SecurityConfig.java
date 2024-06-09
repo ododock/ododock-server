@@ -8,6 +8,7 @@ import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
 import ododock.webserver.security.request.RequestParameterMatcher;
 import ododock.webserver.security.service.AuthService;
 import ododock.webserver.security.service.JwtService;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,6 +27,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,18 +48,30 @@ public class SecurityConfig {
     private final JwtDecoder jwtDecoder;
 
     @Bean
+    public WebSecurityCustomizer configure() {
+        return (web) -> web
+                .ignoring()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations(),
+                        new AntPathRequestMatcher("/docs/**"));
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http, final MvcRequestMatcher.Builder mvc) throws Exception {
         final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         requestCache.setMatchingRequestParameterName(null);
         http
-                .requestCache(config -> config.requestCache(requestCache))
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(config -> config.configurationSource(corsConfigurationSource()))
+                .cors(c -> c
+                        .configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
-                .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/docs/**").permitAll()
+                .logout(c -> c
+                        .logoutUrl("/api/v1/auth/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID"))
+                .sessionManagement(c -> c
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(c -> c
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/accounts")).permitAll()
                         .requestMatchers(new RequestParameterMatcher(
                                 HttpMethod.GET, "/api/v1/accounts", List.of("email"))).permitAll()
@@ -66,17 +81,17 @@ public class SecurityConfig {
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/logout")).permitAll()
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(exceptions -> exceptions
+                .exceptionHandling(c -> c
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                         .accessDeniedHandler(new AccessDeniedHandlerImpl())
                 )
-                .oauth2Login(oauth2 -> oauth2
+                .oauth2Login(c -> c
                         .userInfoEndpoint(oauth ->
                                 oauth.userService(authService)
                         )
                         .successHandler(oAuth2LoginSuccessHandler(jwtService))
                 )
-                .oauth2ResourceServer(oauth -> oauth
+                .oauth2ResourceServer(c -> c
                         .jwt(jwt -> jwt
                                 .decoder(jwtDecoder)
                         )
@@ -86,7 +101,9 @@ public class SecurityConfig {
                                 authenticationManagerBuilder.getOrBuild(),
                                 daoAuthenticationSuccessHandler(jwtService, objectMapper)
                         ),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class
+                );
+
         return http.build();
     }
 
@@ -111,11 +128,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // 허용할 출처
+        configuration.addAllowedOrigin("http://localhost:3000");
         configuration.addAllowedOrigin("http://localhost:3000/home");
-        configuration.addAllowedMethod("*"); // 허용할 HTTP 메소드
-        configuration.addAllowedHeader("*"); // 허용할 HTTP 헤더
-        configuration.setAllowCredentials(true); // 쿠키 요청 허용
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
