@@ -53,7 +53,7 @@ public class SecurityConfig {
         return (web) -> web
                 .ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations(),
-                        new AntPathRequestMatcher("/docs/**"));
+                        new AntPathRequestMatcher("/docs/**")); // TODO fix
     }
 
     @Bean
@@ -61,6 +61,7 @@ public class SecurityConfig {
         final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         requestCache.setMatchingRequestParameterName(null);
         http
+                .securityMatcher("/docs/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c
                         .configurationSource(corsConfigurationSource()))

@@ -23,10 +23,6 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
-}
-
 dependencies {
 
     // Spring Boot
@@ -70,10 +66,6 @@ dependencies {
 
 }
 
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
-
 openapi3 {
     server = 'http://localhost:8080'
     title = 'USER-API'
@@ -84,9 +76,26 @@ openapi3 {
 
 test {
     useJUnitPlatform()
-    outputs.dir snippetsDir
 }
 
-clean {
-    delete file('src/main/generated')
+task copyOasToDocs {
+    delete("src/main/resources/static/docs/openapi3.yaml")
+    copy {
+        from("$buildDir/api-spec/openapi3.yaml")
+        into("src/main/resources/static/docs/.")
+    }
+    doLast {
+        println 'Copying OAS to Docs...'
+    }
+}
+
+tasks.named('build') {
+    finalizedBy 'openapi3', 'copyOasToDocs'
+}
+
+tasks.named('bootBuildImage') {
+    dependsOn 'build'
+    dependsOn 'openapi3'
+    dependsOn 'copyOasToDocs'
+    mustRunAfter 'build'
 }

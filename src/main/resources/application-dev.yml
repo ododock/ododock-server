@@ -78,6 +78,14 @@ logging:
     org.apache.coyote: debug
     org.springframework.security: debug
 
+# Documentation
+springdoc:
+  api-docs:
+    path: /build/api-spec/openapi3.yaml
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
 # app config
 app:
   security:
