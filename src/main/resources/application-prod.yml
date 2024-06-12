@@ -27,6 +27,14 @@ logging:
   level:
     ododock.webserver: info
 
+# Documentation
+springdoc:
+  api-docs:
+    path: /build/api-spec/openapi3.yaml
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
 # app config
 app:
   security:
