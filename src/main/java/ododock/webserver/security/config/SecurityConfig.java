@@ -57,11 +57,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http, final MvcRequestMatcher.Builder mvc) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         requestCache.setMatchingRequestParameterName(null);
         http
-                .securityMatcher("/docs/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c -> c
                         .configurationSource(corsConfigurationSource()))
@@ -74,13 +73,16 @@ public class SecurityConfig {
                 .sessionManagement(c -> c
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/accounts")).permitAll()
-                        .requestMatchers(new RequestParameterMatcher(
-                                HttpMethod.GET, "/api/v1/accounts", List.of("email"))).permitAll()
-                        .requestMatchers(new RequestParameterMatcher(
-                                HttpMethod.GET, "/api/v1/profiles", List.of("nickname"))).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/login")).permitAll()
-                        .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/logout")).permitAll()
+                        .requestMatchers(
+                                new RequestParameterMatcher(HttpMethod.GET, "/api/v1/accounts", List.of("email"))
+                        ).permitAll()
+                        .requestMatchers(
+                                new RequestParameterMatcher(HttpMethod.GET, "/api/v1/profiles", List.of("nickname"))
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/accounts").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
+                        .requestMatchers("/static/docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(c -> c
@@ -98,7 +100,7 @@ public class SecurityConfig {
                                 .decoder(jwtDecoder)
                         )
                 )
-                .addFilterBefore(
+                .addFilterAt(
                         new DaoAuthenticationFilter(
                                 authenticationManagerBuilder.getOrBuild(),
                                 daoAuthenticationSuccessHandler(jwtService, objectMapper)
