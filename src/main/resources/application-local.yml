@@ -9,13 +9,13 @@ spring:
   # Spring data source
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:ododock
+    url: jdbc:h2:mem:ododock;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
     username: root
     password:
   # Spring jpa
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
       dialect: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
@@ -23,6 +23,7 @@ spring:
         use_sql_comments: true
         default_batch_fetch_size: 500
     show-sql: true
+    generate-ddl: true
   # spring security
   security:
     oauth2:
