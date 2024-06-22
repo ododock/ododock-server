@@ -68,8 +68,8 @@ dependencies {
 
 openapi3 {
     server = 'http://localhost:8080'
-    title = 'USER-API'
-    description = '사용자 리소스 API 입니다.'
+    title = 'ODDK API DOCS'
+    description = 'ododock web application API documentation'
     version = '0.1.0'
     format = 'yaml'
 }
