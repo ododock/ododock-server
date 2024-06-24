@@ -69,7 +69,8 @@ public class SecurityConfig {
                 .logout(c -> c
                         .logoutUrl("/api/v1/auth/logout")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID"))
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("http://localhost:3000"))
                 .sessionManagement(c -> c
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
@@ -108,7 +109,7 @@ public class SecurityConfig {
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .addFilterBefore(
-                        new RefreshTokenAuthenticationFilter(jwtDecoder, objectMapper),
+                        new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
                         UsernamePasswordAuthenticationFilter.class
                 );
 

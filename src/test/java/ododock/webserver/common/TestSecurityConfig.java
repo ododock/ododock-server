@@ -1,7 +1,11 @@
 package ododock.webserver.common;
 
+import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
 import ododock.webserver.security.request.RequestParameterMatcher;
+import ododock.webserver.security.service.AuthService;
+import ododock.webserver.security.service.JwtService;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,8 +23,19 @@ import java.util.List;
 @TestConfiguration
 public class TestSecurityConfig {
 
+    @MockBean
+    AuthService authService;
+
+    @MockBean
+    JwtService jwtService;
+
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http, final MvcRequestMatcher.Builder mvc) throws Exception {
+    public MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
+    }
+
+    @Bean
+    public SecurityFilterChain testChain(final HttpSecurity http, final MvcRequestMatcher.Builder mvc) throws Exception {
         final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         requestCache.setMatchingRequestParameterName(null);
         http
@@ -40,14 +55,20 @@ public class TestSecurityConfig {
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/login")).permitAll()
                         .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/v1/auth/logout")).permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(c -> c
+                        .userInfoEndpoint(oauth ->
+                                oauth.userService(authService)
+                        )
+                        .successHandler(oauthSuccessHandler(jwtService))
                 );
 
         return http.build();
     }
 
     @Bean
-    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-        return new MvcRequestMatcher.Builder(introspector);
+    public OAuth2LoginSuccessHandler oauthSuccessHandler(JwtService jwtService) {
+        return new OAuth2LoginSuccessHandler(jwtService);
     }
 
 }
