@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
+import ododock.webserver.security.handler.TokenReissueSuccessHandler;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
@@ -17,14 +17,14 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    public static final String PROCESSING_URI = "/api/v1/login/refresh";
+    public static final String PROCESSING_URI = "/api/v1/auth/token";
 
     private final ObjectMapper objectMapper;
 
     public RefreshTokenAuthenticationFilter(final JwtDecoder jwtDecoder, final JwtService jwtService, final ObjectMapper objectMapper) {
         super(PROCESSING_URI);
         setAuthenticationManager(new ProviderManager(new JwtAuthenticationProvider(jwtDecoder)));
-        setAuthenticationSuccessHandler(new DaoAuthenticationSuccessHandler(jwtService, objectMapper));
+        setAuthenticationSuccessHandler(new TokenReissueSuccessHandler(jwtService, objectMapper));
         this.objectMapper = objectMapper;
     }
 
@@ -46,4 +46,5 @@ public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProc
     public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
         super.setAuthenticationSuccessHandler(successHandler);
     }
+
 }
