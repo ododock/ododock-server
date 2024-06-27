@@ -17,6 +17,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static io.restassured.RestAssured.given;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -47,9 +48,10 @@ public class LogoutEndpointDocsTest {
     }
 
     @Test
-    public void login_Docs() throws Exception {
+    public void logout_Docs() throws Exception {
         given(this.spec)
                 .filter(document("security-logout",
+                        resourceDetails().tag("Auth").description("로그아웃 엔드포인트"),
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .when()
