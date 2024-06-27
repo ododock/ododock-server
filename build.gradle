@@ -67,11 +67,11 @@ dependencies {
 }
 
 openapi3 {
-    server = 'http://localhost:8080'
+    server = 'http://oddk.xyz:8080'
     title = 'ODDK API DOCS'
     description = 'ododock web application API documentation'
     version = '0.1.0'
-    format = 'yaml'
+    format = 'json'
 }
 
 test {
@@ -79,9 +79,9 @@ test {
 }
 
 task copyOasToDocs {
-    delete("src/main/resources/static/docs/openapi3.yaml")
+    delete("src/main/resources/static/docs/openapi3.json")
     copy {
-        from("$buildDir/api-spec/openapi3.yaml")
+        from("$buildDir/api-spec/openapi3.json")
         into("src/main/resources/static/docs/.")
     }
     doLast {
