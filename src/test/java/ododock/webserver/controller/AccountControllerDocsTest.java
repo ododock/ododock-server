@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -59,16 +60,18 @@ public class AccountControllerDocsTest {
     void validateEmail_Docs() throws Exception {
         // given
         final ValidateResponse response = ValidateResponse.of(true);
-        given(accountService.isAvailableEmail("tester@ododock.io")).willReturn(true);
+        given(accountService.isAvailableEmail("tester@oddk.xyz")).willReturn(true);
 
         // expected
         mockMvc.perform(
                         get("/api/v1/accounts")
-                                .queryParam("email", "tester@ododock.io")
+                                .queryParam("email", "tester@oddk.xyz")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("account/validate-email",
+                .andDo(
+                        document("account/validate-email",
+                        resourceDetails().tag("Account").description("email 중복여부 검증 엔드포인트"),
                         responseFields(
                                 fieldWithPath("availability").description("주어진 email 사용가능 여부")
                         )
@@ -79,7 +82,7 @@ public class AccountControllerDocsTest {
     void createDaoAccount_Docs() throws Exception {
         // given
         final AccountCreate requset = AccountCreate.builder()
-                .email("tester@ododock.io")
+                .email("tester@oddk.xyz")
                 .password("1q2w3e4r")
                 .fullname("John doe")
                 .birthDate(LocalDate.of(1999, 05, 23))
@@ -102,17 +105,18 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/create-dao-account",
+                        resourceDetails().tag("Account").description("DB 계정 생성 엔드포인트"),
                         requestFields(
-                                fieldWithPath("email").description("생성할 Account 이메일"),
-                                fieldWithPath("password").description("생성할 Account 비밀번호"),
-                                fieldWithPath("fullname").description("생성할 Account 유저 이름"),
-                                fieldWithPath("birthDate").description("생성할 Account 유저 생년월일"),
-                                fieldWithPath("nickname").description("생성할 Account Profile 닉네임"),
-                                fieldWithPath("attributes").description("생성할 Account 추가 속성필드")
+                                fieldWithPath("email").description("생성할 계정 이메일"),
+                                fieldWithPath("password").description("생성할 계정 비밀번호"),
+                                fieldWithPath("fullname").description("생성할 계정의 유저 이름").optional(),
+                                fieldWithPath("birthDate").description("생성할 계정 유저 생년월일").optional(),
+                                fieldWithPath("nickname").description("생성할 계정의 프로필 닉네임").optional(),
+                                fieldWithPath("attributes").description("생성할 계정 추가 속성필드").optional()
                         ),
                         responseFields(
-                                fieldWithPath("sub").description("생성된 Account ID"),
-                                fieldWithPath("profileId").description("생성된 Profile ID")
+                                fieldWithPath("sub").description("생성된 계정 ID"),
+                                fieldWithPath("profileId").description("생성된 프로필 ID")
                         )
                 ));
     }
@@ -128,19 +132,20 @@ public class AccountControllerDocsTest {
         // expected
         mockMvc.perform(
                         post("/api/v1/accounts/{accountId}/social-accounts", 1L)
-                                .with(user("tester@ododock.io").password("password").roles(Role.USER.toString()))
+                                .with(user("tester@oddk.xyz").password("password").roles(Role.USER.toString()))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(requset))
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/connect-social-account",
+                        resourceDetails().tag("Account").description("DB 계정에 소셜 계정 연동 엔드포인트"),
                         pathParameters(
-                                parameterWithName("accountId").description("연동을 요청한 account ID")
+                                parameterWithName("accountId").description("연동을 요청한 DB 계정 ID")
                         ),
                         requestFields(
-                                fieldWithPath("oauthProvider").description("연동할 social provider"),
-                                fieldWithPath("targetAccountId").description("연동할 social account의 DB Account ID")
+                                fieldWithPath("oauthProvider").description("연동할 소셜 계정 제공사"),
+                                fieldWithPath("targetAccountId").description("연동할 소셜 계정의 ID")
                         )
                 ));
     }
@@ -164,13 +169,15 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/complete-account-register",
+                        resourceDetails().tag("Account")
+                                .description("최초 소셜 계정의 회원가입 완료 처리 엔드포인트"),
                         pathParameters(
-                                parameterWithName("accountId").description("회원가입 완료할 Account ID")
+                                parameterWithName("accountId").description("회원가입 완료할 DB 계정 ID")
                         ),
                         requestFields(
-                                fieldWithPath("fullname").description("회원가입 완료할 Account 이름"),
-                                fieldWithPath("nickname").description("회원가입 완료할 Account 닉네임"),
-                                fieldWithPath("password").description("회원가입 완료할 Account 비밀번호")
+                                fieldWithPath("fullname").description("회원가입 완료할 계정의 유저 이름"),
+                                fieldWithPath("nickname").description("회원가입 완료할 계정의 프로필 닉네임"),
+                                fieldWithPath("password").description("회원가입 완료할 계정의 비밀번호")
                         )
                 ));
 
@@ -194,8 +201,9 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/update-account-password",
+                        resourceDetails().tag("Account").description("계정의 비밀번호 업데이트"),
                         pathParameters(
-                                parameterWithName("accountId").description("비밀번호를 변경할 Account ID")
+                                parameterWithName("accountId").description("비밀번호를 변경할 계정 ID")
                         ),
                         requestFields(
                                 fieldWithPath("password").description("변경할 비밀번호")
@@ -210,12 +218,13 @@ public class AccountControllerDocsTest {
         // expected
         mockMvc.perform(
                         delete("/api/v1/accounts/{accountId}", 1L)
-                                .with(user("tester@ododock.io").password("password").roles(Role.USER.toString()))
+                                .with(user("tester@oddk.xyz").password("password").roles(Role.USER.toString()))
                                 .with(csrf())
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/delete-account",
+                        resourceDetails().tag("Account").description("DB 계정 삭제 엔드포인트"),
                         pathParameters(
                                 parameterWithName("accountId").description("삭제할 Account ID")
                         )

@@ -14,12 +14,12 @@ public record AccountCreate(
         String email,
         @NotBlank
         String password,
+        @NotBlank
+        String nickname,
         @Nullable
         String fullname,
         @Nullable
         LocalDate birthDate,
-        @Nullable
-        String nickname,
         @Nullable
         Map<String, List<String>> attributes
 ) {
