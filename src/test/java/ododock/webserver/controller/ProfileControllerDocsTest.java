@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
@@ -51,6 +52,32 @@ public class ProfileControllerDocsTest {
 
     @Test
     @WithMockUser
+    void validateNickname_Docs() throws Exception {
+        // given
+        given(profileService.isAvailableNickname("admin")).willReturn(true);
+
+        // expected
+        mockMvc.perform(
+                        get("/api/v1/profiles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .param("nickname", "admin")
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("profile/validate-nickname",
+                        resourceDetails().tag("Profile").description("프로필 nickname 중복여부 검증 엔드포인트"),
+                        queryParameters(
+                                parameterWithName("nickname").description("검증할 닉네임")
+                        ),
+                        responseFields(
+                                fieldWithPath("availability").description("닉네임 존재여부")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockUser
     void getProfile_Docs() throws Exception {
         // given
         final ProfileDetailsResponse response = ProfileDetailsResponse.builder()
@@ -61,7 +88,7 @@ public class ProfileControllerDocsTest {
                         .name("category1")
                         .build()))
                 .nickname("user1")
-                .imageSource("http://example.com/img.jpg")
+                .imageSource("http://oddk.xyz/img.jpg")
                 .fileType("jpeg")
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
@@ -77,11 +104,12 @@ public class ProfileControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("profile/get-profile",
+                        resourceDetails().tag("Profile").description("프로필 정보 조회 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("조회할 프로필 ID")
                         ),
                         responseFields(
-                                fieldWithPath("ownerAccountId").description("조회한 프로필의 소유자 account ID"),
+                                fieldWithPath("ownerAccountId").description("조회한 프로필의 소유자 DB 계정 ID"),
                                 fieldWithPath("profileId").description("조회한 프로필 ID"),
                                 fieldWithPath("nickname").description("조회한 프로필의 닉네임"),
                                 fieldWithPath("imageSource").description("조회한 프로필의 프로필 사진 리소스 주소"),
@@ -99,36 +127,11 @@ public class ProfileControllerDocsTest {
 
     @Test
     @WithMockUser
-    void validateNickname_Docs() throws Exception {
-        // given
-        given(profileService.isAvailableNickname("admin")).willReturn(true);
-
-        // expected
-        mockMvc.perform(
-                        get("/api/v1/profiles")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .characterEncoding(StandardCharsets.UTF_8)
-                                .param("nickname", "admin")
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("profile/validate-nickname",
-                        queryParameters(
-                                parameterWithName("nickname").description("검증할 닉네임")
-                        ),
-                        responseFields(
-                                fieldWithPath("availability").description("닉네임 존재여부")
-                        )
-                ));
-    }
-
-    @Test
-    @WithMockUser
     void updateProfile_Docs() throws Exception {
         // given
         final ProfileUpdate request = ProfileUpdate.builder()
                 .nickname("newNickname")
-                .imageSource("http://example.com/newPhoto.png")
+                .imageSource("http://oddk.xyz/newPhoto.png")
                 .fileType("png")
                 .build();
 
@@ -140,7 +143,7 @@ public class ProfileControllerDocsTest {
                         .name("category1")
                         .build()))
                 .nickname("user1")
-                .imageSource("http://example.com/img.jpg")
+                .imageSource("http://oddk.xyz/img.jpg")
                 .fileType("jpeg")
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
@@ -156,8 +159,9 @@ public class ProfileControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("profile/update-profile",
+                        resourceDetails().tag("Profile").description("프로필 수정 엔드포인트"),
                         pathParameters(
-                                parameterWithName("profileId").description("업데이트할 프로필 ID")
+                                parameterWithName("profileId").description("업데이트할 프로필의 ID")
                         ),
                         requestFields(
                                 fieldWithPath("nickname").description("업데이트할 프로필의 닉네임"),
@@ -172,7 +176,7 @@ public class ProfileControllerDocsTest {
     void updateProfileImage_Docs() throws Exception {
         // given
         final ProfileImageUpdate request = ProfileImageUpdate.builder()
-                .imageSource("http://example.com/newPhoto.png")
+                .imageSource("http://oddk.xyz/newPhoto.png")
                 .fileType("png")
                 .build();
 
@@ -186,8 +190,9 @@ public class ProfileControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("profile/update-profile-image",
+                        resourceDetails().tag("Profile").description("프로필 이미지 수정 엔드포인트"),
                         pathParameters(
-                                parameterWithName("profileId").description("업데이트할 프로필 ID")
+                                parameterWithName("profileId").description("업데이트할 프로필의 ID")
                         ),
                         requestFields(
                                 fieldWithPath("imageSource").description("업데이트할 프로필의 프로필 사진 리소스 주소"),

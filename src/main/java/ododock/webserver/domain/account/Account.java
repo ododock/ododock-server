@@ -56,7 +56,6 @@ import java.util.Set;
                 @Index(name = "idx_account__last_modified_at", columnList = "last_modified_at desc")
         }
 )
-@EqualsAndHashCode(of = {"id", "version"})
 @ToString(of = {"email", "fullname"})
 public class Account extends BaseEntity {
 
@@ -85,11 +84,9 @@ public class Account extends BaseEntity {
     )
     private List<SocialAccount> socialAccounts = new ArrayList<>();
 
-    @Nullable
     @Column(name = "email")
     private String email;
 
-    @Nullable
     @Column(name = "password")
     private String password;
 
