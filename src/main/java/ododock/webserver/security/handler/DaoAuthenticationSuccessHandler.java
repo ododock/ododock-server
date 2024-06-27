@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.account.TokenRecord;
 import ododock.webserver.security.DaoUserDetails;
 import ododock.webserver.security.response.Token;
+import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -39,18 +40,22 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     }
 
     private String convertToken(final HttpServletResponse response, final Authentication authentication) throws JsonProcessingException {
-        final TokenRecord tokenRecord = jwtService.generateToken(authentication);
-        final Long accountId = ((DaoUserDetails)authentication.getPrincipal()).getAccountId();
-        final Cookie cookie = new Cookie("access_token", tokenRecord.getAccessTokenValue());
-        cookie.setPath("/");
-        cookie.setSecure(true);
-        cookie.setAttribute("SameSite", "None");
+        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from((DaoUserDetails) authentication.getPrincipal()));
+        final Cookie atCookie = new Cookie("access_token", tokenRecord.getAccessTokenValue());
+        atCookie.setPath("/");
+        atCookie.setSecure(true);
+        atCookie.setAttribute("SameSite", "None");
+        final Cookie rtCookie = new Cookie("refresh_token", tokenRecord.getRefreshTokenValue());
+        rtCookie.setPath("/");
+        rtCookie.setSecure(true);
+        rtCookie.setAttribute("SameSite", "None");
 
-        response.addCookie(cookie);
+        response.addCookie(atCookie);
+        response.addCookie(rtCookie);
 
         return objectMapper.writeValueAsString(
                 Token.builder()
-                        .sub(String.valueOf(accountId))
+                        .sub(String.valueOf(tokenRecord.getAccountId()))
                         .accessToken(tokenRecord.getAccessTokenValue())
                         .refreshToken(tokenRecord.getRefreshTokenValue())
                         .build()

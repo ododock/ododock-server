@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.TokenRecord;
+import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -29,7 +30,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             final Authentication authentication
     ) throws IOException {
         final OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        final TokenRecord tokenRecord = jwtService.generateToken(oauthToken);
+        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from(oauthToken.getPrincipal()));
         final String redirectUri = String.format(
                 OAUTH_CALLBACK_URI,
                 tokenRecord.getAccountId(),
