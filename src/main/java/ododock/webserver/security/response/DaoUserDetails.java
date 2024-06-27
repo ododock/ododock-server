@@ -1,4 +1,4 @@
-package ododock.webserver.security;
+package ododock.webserver.security.response;
 
 import lombok.Builder;
 import lombok.Getter;

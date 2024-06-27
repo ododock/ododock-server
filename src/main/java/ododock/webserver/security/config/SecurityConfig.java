@@ -6,7 +6,7 @@ import ododock.webserver.security.filter.DaoAuthenticationFilter;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
-import ododock.webserver.security.request.RequestParameterMatcher;
+import ododock.webserver.security.util.RequestParameterMatcher;
 import ododock.webserver.security.service.AuthService;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;

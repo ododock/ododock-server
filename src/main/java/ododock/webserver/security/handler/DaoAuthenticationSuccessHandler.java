@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.account.TokenRecord;
-import ododock.webserver.security.DaoUserDetails;
+import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.security.service.JwtService;

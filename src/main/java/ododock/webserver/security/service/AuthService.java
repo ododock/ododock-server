@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.security.DaoUserDetails;
+import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.OAuth2UserInfo;
 import ododock.webserver.security.util.OAuth2UserMapper;
 import ododock.webserver.service.AccountService;
