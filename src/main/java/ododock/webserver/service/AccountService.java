@@ -46,12 +46,12 @@ public class AccountService {
             throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
         final Account newAccount = Account.builder()
-                .password(passwordEncoder.encode(request.password()))
                 .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
+                .nickname(request.nickname())
                 .birthDate(request.birthDate())
                 .fullname(request.fullname())
                 .roles(Set.of(Role.USER))
-                .nickname(request.nickname())
                 .attributes(request.attributes())
                 .build();
         newAccount.daoSignedUp();
@@ -80,10 +80,16 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
+    /**
+     * merge Social Account specified by {@link ododock.webserver.request.account.OAuthAccountConnect} into given Account
+     * @param accountId
+     * @param request which contains OAuth2 Provider and Account ID will be merged
+     * @return
+     */
     @Transactional
     public Account connectSocialAccount(final Long accountId, final OAuthAccountConnect request) {
         final Account originAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new IllegalArgumentException("account with id " + accountId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("DB Account with id not found", accountId));
         final String targetProvider = request.oauthProvider();
         originAccount.getSocialAccounts().stream()
                 .filter(a -> a.getProvider().equals(targetProvider))
