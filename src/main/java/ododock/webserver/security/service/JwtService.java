@@ -34,14 +34,13 @@ public class JwtService {
                 .issuedAt(now)
                 .expiresAt(now.plus(jwtProperties.getAccessTokenExpiry(), ChronoUnit.MINUTES))
                 .subject(userPrincipal.id())
-                .claim("roles", userPrincipal.roles())
                 .claim("provider", userPrincipal.provider())
                 .build();
         final JwtClaimsSet refreshTokenClaim = JwtClaimsSet.builder()
                 .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiresAt(now.plus(jwtProperties.getRefreshTokenExpiry(), ChronoUnit.MINUTES))
-                .subject(userPrincipal.id()) // username
+                .subject(userPrincipal.id())
                 .id(UUID.randomUUID().toString())
                 .build();
         tokenRecord.setAccessToken(accessTokenClaim);
