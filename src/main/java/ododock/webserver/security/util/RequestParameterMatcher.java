@@ -1,7 +1,6 @@
-package ododock.webserver.security.request;
+package ododock.webserver.security.util;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 

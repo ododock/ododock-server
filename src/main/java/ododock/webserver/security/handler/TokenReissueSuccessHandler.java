@@ -7,19 +7,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.account.TokenRecord;
-import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.security.service.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
+public class TokenReissueSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
     private final ObjectMapper objectMapper;
@@ -29,7 +29,8 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     public void onAuthenticationSuccess(
             final HttpServletRequest request,
             final HttpServletResponse response,
-            final Authentication authentication) throws IOException {
+            final Authentication authentication
+    ) throws IOException {
         writeAuthenticationToken(response, authentication);
     }
 
@@ -40,7 +41,7 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     }
 
     private String convertToken(final HttpServletResponse response, final Authentication authentication) throws JsonProcessingException {
-        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from((DaoUserDetails) authentication.getPrincipal()));
+        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from((Jwt) authentication.getPrincipal()));
         final Cookie atCookie = new Cookie("access_token", tokenRecord.getAccessTokenValue());
         atCookie.setPath("/");
         atCookie.setSecure(true);
