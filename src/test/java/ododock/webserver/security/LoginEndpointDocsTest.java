@@ -31,6 +31,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,7 +78,7 @@ public class LoginEndpointDocsTest {
 
         accountService.createDaoAccount(AccountCreate.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .fullname("testuser")
                 .password("password")
                 .birthDate(LocalDate.of(1993, 10, 23))
@@ -88,7 +89,7 @@ public class LoginEndpointDocsTest {
     @Test
     public void login_Docs(RestDocumentationContextProvider restDocumentation) throws Exception {
         LoginRequest request = LoginRequest.builder()
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password("password")
                 .build();
 
@@ -97,6 +98,7 @@ public class LoginEndpointDocsTest {
 
         Response response = given(this.spec)
                 .filter(document("dao-login",
+                        resourceDetails().tag("Auth").description("DB 유저 로그인 엔드포인트"),
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestFields(

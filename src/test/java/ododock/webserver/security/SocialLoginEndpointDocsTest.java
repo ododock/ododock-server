@@ -14,17 +14,23 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.hamcrest.Matchers.startsWith;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,14 +43,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SocialLoginEndpointDocsTest {
 
     @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
     private MockMvc mockMvc;
 
+
     @BeforeEach
-    public void setup() {
+    public void setup(RestDocumentationContextProvider restDocumentation) {
         MockOAuth2AuthorizationRequestRedirectFilter filter = new MockOAuth2AuthorizationRequestRedirectFilter();
-        this.mockMvc = MockMvcBuilders
-                .standaloneSetup(new Object()) // 더미 컨트롤러
-                .addFilter(filter)
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context)
+                .apply(documentationConfiguration(restDocumentation))
+                .alwaysDo(print())
+                .addFilters(filter)
                 .build();
     }
 
@@ -61,11 +72,17 @@ public class SocialLoginEndpointDocsTest {
     }
 
     @Test
-    public void testAuthorizationRedirect() throws Exception {
+    public void socialLoginSuccessResultResponse_Docs() throws Exception {
 
         mockMvc.perform(get("/oauth2/authorization/google"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/auth")));
+                .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/auth")))
+                .andDo(document("oauth2-login-success-result",
+                        resourceDetails().tag("Auth")
+                                .description("/oauth2/authorization/{provider} 주소에 대해 하이퍼링크로 요청함."
+                                        + "사용자는 하이퍼링크를 통해 oauth provider가 제공하는 로그인창으로 이동하여 로그인을 수행함."
+                                        + "로그인 성공 시 `소셜로그인 성공 결과`처럼 callback 주소의 param과함께 redirect됨."))
+                );
     }
 
 }

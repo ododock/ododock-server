@@ -20,7 +20,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.headers.HeaderDocumentation;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -40,14 +39,16 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -120,9 +121,11 @@ public class SocialLoginSuccessResultResponseDocs {
                     assertThat(queryParams.getFirst("refresh_token")).isNotBlank();
                 })
                 .andDo(document("login-oauth2-code-google",
+                        resourceDetails().tag("Auth")
+                                .description("소셜 로그인 성공 시 callback주소로 query param에 아래의 헤더 정보가 담겨 리다이렉트 됨."),
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
-                        HeaderDocumentation.responseHeaders(
+                        responseHeaders(
                                 headerWithName("Location").description("The URL to redirect to with query parameters: "
                                         + "`sub` - 소셜 로그인한 유저 ID, "
                                         + "`provider` - 소셜 로그인한 유저의 provider, "

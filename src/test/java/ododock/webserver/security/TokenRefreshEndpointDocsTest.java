@@ -34,12 +34,14 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -112,6 +114,7 @@ public class TokenRefreshEndpointDocsTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("refresh-token",
+                        resourceDetails().tag("Auth").description("리프레시 토큰을 통한 액세스/리프레시 토큰 갱신 엔드포인트"),
                         responseFields(
                                 fieldWithPath("sub").description("유저 ID"),
                                 fieldWithPath("accessToken").description("새로 발급된 액세스 토큰"),
