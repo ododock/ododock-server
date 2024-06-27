@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -47,12 +48,12 @@ public class AccountQueryControllerDocsTest {
         final AccountDetailsResponse response = AccountDetailsResponse.builder()
                 .sub(1L)
                 .profileId(6L)
-                .email("tester@ododock.io")
+                .email("tester@oddk.xyz")
                 .nickname("tester")
                 .birthDate(LocalDate.of(1999, 12, 31))
                 .fullname("John doe")
                 .profileImage(ProfileImage.builder()
-                        .imageSource("http://awesome.io/foo.png")
+                        .imageSource("http://oddk.xyz/foo.png")
                         .fileType("png")
                         .build())
                 .createdDate(LocalDateTime.now())
@@ -68,6 +69,7 @@ public class AccountQueryControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/get-account-details",
+                        resourceDetails().tag("Account").description("계정 정보 조회").privateResource(true),
                         pathParameters(
                                 parameterWithName("accountId").description("조회할 Account ID")
                         ),
