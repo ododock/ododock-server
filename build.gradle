@@ -67,7 +67,7 @@ dependencies {
 }
 
 openapi3 {
-    server = 'http://oddk.xyz:8080'
+    server = 'http://dev.oddk.xyz'
     title = 'ODDK API DOCS'
     description = 'ododock web application API documentation'
     version = '0.1.0'

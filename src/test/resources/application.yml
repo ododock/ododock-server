@@ -21,7 +21,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080
+          issuer-uri: http://dev.oddk.xyz:8080
       client:
         registration:
           google:
@@ -71,6 +71,6 @@ app:
     oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"
 
   jwt:
-    issuer: "http://localhost:8080"
+    issuer: "http://dev.oddk.xyz"
     access-token-expiry: 60
     refresh-token-expiry: 1440

@@ -17,8 +17,8 @@ public class RestDocsConfig {
                 .withRequestDefaults(
                         prettyPrint(),
                         modifyUris()
-                                .scheme("https")
-                                .host("example.ododock.com")
+                                .scheme("http")
+                                .host("dev.ododock.com")
                                 .removePort()
                 )
                 .withResponseDefaults(
