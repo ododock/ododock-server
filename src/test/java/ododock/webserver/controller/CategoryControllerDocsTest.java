@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -87,6 +88,7 @@ public class CategoryControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("category/get-categories",
+                        resourceDetails().tag("Category").description("카테고리 조회 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("조회할 프로필 ID")
                         ),
@@ -122,6 +124,7 @@ public class CategoryControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("category/create-category",
+                        resourceDetails().tag("Category").description("카테고리 생성 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("생성할 카테고리의 소유자 프로필 ID")
                         ),
@@ -174,6 +177,7 @@ public class CategoryControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("category/update-category-list",
+                        resourceDetails().tag("Category").description("카테고리 리스트 수정 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("업데이트할 카테고리의 소유자 프로필 ID")
                         ),
@@ -207,6 +211,7 @@ public class CategoryControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("category/update-category",
+                        resourceDetails().tag("Category").description("카테고리 단건 수정 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("업데이트할 카테고리의 소유자 프로필 ID"),
                                 parameterWithName("categoryId").description("업데이트할 카테고리 ID")
@@ -232,6 +237,7 @@ public class CategoryControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("category/delete-category",
+                        resourceDetails().tag("Category").description("카테고리 삭제 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("삭제할 카테고리의 소유자 프로필 ID"),
                                 parameterWithName("categoryId").description("삭제할 카테고리 ID")

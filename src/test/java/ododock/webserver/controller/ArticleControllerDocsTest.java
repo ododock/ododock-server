@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -75,6 +76,7 @@ public class ArticleControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("article/get-article",
+                        resourceDetails().tag("Article").description("아티클 조회 엔드포인트"),
                         pathParameters(
                                 parameterWithName("articleId").description("조회할 글 ID")
                         ),
@@ -116,6 +118,7 @@ public class ArticleControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("article/create-article",
+                        resourceDetails().tag("Article").description("아티클 생성 엔드포인트"),
                         requestFields(
                                 fieldWithPath("profileId").description("글 작성자 프로필 ID"),
                                 fieldWithPath("title").description("글 제목"),
@@ -154,6 +157,7 @@ public class ArticleControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("article/update-article",
+                        resourceDetails().tag("Article").description("아티클 수정 엔드포인트"),
                         pathParameters(
                                 parameterWithName("articleId").description("업데이트할 글 ID")
                         ),
@@ -179,6 +183,7 @@ public class ArticleControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("article/delete-article",
+                        resourceDetails().tag("Article").description("아티클 삭제 엔드포인트"),
                         pathParameters(
                                 parameterWithName("articleId").description("삭제할 글 ID")
                         )
