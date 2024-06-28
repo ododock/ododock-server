@@ -23,7 +23,7 @@ spring:
   # Spring jpa
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
