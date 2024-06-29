@@ -6,17 +6,19 @@ import ododock.webserver.domain.account.TokenStatus;
 import ododock.webserver.repository.TokenRecordRepository;
 import ododock.webserver.security.config.JwtProperties;
 import ododock.webserver.security.response.UserPrincipal;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-@Component
+@Service
 @RequiredArgsConstructor
+@EnableConfigurationProperties(JwtProperties.class)
 public class JwtService {
 
     private final JwtProperties jwtProperties;

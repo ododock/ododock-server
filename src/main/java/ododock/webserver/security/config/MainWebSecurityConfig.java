@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
-import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
-import ododock.webserver.security.util.RequestParameterMatcher;
-import ododock.webserver.security.service.AuthService;
 import ododock.webserver.security.service.JwtService;
+import ododock.webserver.security.util.RequestParameterMatcher;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -29,9 +28,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.List;
@@ -39,21 +35,25 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfig {
+@Import(OAuth2SecurityConfig.class)
+public class MainWebSecurityConfig {
 
-    private final JwtProperties jwtProperties;
     private final ObjectMapper objectMapper;
-    private final AuthService authService;
     private final JwtService jwtService;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtDecoder jwtDecoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Bean
     public WebSecurityCustomizer configure() {
         return (web) -> web
                 .ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations(),
-                        new AntPathRequestMatcher("/docs/**")); // TODO fix
+                        new AntPathRequestMatcher("/docs/**"));
+    }
+
+    @Bean
+    MvcRequestMatcher.Builder mvc(final HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
     }
 
     @Bean
@@ -62,8 +62,7 @@ public class SecurityConfig {
         requestCache.setMatchingRequestParameterName(null);
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(c -> c
-                        .configurationSource(corsConfigurationSource()))
+                .cors(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .logout(c -> c
@@ -90,17 +89,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                         .accessDeniedHandler(new AccessDeniedHandlerImpl())
                 )
-                .oauth2Login(c -> c
-                        .userInfoEndpoint(oauth ->
-                                oauth.userService(authService)
-                        )
-                        .successHandler(oAuth2LoginSuccessHandler(jwtService))
-                )
-                .oauth2ResourceServer(c -> c
-                        .jwt(jwt -> jwt
-                                .decoder(jwtDecoder)
-                        )
-                )
                 .addFilterAt(
                         new DaoAuthenticationFilter(
                                 authenticationManagerBuilder.getOrBuild(),
@@ -117,35 +105,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    MvcRequestMatcher.Builder mvc(final HandlerMappingIntrospector introspector) {
-        return new MvcRequestMatcher.Builder(introspector);
-    }
-
-    @Bean
     public DaoAuthenticationSuccessHandler daoAuthenticationSuccessHandler(
             final JwtService jwtService,
             final ObjectMapper objectMapper
     ) {
         return new DaoAuthenticationSuccessHandler(jwtService, objectMapper);
-    }
-
-    @Bean
-    public OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler(final JwtService jwtService) {
-        return new OAuth2LoginSuccessHandler(jwtService);
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedOrigin("http://localhost:3000/home");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
 }
