@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import static ododock.webserver.exception.ErrorCode.INTERNAL_SERVER_ERROR;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -28,8 +30,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleRootException(final Exception ex, final WebRequest request) {
         final HttpHeaders headers = new HttpHeaders();
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        final String defaultDetails = String.valueOf(INTERNAL_SERVER_ERROR);
         final ProblemDetail body = createProblemDetail(
-                ex, status, "Internal Server Error Occurred", null, null, request);
+                ex, status, defaultDetails, null, null, request);
         return handleExceptionInternal(ex, body, headers, status, request);
     }
 
