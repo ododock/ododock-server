@@ -5,11 +5,13 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.request.account.AccountPasswordUpdate;
 import ododock.webserver.response.account.AccountCreateResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -91,6 +93,32 @@ public class AccountServiceTest {
         assertThat(result.sub()).isEqualTo(account.get().getId());
         assertThat(profile.isPresent()).isTrue();
         assertThat(result.profileId()).isEqualTo(profile.get().getId());
+    }
+
+    @Test
+    @Transactional
+    void shouldThrowException() {
+        // given
+        accountService.createDaoAccount(AccountCreate.builder()
+                .nickname("test-user")
+                .email("test-user@ododock.io")
+                .password("password")
+                .fullname("John Doe")
+                .birthDate(LocalDate.of(1991, 5, 22))
+                .build());
+        final AccountCreate request = AccountCreate.builder()
+                .nickname("test-user")
+                .email("test-user@ododock.io")
+                .password("password")
+                .fullname("John Doe")
+                .birthDate(LocalDate.of(1991, 5, 22))
+                .build();
+
+        // expected
+        Assertions.assertThrows(ResourceAlreadyExistsException.class, () -> {
+            accountService.createDaoAccount(request);
+        });
+
     }
 
     @Test

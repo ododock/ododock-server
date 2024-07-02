@@ -35,7 +35,7 @@ public class ProfileService {
     @Transactional
     public void createProfile(final Account ownerAccount, final ProfileCreate request) {
         if (!isAvailableNickname(request.nickname())) {
-            throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
+            throw new ResourceAlreadyExistsException(Profile.class, "nickname", request.nickname());
         }
         Profile newProfile = Profile.builder()
                 .nickname(request.nickname())
@@ -50,7 +50,7 @@ public class ProfileService {
     @Transactional
     public void updateProfile(final Long profileId, final ProfileUpdate request) {
         if (isAvailableNickname(request.nickname())) {
-            throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
+            throw new ResourceAlreadyExistsException(Profile.class, "nickname", request.nickname());
         }
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResourceNotFoundException(Profile.class, profileId));

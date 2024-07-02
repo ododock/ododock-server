@@ -8,6 +8,7 @@ import ododock.webserver.domain.account.SocialAccount;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
+import ododock.webserver.exception.SocialProviderDuplicatedException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.account.AccountCreate;
@@ -40,10 +41,10 @@ public class AccountService {
     @Transactional
     public AccountCreateResponse createDaoAccount(final AccountCreate request) {
         if (!isAvailableEmail(request.email())) {
-            throw new ResourceAlreadyExistsException(Account.class, request.email());
+            throw new ResourceAlreadyExistsException(Account.class, "email", request.email());
         }
         if (profileRepository.existsByNickname(request.nickname())) {
-            throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
+            throw new ResourceAlreadyExistsException(Profile.class, "nickname", request.nickname());
         }
         final Account newAccount = Account.builder()
                 .email(request.email())
@@ -67,7 +68,7 @@ public class AccountService {
         final Account account = accountRepository.findBySocialAccountsProviderId(userInfo.getProviderId())
                 .orElse(Account.builder()
                         .email(userInfo.getEmail())
-                        .password(null)
+                        .password(UUID.randomUUID().toString())
                         .nickname(UUID.randomUUID().toString())
                         .roles(Set.of(Role.USER))
                         .build());
@@ -89,19 +90,19 @@ public class AccountService {
     @Transactional
     public Account connectSocialAccount(final Long accountId, final OAuthAccountConnect request) {
         final Account originAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("DB Account with id not found", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         final String targetProvider = request.oauthProvider();
         originAccount.getSocialAccounts().stream()
                 .filter(a -> a.getProvider().equals(targetProvider))
                 .findAny()
                 .ifPresent(ex -> {
-                    throw new IllegalArgumentException("already registered social provider");
+                    throw new SocialProviderDuplicatedException(accountId, request.oauthProvider());
                 });
-        final Account targetDaoAccount = accountRepository.findById(request.targetAccountId())
-                .orElseThrow(() -> new IllegalArgumentException("target account not exists"));
+        final Account targetDaoAccount = accountRepository.findById(request.targetAccountId()) // 주어진 계정 없음
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, SocialAccount.class, request.targetAccountId()));
         final SocialAccount targetSocialAccount = targetDaoAccount.getSocialAccounts().stream()
-                .filter(a -> a.getProvider().equals(targetProvider))
-                .findAny().orElseThrow(() -> new IllegalArgumentException("Illegal social account connect request"));
+                .filter(a -> a.getProvider().equals(targetProvider)) // 주어진 provider에 해당하는 계정 없음
+                .findAny().orElseThrow(() -> new ResourceNotFoundException(Account.class, SocialAccount.class, request.oauthProvider()));
         originAccount.addSocialAccount(SocialAccount.builder()
                 .providerId(targetSocialAccount.getProviderId())
                 .provider(targetProvider)
@@ -122,7 +123,7 @@ public class AccountService {
     @Transactional
     public void completeAccountRegister(final Long accountId, final CompleteAccountRegister request) {
         if (profileRepository.existsByNickname(request.nickname())) {
-            throw new IllegalArgumentException("nickname already exists");
+            throw new ResourceAlreadyExistsException(Account.class, "nickname", request.nickname());
         }
         final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("account not found"));

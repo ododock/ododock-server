@@ -25,13 +25,12 @@ public class AccountQueryService {
     }
 
     public AccountDetailsResponse getAccountDetails(final Long accountId) {
-
         Account foundAccount = Optional.ofNullable(queryFactory.selectFrom(account)
                         .leftJoin(socialAccount).on(socialAccount.daoAccount.eq(account))
                         .leftJoin(account.ownProfile).fetchJoin()
                         .where(account.id.eq(accountId))
                         .fetchOne())
-                .orElseThrow(() -> new ResourceNotFoundException("resource not found: ", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
 
         return AccountDetailsResponse.of(foundAccount);
     }
@@ -41,7 +40,7 @@ public class AccountQueryService {
                         .leftJoin(socialAccount).fetchJoin()
                         .where(account.id.eq(accountId))
                         .fetchOne())
-                .orElseThrow(() -> new ResourceNotFoundException("resource not found: ", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         return AccountSocialConnectDetails.of(foundAccount);
     }
 
