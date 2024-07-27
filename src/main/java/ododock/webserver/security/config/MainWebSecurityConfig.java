@@ -73,6 +73,7 @@ public class MainWebSecurityConfig {
                 .sessionManagement(c -> c
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
+                        .requestMatchers("/h2-console").permitAll()
                         .requestMatchers(
                                 new RequestParameterMatcher(HttpMethod.GET, "/api/v1/accounts", List.of("email"))
                         ).permitAll()

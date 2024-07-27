@@ -57,7 +57,7 @@ public class ArticleService {
         }
         Article newArticle = Article.builder()
                 .title(request.title())
-                .body(request.body())
+                .body(request.body()) // TODO JSON domain object로 parsing? 이후 NoSQL 적용가능.. 자바 상 메모리 이슈
                 .tags(request.tags())
                 .category(category)
                 .visibility(defaultVisibility)
