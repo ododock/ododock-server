@@ -2,8 +2,9 @@ package ododock.webserver.controller;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import ododock.webserver.domain.profile.Category;
 import ododock.webserver.request.CategoryCreate;
-import ododock.webserver.request.CategoryListUpdate;
+import ododock.webserver.request.CategoryOrderUpdate;
 import ododock.webserver.request.CategoryUpdate;
 import ododock.webserver.response.ApiResponse;
 import ododock.webserver.response.CategoryDetailsResponse;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -39,23 +43,32 @@ public class CategoryController {
         return ApiResponse.of("categoryId", categoryService.createCategory(profileId, request));
     }
 
-    @PatchMapping("/api/v1/profiles/{profileId}/categories")
-    public ResponseEntity<Void> updateCategoryList(
-            final @PathVariable Long profileId,
-            final @Valid @RequestBody CategoryListUpdate request
-    ) {
-        categoryService.updateCategoryList(profileId, request);
-        return ResponseEntity.ok().build();
-    }
-
     @PatchMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")
-    public ResponseEntity<Void> updateCategory(
+    public ListResponse<CategoryDetailsResponse> updateCategory(
             final @PathVariable Long profileId,
             final @PathVariable Long categoryId,
             final @Valid @RequestBody CategoryUpdate request
     ) {
-        categoryService.updateCategory(profileId, categoryId, request);
-        return ResponseEntity.ok().build();
+        final List<Category> categories = categoryService.updateCategory(profileId, categoryId, request);
+        return ListResponse.of(
+                profileId,
+                categories.size(),
+                categories.stream().map(CategoryDetailsResponse::of).collect(Collectors.toList())
+        );
+    }
+
+    @PatchMapping("/api/v1/profiles/{profileId}/categories/{categoryId}/order")
+    public ListResponse<CategoryDetailsResponse> updateCategoryOrder(
+            final @PathVariable Long profileId,
+            final @PathVariable Long categoryId,
+            final @Valid @RequestBody CategoryOrderUpdate request
+    ) {
+        final List<Category> updateCategories = categoryService.updateCategoryOrder(profileId, categoryId, request);
+        return ListResponse.of(
+                profileId,
+                updateCategories.size(),
+                updateCategories.stream().map(CategoryDetailsResponse::of).collect(Collectors.toList())
+        );
     }
 
     @DeleteMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")

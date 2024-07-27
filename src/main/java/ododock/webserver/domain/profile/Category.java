@@ -50,11 +50,12 @@ public class Category extends BaseEntity {
     private boolean visibility;
 
     @Builder
-    public Category(final Profile ownerProfile, final String name, final Integer order, final boolean visibility) {
+    public Category(final Profile ownerProfile, final String name, final boolean visibility) {
         ownerProfile.getCategories().add(this);
+        ownerProfile.updateCategoriesSize(ownerProfile.getCategorySize()+1);
         this.ownerProfile = ownerProfile;
         this.name = name;
-        this.order = order;
+        this.order = ownerProfile.getCategorySize();
         this.visibility = visibility;
     }
 
@@ -77,6 +78,10 @@ public class Category extends BaseEntity {
 
     public void updateVisibility(boolean visibility) {
         this.visibility = visibility;
+    }
+
+    public void updateOrder(Integer order) {
+        this.order = order;
     }
 
 }
