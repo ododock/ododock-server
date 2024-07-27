@@ -69,7 +69,7 @@ public class Article extends BaseEntity {
     private Set<Tag> tags = new HashSet<>();
 
     @Nullable
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Category category;
 
@@ -99,12 +99,14 @@ public class Article extends BaseEntity {
         this.body = body;
     }
 
-    public void updateCategory(final Category category) {
+    public void updateCategory(@Nullable final Category category) {
         if (category == null) {
-            category.getArticles().remove(this);
+            this.category = null;
+            return;
         }
         category.getArticles().add(this);
         this.category = category;
+
     }
 
     public void updateTags(final Set<String> tags) {

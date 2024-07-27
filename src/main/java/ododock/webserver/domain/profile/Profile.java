@@ -14,6 +14,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
@@ -21,9 +22,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.article.Article;
 import ododock.webserver.domain.common.BaseEntity;
-import ododock.webserver.domain.account.Account;
+import ododock.webserver.exception.ResourceNotFoundException;
 import org.springframework.lang.Nullable;
 
 import java.util.ArrayList;
@@ -69,8 +71,11 @@ public class Profile extends BaseEntity {
             orphanRemoval = true,
             cascade = CascadeType.ALL
     )
-//    @OrderColumn(name = "order") TODO add order concept on Categories
+    @OrderBy("order asc")
     private List<Category> categories = new ArrayList<>();
+
+    @Column(name = "category_size")
+    private Integer categorySize;
 
     @OneToMany(
             mappedBy = "ownerProfile",
@@ -82,9 +87,9 @@ public class Profile extends BaseEntity {
 
     @Builder
     public Profile(final String nickname, final ProfileImage profileImage) {
-        // TODO 소셜 회원가입 한 경우, dao랑 oauth 계정 중 어느걸로 할것인가?
         this.nickname = nickname;
         this.profileImage = profileImage;
+        this.categorySize = 0;
     }
 
     public void setOwnerAccount(final Account account) {
@@ -95,9 +100,27 @@ public class Profile extends BaseEntity {
         this.nickname = nickname;
     }
 
-    public void updateCategories(final List<Category> categories) {
-        this.categories = categories;
+    public void updateCategoriesSize(final Integer categorySize) {
+        this.categorySize = categorySize;
     }
+
+    public void deleteCategory(final Category category) {
+        if (this.categories.isEmpty()) {
+            throw new IllegalArgumentException("category is empty");
+        }
+        Category foundCategory = this.categories.stream()
+                .filter(c -> c.equals(category))
+                .findAny()
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(Category.class, category.getId())
+                );
+        if (!foundCategory.getArticles().isEmpty()) {
+            List<Article> articles = foundCategory.getArticles();
+            articles.forEach(article -> article.updateCategory(null));
+            this.categorySize--;
+        }
+    }
+
     public void updateProfileImage(final String imageSource, final String filetype) {
         this.profileImage = ProfileImage.builder()
                 .imageSource(imageSource)
