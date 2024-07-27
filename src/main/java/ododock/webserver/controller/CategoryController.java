@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -43,23 +44,31 @@ public class CategoryController {
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")
-    public ListResponse<Category> updateCategory(
+    public ListResponse<CategoryDetailsResponse> updateCategory(
             final @PathVariable Long profileId,
             final @PathVariable Long categoryId,
             final @Valid @RequestBody CategoryUpdate request
     ) {
         final List<Category> categories = categoryService.updateCategory(profileId, categoryId, request);
-        return ListResponse.of(profileId, categories.size(), categories);
+        return ListResponse.of(
+                profileId,
+                categories.size(),
+                categories.stream().map(CategoryDetailsResponse::of).collect(Collectors.toList())
+        );
     }
 
     @PatchMapping("/api/v1/profiles/{profileId}/categories/{categoryId}/order")
-    public ListResponse<Category> updateCategoryOrder(
+    public ListResponse<CategoryDetailsResponse> updateCategoryOrder(
             final @PathVariable Long profileId,
             final @PathVariable Long categoryId,
             final @Valid @RequestBody CategoryOrderUpdate request
     ) {
         final List<Category> updateCategories = categoryService.updateCategoryOrder(profileId, categoryId, request);
-        return ListResponse.of(null, updateCategories.size(), updateCategories);
+        return ListResponse.of(
+                profileId,
+                updateCategories.size(),
+                updateCategories.stream().map(CategoryDetailsResponse::of).collect(Collectors.toList())
+        );
     }
 
     @DeleteMapping("/api/v1/profiles/{profileId}/categories/{categoryId}")
