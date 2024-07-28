@@ -99,7 +99,10 @@ public class MainWebSecurityConfig {
                 .addFilterBefore(
                         new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
                         UsernamePasswordAuthenticationFilter.class
-                );
+                )
+                .oauth2ResourceServer(resourceServer -> resourceServer.jwt(
+                        jwt -> jwt.decoder(jwtDecoder)
+                ));
 
         return http.build();
     }
