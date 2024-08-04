@@ -43,7 +43,7 @@ public class JwtService {
                 .issuedAt(now)
                 .expiresAt(now.plus(jwtProperties.getRefreshTokenExpiry(), ChronoUnit.MINUTES))
                 .subject(userPrincipal.id())
-                .id(UUID.randomUUID().toString())
+                .id(userPrincipal.id())
                 .build();
         tokenRecord.setAccessToken(accessTokenClaim);
         tokenRecord.setTokenStatus(TokenStatus.ACTIVE);
