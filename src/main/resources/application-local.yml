@@ -26,6 +26,6 @@ logging:
 
 app:
   security:
-    oauth-callback-uri: "${HOST_DOMAIN_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
+    oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
     issuer: "http://localhost:8080"

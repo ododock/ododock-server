@@ -24,6 +24,6 @@ logging:
 
 app:
   security:
-    oauth-callback-uri: "http://${HOST_DOMAIN_URI}:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"
+    oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
     issuer: "http://${HOST_DOMAIN_URI}:8080"

@@ -19,7 +19,7 @@ import java.io.IOException;
 public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${app.security.oauth-callback-uri:http://localhost:3000/oauth2/callback?sub=%s&access_token=%s&refresh_token=%s}")
-    private String OAUTH_CALLBACK_URI = "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}";
+    private String OAUTH_CALLBACK_URI = "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s";
 
     private final JwtService jwtService;
 
