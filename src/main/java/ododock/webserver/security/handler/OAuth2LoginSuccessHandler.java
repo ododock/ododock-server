@@ -30,7 +30,7 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             final Authentication authentication
     ) throws IOException {
         final OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from(oauthToken.getPrincipal()));
+        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from(oauthToken));
         final String redirectUri = String.format(
                 OAUTH_CALLBACK_URI,
                 tokenRecord.getAccountId(),
