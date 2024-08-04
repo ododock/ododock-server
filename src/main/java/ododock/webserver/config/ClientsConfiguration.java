@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
 import java.util.Map;
 
 @Configuration
@@ -12,16 +13,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ClientsConfiguration {
 
-    private final ClientProperties clientProperties;
-
-    @Bean
-    public Map<String, ClientProperties.ClientConfig> clientConfigs() {
-        return clientProperties.clients();
-    }
+    private final List<ClientProperties> clientProperties;
 
     @Bean
     public ClientProperties.ClientConfig bookInfoConfig() {
+//        clientProperties.stream()
+
         return clientProperties.clients().get("book-info");
+
     }
 
     @Bean
