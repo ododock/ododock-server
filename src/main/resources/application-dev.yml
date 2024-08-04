@@ -11,7 +11,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     database-platform: org.hibernate.dialect.MySQLDialect
 
 logging:
@@ -22,6 +22,6 @@ logging:
 
 app:
   security:
-    oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s}"
+    oauth-callback-uri: "${HOST_DOMAIN_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
-    issuer: "http://${HOST_DOMAIN_URI}:8080"
+    issuer: "${HOST_DOMAIN_URI}"
