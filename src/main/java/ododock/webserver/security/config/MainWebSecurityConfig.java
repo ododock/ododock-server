@@ -28,8 +28,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -62,7 +64,14 @@ public class MainWebSecurityConfig {
         requestCache.setMatchingRequestParameterName(null);
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOriginPatterns(List.of("http://localhost:[*]", "http://localhost:[*]/*"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
+                    return config;
+                }))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .logout(c -> c
