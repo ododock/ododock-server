@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
+import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
+import ododock.webserver.security.service.AuthService;
 import ododock.webserver.security.service.JwtService;
 import ododock.webserver.security.util.RequestParameterMatcher;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -37,9 +39,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Import(OAuth2SecurityConfig.class)
 public class MainWebSecurityConfig {
 
+    private final AuthService authService;
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final JwtDecoder jwtDecoder;
@@ -91,6 +93,7 @@ public class MainWebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/accounts").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/oauth2/**").permitAll()
                         .requestMatchers("/static/docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -109,6 +112,11 @@ public class MainWebSecurityConfig {
                         new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
                         UsernamePasswordAuthenticationFilter.class
                 )
+                .oauth2Login(login ->
+                        login.userInfoEndpoint(
+                                info -> info.userService(authService)
+                        ).successHandler(oAuth2LoginSuccessHandler(jwtService))
+                )
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(
                         jwt -> jwt.decoder(jwtDecoder)
                 ));
@@ -122,6 +130,11 @@ public class MainWebSecurityConfig {
             final ObjectMapper objectMapper
     ) {
         return new DaoAuthenticationSuccessHandler(jwtService, objectMapper);
+    }
+
+    @Bean
+    public OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler(final JwtService jwtService) {
+        return new OAuth2LoginSuccessHandler(jwtService);
     }
 
 }
