@@ -72,6 +72,9 @@ public class AccountControllerDocsTest {
                 .andDo(
                         document("account/validate-email",
                         resourceDetails().tag("Account").description("email 중복여부 검증 엔드포인트"),
+                        pathParameters(
+                                parameterWithName("email").description("조회할 계정 email")
+                        ),
                         responseFields(
                                 fieldWithPath("availability").description("주어진 email 사용가능 여부")
                         )
@@ -106,6 +109,9 @@ public class AccountControllerDocsTest {
                 .andExpect(status().isOk())
                 .andDo(document("account/create-dao-account",
                         resourceDetails().tag("Account").description("DB 계정 생성 엔드포인트"),
+                        pathParameters(
+                                parameterWithName("email").description("조회할 계정 email")
+                        ),
                         requestFields(
                                 fieldWithPath("email").description("생성할 계정 이메일"),
                                 fieldWithPath("password").description("생성할 계정 비밀번호"),
