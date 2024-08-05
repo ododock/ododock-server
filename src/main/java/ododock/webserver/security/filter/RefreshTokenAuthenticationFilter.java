@@ -9,6 +9,7 @@ import ododock.webserver.security.service.JwtService;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
@@ -17,8 +18,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
+    private static final String REFRESH_TOKEN = "refresh_token";
     public static final String PROCESSING_URI = "/api/v1/auth/token";
-
     private final ObjectMapper objectMapper;
 
     public RefreshTokenAuthenticationFilter(final JwtDecoder jwtDecoder, final JwtService jwtService, final ObjectMapper objectMapper) {
@@ -33,10 +34,17 @@ public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProc
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("refresh_token")) {
+                if (cookie.getName().equals(REFRESH_TOKEN)) {
                     String token = cookie.getValue();
                     return getAuthenticationManager().authenticate(new BearerTokenAuthenticationToken(token));
                 }
+            }
+        } else {
+            if (request.getHeader(REFRESH_TOKEN) != null) {
+                if (request.getHeader(REFRESH_TOKEN).isEmpty()) {
+                    throw new BadJwtException("Token not found from http request headers");
+                }
+                return getAuthenticationManager().authenticate(new BearerTokenAuthenticationToken(request.getHeader(REFRESH_TOKEN)));
             }
         }
         return null;
