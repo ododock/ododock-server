@@ -42,6 +42,7 @@ public class AuthService implements UserDetailsService, OAuth2UserService<OAuth2
         return daoUserDetails;
     }
 
+    @Transactional
     public OAuth2User loadUser(final OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         final OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
         final OAuth2User oAuth2User = delegate.loadUser(userRequest);
@@ -49,24 +50,26 @@ public class AuthService implements UserDetailsService, OAuth2UserService<OAuth2
         final String userNameAttributeName = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
         final OAuth2UserInfo userInfo = OAuth2UserMapper.resolveUserInfo(userRequest, oAuth2User);
-        final Optional<Account> foundDaoAccount = accountRepository.findBySocialAccountsProviderId(userInfo.getProviderId());
+        final Optional<Account> foundDaoAccount = accountRepository.findAccountWithRolesBySocialAccountsProviderId(userInfo.getProviderId());
 
         if (foundDaoAccount.isPresent()) {
             final Long accountId = foundDaoAccount.get().getId();
             userInfo.addAttribute("accountId", accountId);
-            return new DefaultOAuth2User(
+            OAuth2User user = new DefaultOAuth2User(
                     foundDaoAccount.get().getRoles().stream()
                             .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
                             .collect(Collectors.toList()),
                     userInfo.getAttributes(),
-                    userNameAttributeName
-            );
+                    userNameAttributeName);
+            return user;
         }
 
         final Account newAccount = accountService.createSocialAccount(userInfo);
         userInfo.addAttribute("accountId", newAccount.getId());
         return new DefaultOAuth2User(
-                List.of(new SimpleGrantedAuthority("OAUTH2_USER")),
+                newAccount.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role.getRoleName()))
+                        .collect(Collectors.toList()),
                 userInfo.getAttributes(),
                 userNameAttributeName);
     }

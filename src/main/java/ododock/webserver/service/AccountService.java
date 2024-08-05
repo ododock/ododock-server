@@ -64,7 +64,7 @@ public class AccountService {
 
     @Transactional
     public Account createSocialAccount(final OAuth2UserInfo userInfo) {
-        final Account account = accountRepository.findBySocialAccountsProviderId(userInfo.getProviderId())
+        final Account account = accountRepository.findAccountWithRolesBySocialAccountsProviderId(userInfo.getProviderId())
                 .orElse(Account.builder()
                         .email(userInfo.getEmail())
                         .password(null)
