@@ -68,8 +68,14 @@ public class MainWebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOriginPatterns(List.of("http://localhost:[*]", "http://localhost:[*]/*"));
-                    config.setAllowedOriginPatterns(List.of("http://dev.oddk.xyz:[*]", "http://dev.oddk.xyz:[*]/*"));
+                    config.setAllowedOriginPatterns(List.of(
+                            "http://localhost:[*]",
+                            "http://localhost:[*]/*",
+                            "http://dev.oddk.xyz/*",
+                            "http://dev.oddk.xyz:[*]",
+                            "http://dev.oddk.xyz:[*]/*"
+                    ));
+                    config.setAllowedOriginPatterns(List.of());
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
