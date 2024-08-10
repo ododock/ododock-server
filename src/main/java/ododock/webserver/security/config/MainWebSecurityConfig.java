@@ -75,9 +75,7 @@ public class MainWebSecurityConfig {
                             "http://dev.oddk.xyz:[*]",
                             "http://dev.oddk.xyz:[*]/*"
                     ));
-                    config.setAllowedOriginPatterns(List.of());
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     return config;
                 }))
