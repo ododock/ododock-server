@@ -10,15 +10,20 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.CompleteDaoAccountRegister;
+import ododock.webserver.request.account.RequestVerificationCode;
+import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.service.AccountService;
+import ododock.webserver.service.MailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -43,7 +48,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
@@ -62,10 +66,14 @@ public class LoginEndpointDocsTest {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @MockBean
+    private MailService mailService;
+
     private RequestSpecification spec;
 
     @BeforeEach
-    public void setUp(ServletWebServerApplicationContext context, RestDocumentationContextProvider provider) {
+    public void setUp(ServletWebServerApplicationContext context, RestDocumentationContextProvider provider) throws Exception {
         RestAssured.port = context.getWebServer().getPort();
         RestAssured.baseURI = "http://127.0.0.1";
 
@@ -76,7 +84,7 @@ public class LoginEndpointDocsTest {
                         .withResponseDefaults(prettyPrint()))
                 .build();
 
-        accountService.createDaoAccount(AccountCreate.builder()
+        AccountCreateResponse response = accountService.createDaoAccount(AccountCreate.builder()
                 .nickname("test-user")
                 .email("test-user@oddk.xyz")
                 .fullname("testuser")
@@ -84,6 +92,18 @@ public class LoginEndpointDocsTest {
                 .birthDate(LocalDate.of(1993, 10, 23))
                 .attributes(Map.of())
                 .build());
+        Account createdAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
+        accountService.sendEmailVerificationCode(createdAccount.getId(), RequestVerificationCode.builder()
+                .accountId(createdAccount.getId())
+                .email(createdAccount.getEmail())
+                .build());
+        Account foundAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
+        accountService.activateDaoAccountRegister(
+                createdAccount.getId(),
+                CompleteDaoAccountRegister.builder()
+                        .code(foundAccount.getVerificationInfo().getCode())
+                        .email(foundAccount.getEmail())
+                        .build());
     }
 
     @Test
