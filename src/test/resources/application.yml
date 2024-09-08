@@ -1,4 +1,16 @@
 spring:
+  # mail service
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "mock@oddk.xyz"
+    password: "se(ret"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   # Spring data source
   datasource:
     driver-class-name: org.h2.Driver
