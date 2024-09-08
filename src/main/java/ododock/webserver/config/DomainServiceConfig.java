@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DomainServiceConfiguration {
+public class DomainServiceConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {

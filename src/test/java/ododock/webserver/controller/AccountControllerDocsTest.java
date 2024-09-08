@@ -6,11 +6,13 @@ import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.request.account.AccountPasswordUpdate;
-import ododock.webserver.request.account.CompleteAccountRegister;
+import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
+import ododock.webserver.request.account.RequestVerificationCode;
 import ododock.webserver.response.ValidateResponse;
 import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.service.AccountService;
+import ododock.webserver.service.MailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -55,6 +57,9 @@ public class AccountControllerDocsTest {
 
     @MockBean
     private AccountService accountService;
+
+    @MockBean
+    private MailService mailService;
 
     @Test
     void validateEmail_Docs() throws Exception {
@@ -139,7 +144,7 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/connect-social-account",
-                        resourceDetails().tag("Account").description("DB 계정에 소셜 계정 연동 엔드포인트"),
+                        resourceDetails().tag("Account").description("기존의 DB 계정에 소셜 계정 연동 엔드포인트"),
                         pathParameters(
                                 parameterWithName("accountId").description("연동을 요청한 DB 계정 ID")
                         ),
@@ -152,9 +157,38 @@ public class AccountControllerDocsTest {
 
     @Test
     @WithMockUser
-    void completeAccountRegister_Docs() throws Exception {
+    void sendVerificationCode_Docs() throws Exception {
         // given
-        final CompleteAccountRegister request = CompleteAccountRegister.builder()
+        final RequestVerificationCode request = RequestVerificationCode.builder()
+                .accountId(1L)
+                .email("testuser@oddk.xyz")
+                .build();
+
+        // expected
+        mockMvc.perform(
+                        put("/api/v1/accounts/{accountId}/verification-code", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("account/send-verification-code",
+                        resourceDetails().tag("Account").description("DB 계정의 이메일 인증 코드 요청"),
+                        pathParameters(
+                                parameterWithName("accountId").description("인증 코드를 발송한 DB 계정 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("accountId").description("인증 코드를 발송한 DB 계정 ID"),
+                                fieldWithPath("email").description("인증 코드를 발송한 DB 계정 email")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockUser
+    void completeSocialAccountRegister_Docs() throws Exception {
+        // given
+        final CompleteSocialAccountRegister request = CompleteSocialAccountRegister.builder()
                 .fullname("테스트유저")
                 .nickname("testuser")
                 .password("password")
@@ -169,8 +203,7 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/complete-account-register",
-                        resourceDetails().tag("Account")
-                                .description("최초 소셜 계정의 회원가입 완료 처리 엔드포인트"),
+                        resourceDetails().tag("Account").description("최초 소셜 가입 계정의 회원가입 완료 처리 엔드포인트"),
                         pathParameters(
                                 parameterWithName("accountId").description("회원가입 완료할 DB 계정 ID")
                         ),
@@ -180,7 +213,6 @@ public class AccountControllerDocsTest {
                                 fieldWithPath("password").description("회원가입 완료할 계정의 비밀번호")
                         )
                 ));
-
     }
 
     @Test
@@ -201,7 +233,7 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/update-account-password",
-                        resourceDetails().tag("Account").description("계정의 비밀번호 업데이트"),
+                        resourceDetails().tag("Account").description("DB 계정의 비밀번호 업데이트"),
                         pathParameters(
                                 parameterWithName("accountId").description("비밀번호를 변경할 계정 ID")
                         ),
@@ -243,6 +275,7 @@ public class AccountControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/delete-social-account",
+                        resourceDetails().tag("Account").description("연동된 소셜계정 삭제 엔드포인트"),
                         pathParameters(
                                 parameterWithName("accountId").description("삭제할 Account ID"),
                                 parameterWithName("socialAccountId").description("삭제할 Social Account ID")

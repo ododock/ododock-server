@@ -69,7 +69,7 @@ public class AccountServiceTest {
 
     @Test
     @Transactional
-    void createAccount() {
+    void createAccount() throws Exception {
         // given
         final AccountCreate request = AccountCreate.builder()
                 .nickname("test-user")
