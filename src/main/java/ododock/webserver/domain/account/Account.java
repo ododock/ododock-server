@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,7 +27,6 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -116,7 +116,11 @@ public class Account extends BaseEntity {
     private Boolean credentialNonExpired;
 
     @Column(name = "enabled", nullable = false)
-    private Boolean enabled = true;
+    private Boolean enabled;
+
+    @Nullable
+    @Embedded
+    private VerificationInfo verificationInfo;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "account_roles",
@@ -151,6 +155,7 @@ public class Account extends BaseEntity {
                 .nickname(nickname)
                 .build();
         this.ownProfile.setOwnerAccount(this);
+        this.enabled = false;
     }
 
     public void updatePassword(final String password) {
@@ -163,6 +168,18 @@ public class Account extends BaseEntity {
 
     public void updateAttributes(final Map<String, List<String>> attributes) {
         this.attributes = attributes;
+    }
+
+    public void generateVerificationCode() {
+        this.verificationInfo = new VerificationInfo();
+    }
+
+    public void activate() {
+        this.enabled = true;
+    }
+
+    public void deactivate() {
+        this.enabled = false;
     }
 
     public void setProfile(final Profile profile) {

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorCode {
     INTERNAL_SERVER_ERROR("INT-01", "Internal Server Error", 500),
-    RESOURCE_ALREADY_EXISTS("RES-01", "Resource already exists", 404),
+    RESOURCE_ALREADY_EXISTS("RES-01", "Resource already exists", 409),
     RESOURCE_NOT_FOUNDS("RES-02", "Resource not found", 404),
     TOKEN_MISSING_AUTHORIZATION_DATA("TKN-01", "Bearer token missing", 401),
     TOKEN_MISSING_ATTRIBUTES("TKN-02", "Missing required attributes", 400),
