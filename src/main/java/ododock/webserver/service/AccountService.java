@@ -6,16 +6,21 @@ import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.account.SocialAccount;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.exception.InvalidVerificationCodeException;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
+import ododock.webserver.exception.VerificationCodeExpiredException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.request.account.AccountPasswordUpdate;
-import ododock.webserver.request.account.CompleteAccountRegister;
+import ododock.webserver.request.account.CompleteDaoAccountRegister;
+import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
+import ododock.webserver.request.account.RequestVerificationCode;
 import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.security.response.OAuth2UserInfo;
+import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
+    private final MailService mailService;
 
     @Transactional(readOnly = true)
     public boolean isAvailableEmail(final String email) {
@@ -38,7 +44,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountCreateResponse createDaoAccount(final AccountCreate request) {
+    public AccountCreateResponse createDaoAccount(final AccountCreate request) throws Exception {
         if (!isAvailableEmail(request.email())) {
             throw new ResourceAlreadyExistsException(Account.class, request.email());
         }
@@ -120,7 +126,21 @@ public class AccountService {
     }
 
     @Transactional
-    public void completeAccountRegister(final Long accountId, final CompleteAccountRegister request) {
+    public void sendEmailVerificationCode(final Long accountId, final RequestVerificationCode request) throws Exception {
+        if (!accountId.equals(request.accountId())) {
+            throw new BadRequestException("invalid request");
+        }
+        Account account = accountRepository.findById(request.accountId())
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, request.accountId()));
+        if (!request.email().equalsIgnoreCase(account.getEmail())) {
+            throw new IllegalArgumentException("requested email not match with account email");
+        }
+        account.generateVerificationCode();
+        mailService.sendVerificationCode(account.getEmail(), account.getVerificationInfo().getCode());
+    }
+
+    @Transactional
+    public void completeSocialAccountRegister(Long accountId, CompleteSocialAccountRegister request) {
         if (profileRepository.existsByNickname(request.nickname())) {
             throw new IllegalArgumentException("nickname already exists");
         }
@@ -130,6 +150,16 @@ public class AccountService {
         account.updateFullname(request.fullname());
         account.updatePassword(passwordEncoder.encode(request.password()));
         account.daoSignedUp();
+    }
+
+    @Transactional
+    public void activateDaoAccountRegister(final Long userId, final CompleteDaoAccountRegister request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+        Account foundAccount = accountRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, userId));
+        if (foundAccount.getVerificationInfo().validate(request.code())) {
+            log.info("user has been activated");
+            foundAccount.activate();
+        }
     }
 
     @Transactional
