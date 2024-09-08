@@ -6,6 +6,7 @@ import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.request.account.AccountPasswordUpdate;
+import ododock.webserver.request.account.CompleteDaoAccountRegister;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
 import ododock.webserver.request.account.RequestVerificationCode;
@@ -184,6 +185,37 @@ public class AccountControllerDocsTest {
                 ));
     }
 
+
+    @Test
+    @WithMockUser
+    void completeDaoAccountRegister_Docs() throws Exception {
+        // given
+        final CompleteDaoAccountRegister request = CompleteDaoAccountRegister.builder()
+                .email("testuser@oddk.xyz")
+                .code("5252")
+                .build();
+
+        // expected
+        mockMvc.perform(
+                        post("/api/v1/accounts/{accountId}/verification-code", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("account/complete-dao-account-register",
+                        resourceDetails().tag("Account").description("DB 회원가입 계정의 이메일 인증 완료 엔드포인트"),
+                        pathParameters(
+                                parameterWithName("accountId").description("회원가입 완료할 DB 계정 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("email").description("회원가입 완료할 계정의 이메일"),
+                                fieldWithPath("code").description("회원가입 완료할 계정의 이메일로 발급된 이메일 검증 코드")
+                        )
+                ));
+    }
+
+
     @Test
     @WithMockUser
     void completeSocialAccountRegister_Docs() throws Exception {
@@ -202,7 +234,7 @@ public class AccountControllerDocsTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("account/complete-account-register",
+                .andDo(document("account/complete-social-account-register",
                         resourceDetails().tag("Account").description("최초 소셜 가입 계정의 회원가입 완료 처리 엔드포인트"),
                         pathParameters(
                                 parameterWithName("accountId").description("회원가입 완료할 DB 계정 ID")

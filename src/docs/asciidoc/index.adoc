@@ -8,7 +8,7 @@
 
 [[ododock-account-get]]
 == Account 조회
-operation::account/get-account[snippets='http-request,path-parameters,http-response,response-fields']
+operation::account/get-account-details[snippets='http-request,path-parameters,http-response,response-fields']
 
 [[ododock-account-email-validte]]
 == Account 이메일 검증
@@ -17,6 +17,15 @@ operation::account/validate-email[snippets='http-request,http-response,response-
 [[ododock-account-create]]
 == DB Account 생성
 operation::account/create-dao-account[snippets='http-request,request-fields,http-response,response-fields']
+
+[[ododock-account-email-verification-code]]
+== DB Account 이메일 인증코드 요청
+operation::account/send-verification-code[snippets='http-request,path-parameters,request-fields,request-body,http-response']
+
+[[ododock-complete-dao-account-register]]
+== DB Account 이메일 인증완료
+operation::account/complete-dao-account-register[snippets='http-request,path-parameters,request-body,http-response']
+
 
 [[ododock-connect-social-account]]
 == Social Account 연결
@@ -27,7 +36,7 @@ operation::account/connect-social-account[snippets='http-request,path-parameters
 operation::account/update-account-password[snippets='http-request,path-parameters,request-fields,http-response']
 
 [[ododock-account-delete]]
-== Account 삭제
+== DB Account 삭제
 operation::account/delete-account[snippets='http-request,path-parameters,http-response']
 
 [[ododock-delete-social-account]]
