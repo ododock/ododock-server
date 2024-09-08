@@ -104,7 +104,7 @@ public class ProfileControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("profile/get-profile",
-                        resourceDetails().tag("Profile").description("프로필 정보 조회 엔드포인트"),
+                        resourceDetails().tag("Profile").description("계정 프로필 정보 조회 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("조회할 프로필 ID")
                         ),
@@ -159,7 +159,7 @@ public class ProfileControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("profile/update-profile",
-                        resourceDetails().tag("Profile").description("프로필 수정 엔드포인트"),
+                        resourceDetails().tag("Profile").description("계정 프로필 수정 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("업데이트할 프로필의 ID")
                         ),
@@ -190,7 +190,7 @@ public class ProfileControllerDocsTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("profile/update-profile-image",
-                        resourceDetails().tag("Profile").description("프로필 이미지 수정 엔드포인트"),
+                        resourceDetails().tag("Profile").description("계정 프로필 이미지 수정 엔드포인트"),
                         pathParameters(
                                 parameterWithName("profileId").description("업데이트할 프로필의 ID")
                         ),

@@ -48,7 +48,6 @@ public class SocialLoginEndpointDocsTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @BeforeEach
     public void setup(RestDocumentationContextProvider restDocumentation) {
         MockOAuth2AuthorizationRequestRedirectFilter filter = new MockOAuth2AuthorizationRequestRedirectFilter();
