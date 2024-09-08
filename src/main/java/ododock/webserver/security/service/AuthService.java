@@ -8,7 +8,6 @@ import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.OAuth2UserInfo;
 import ododock.webserver.security.util.OAuth2UserMapper;
 import ododock.webserver.service.AccountService;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -38,11 +37,7 @@ public class AuthService implements UserDetailsService, OAuth2UserService<OAuth2
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
         final Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email + "is not found"));
-        final DaoUserDetails daoUserDetails = new DaoUserDetails(account);
-        if (!daoUserDetails.isEnabled()) {
-            throw new DisabledException("Account email need verification");
-        }
-        return daoUserDetails;
+        return new DaoUserDetails(account);
     }
 
     @Transactional
