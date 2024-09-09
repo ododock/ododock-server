@@ -6,6 +6,7 @@ import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.account.SocialAccount;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.exception.InvalidAccountPropertyException;
 import ododock.webserver.exception.InvalidVerificationCodeException;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
@@ -17,10 +18,8 @@ import ododock.webserver.request.account.AccountPasswordUpdate;
 import ododock.webserver.request.account.CompleteDaoAccountRegister;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
-import ododock.webserver.request.account.RequestVerificationCode;
 import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.security.response.OAuth2UserInfo;
-import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,8 +87,9 @@ public class AccountService {
 
     /**
      * merge Social Account specified by {@link ododock.webserver.request.account.OAuthAccountConnect} into given Account
+     *
      * @param accountId
-     * @param request which contains OAuth2 Provider and Account ID will be merged
+     * @param request   which contains OAuth2 Provider and Account ID will be merged
      * @return
      */
     @Transactional
@@ -126,14 +126,11 @@ public class AccountService {
     }
 
     @Transactional
-    public void sendEmailVerificationCode(final Long accountId, final RequestVerificationCode request) throws Exception {
-        if (!accountId.equals(request.accountId())) {
-            throw new BadRequestException("invalid request");
-        }
-        Account account = accountRepository.findById(request.accountId())
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class, request.accountId()));
-        if (!request.email().equalsIgnoreCase(account.getEmail())) {
-            throw new IllegalArgumentException("requested email not match with account email");
+    public void sendEmailVerificationCode(final Long accountId, final String email) throws Exception {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        if (!account.getEmail().equalsIgnoreCase(email)) {
+            throw new InvalidAccountPropertyException(email);
         }
         account.generateVerificationCode();
         mailService.sendVerificationCode(account.getEmail(), account.getVerificationInfo().getCode());

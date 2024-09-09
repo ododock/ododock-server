@@ -93,10 +93,7 @@ public class LoginEndpointDocsTest {
                 .attributes(Map.of())
                 .build());
         Account createdAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
-        accountService.sendEmailVerificationCode(createdAccount.getId(), RequestVerificationCode.builder()
-                .accountId(createdAccount.getId())
-                .email(createdAccount.getEmail())
-                .build());
+        accountService.sendEmailVerificationCode(createdAccount.getId(), createdAccount.getEmail());
         Account foundAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
         accountService.activateDaoAccountRegister(
                 createdAccount.getId(),

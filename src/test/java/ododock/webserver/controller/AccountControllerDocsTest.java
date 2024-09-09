@@ -40,6 +40,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -78,6 +79,9 @@ public class AccountControllerDocsTest {
                 .andDo(
                         document("account/validate-email",
                         resourceDetails().tag("Account").description("email 중복여부 검증 엔드포인트"),
+                        queryParameters(
+                            parameterWithName("email").description("중복여부 검증할 email")
+                        ),
                         responseFields(
                                 fieldWithPath("availability").description("주어진 email 사용가능 여부")
                         )
@@ -160,27 +164,22 @@ public class AccountControllerDocsTest {
     @WithMockUser
     void sendVerificationCode_Docs() throws Exception {
         // given
-        final RequestVerificationCode request = RequestVerificationCode.builder()
-                .accountId(1L)
-                .email("testuser@oddk.xyz")
-                .build();
 
         // expected
         mockMvc.perform(
                         put("/api/v1/accounts/{accountId}/verification-code", 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
+                                .queryParam("email", "testuser@oddk.xyz")
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("account/send-verification-code",
                         resourceDetails().tag("Account").description("DB 계정의 이메일 인증 코드 요청"),
+                        queryParameters(
+                                parameterWithName("email").description("회원가입한 DB계정의 등록 이메일(인증코드 발급 주소)")
+                        ),
                         pathParameters(
                                 parameterWithName("accountId").description("인증 코드를 발송한 DB 계정 ID")
-                        ),
-                        requestFields(
-                                fieldWithPath("accountId").description("인증 코드를 발송한 DB 계정 ID"),
-                                fieldWithPath("email").description("인증 코드를 발송한 DB 계정 email")
                         )
                 ));
     }

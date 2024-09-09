@@ -50,9 +50,9 @@ public class AccountController {
     @PutMapping("/api/v1/accounts/{accountId}/verification-code")
     public ResponseEntity<Void> sendVerificationCode(
             final @PathParam("accountId") Long accountId,
-            final @Validated @ModelAttribute RequestVerificationCode request
+            final @RequestParam String email
     ) throws Exception {
-        accountService.sendEmailVerificationCode(accountId, request);
+        accountService.sendEmailVerificationCode(accountId, email);
         return ResponseEntity.ok().build();
     }
 

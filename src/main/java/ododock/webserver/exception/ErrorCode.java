@@ -12,7 +12,8 @@ public enum ErrorCode {
     TOKEN_MISSING_AUTHORIZATION_DATA("TKN-01", "Bearer token missing", 401),
     TOKEN_MISSING_ATTRIBUTES("TKN-02", "Missing required attributes", 400),
     TOKEN_INVALID("TKN-03", "Token as either expired or already revoked", 401),
-    TOKEN_INVALID_NONCE("TKN-04", "Nonce does not match the nonce provided using token request", 401)
+    TOKEN_INVALID_NONCE("TKN-04", "Nonce does not match the nonce provided using token request", 401),
+    INVALID_ACCOUNT_INFO("ACC-01", "Invalid account information", 400);
     ;
 
     private final String code;
