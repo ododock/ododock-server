@@ -3,6 +3,7 @@ package ododock.webserver.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import ododock.webserver.security.handler.MainAuthenticationFailureHandler;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ public class DaoAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.authenticationManager = authenticationManager;
         this.setFilterProcessesUrl("/api/v1/auth/login");
         this.setAuthenticationSuccessHandler(successHandler);
+        this.setAuthenticationFailureHandler(new MainAuthenticationFailureHandler());
     }
 
     @Override

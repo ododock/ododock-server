@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
+import ododock.webserver.security.handler.MainAuthenticationFailureHandler;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
 import ododock.webserver.security.service.AuthService;
@@ -126,6 +127,7 @@ public class MainWebSecurityConfig {
                         login.userInfoEndpoint(
                                 info -> info.userService(authService)
                         ).successHandler(oAuth2LoginSuccessHandler(jwtService))
+                                .failureHandler(new MainAuthenticationFailureHandler())
                 )
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(
                         jwt -> jwt.decoder(jwtDecoder)
