@@ -3,16 +3,18 @@ package ododock.webserver.domain.account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ododock.webserver.exception.InvalidVerificationCodeException;
 import ododock.webserver.exception.VerificationCodeExpiredException;
 import ododock.webserver.util.CodeGenerator;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Embeddable
+@NoArgsConstructor
 public class VerificationInfo {
 
     private final int CODE_LENGTH = 4;
@@ -45,10 +47,18 @@ public class VerificationInfo {
         return !isExpired() && isValidCode(code);
     }
 
-    public VerificationInfo() {
+    public VerificationInfo generatePasswordResetCode() {
+        this.code = UUID.randomUUID().toString();
+        this.creationTimestamp = LocalDateTime.now();
+        this.expiryTimestamp = LocalDateTime.now().plusMinutes(10);
+        return this;
+    }
+
+    public VerificationInfo generateVerificationCode() {
         this.code = CodeGenerator.generateCode(CODE_LENGTH);
         this.creationTimestamp = LocalDateTime.now();
         this.expiryTimestamp = LocalDateTime.now().plusMinutes(30);
+        return this;
     }
 
 }

@@ -5,9 +5,12 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.exception.InvalidVerificationCodeException;
+import ododock.webserver.exception.VerificationCodeExpiredException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
 import ododock.webserver.response.account.AccountCreateResponse;
 import org.junit.jupiter.api.Test;
@@ -116,6 +119,37 @@ public class AccountServiceTest {
         // then
         Optional<Account> found = accountRepository.findByEmail("test-user@ododock.io");
         assertThat(found.isPresent()).isTrue();
+        assertThat(passwordEncoder.matches("123456", found.get().getPassword())).isTrue();
+    }
+
+
+    @Test
+    @Transactional
+    void resetAccountPassword() throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+        // given
+        final Account account = Account.builder()
+                .nickname("test-user")
+                .email("test-user@ododock.io")
+                .password(passwordEncoder.encode("password"))
+                .fullname("John Doe")
+                .birthDate(LocalDate.of(1991, 5, 22))
+                .roles(Set.of(Role.USER))
+                .build();
+        account.generateResetPasswordCode();
+        Long id = accountRepository.save(account).getId();
+        AccountPasswordReset request = AccountPasswordReset.builder()
+                .code(account.getVerificationInfo().getCode())
+                .newPassword("123456")
+                .build();
+
+        // when
+        accountService.resetAccountPassword(id, request);
+
+        // then
+        Optional<Account> found = accountRepository.findByEmail("test-user@ododock.io");
+        assertThat(found.isPresent()).isTrue();
+        assertThat(Optional.ofNullable(found.get().getVerificationInfo()).isPresent()).isTrue();
+        assertThat(found.get().getVerificationInfo().getCode()).isEqualTo(request.code());
         assertThat(passwordEncoder.matches("123456", found.get().getPassword())).isTrue();
     }
 

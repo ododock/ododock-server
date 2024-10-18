@@ -1,24 +1,22 @@
 package ododock.webserver.controller;
 
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import ododock.webserver.exception.InvalidVerificationCodeException;
 import ododock.webserver.exception.VerificationCodeExpiredException;
 import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
-import ododock.webserver.request.account.CompleteDaoAccountRegister;
+import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
-import ododock.webserver.request.account.RequestVerificationCode;
 import ododock.webserver.response.ValidateResponse;
 import ododock.webserver.response.account.AccountCreateResponse;
+import ododock.webserver.response.account.AccountVerified;
 import ododock.webserver.service.AccountService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,18 +50,16 @@ public class AccountController {
             final @PathVariable("accountId") Long accountId,
             final @RequestParam String email
     ) throws Exception {
-        System.out.println(accountId);
         accountService.sendEmailVerificationCode(accountId, email);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/v1/accounts/{accountId}/verification-code")
-    public ResponseEntity<Void> verifyDaoAccount(
+    public AccountVerified verifyDaoAccountEmail(
             final @PathVariable Long accountId,
-            final @Validated @ModelAttribute CompleteDaoAccountRegister request
+            final @RequestBody CompleteDaoAccountVerification request
     ) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
-        accountService.activateDaoAccountRegister(accountId, request);
-        return ResponseEntity.ok().build();
+        return accountService.verifyDaoAccountEmail(accountId, request);
     }
 
     @PostMapping("/api/v1/accounts/{accountId}/social-accounts")
@@ -90,6 +86,15 @@ public class AccountController {
             final @Valid @RequestBody AccountPasswordUpdate request
     ) {
         accountService.updateAccountPassword(accountId, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/api/v1/accounts/{accountId}/password")
+    public ResponseEntity<Void> resetPassword(
+            final @PathVariable Long accountId,
+            final @Valid @RequestBody AccountPasswordReset request
+    ) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+        accountService.resetAccountPassword(accountId, request);
         return ResponseEntity.ok().build();
     }
 

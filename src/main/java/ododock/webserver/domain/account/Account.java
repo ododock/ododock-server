@@ -170,8 +170,14 @@ public class Account extends BaseEntity {
         this.attributes = attributes;
     }
 
-    public void generateVerificationCode() {
+    public VerificationInfo generateVerificationCode() {
         this.verificationInfo = new VerificationInfo();
+        return this.verificationInfo.generateVerificationCode();
+    }
+
+    public VerificationInfo generateResetPasswordCode() {
+        this.verificationInfo = new VerificationInfo();
+        return  this.verificationInfo.generatePasswordResetCode();
     }
 
     public void activate() {
