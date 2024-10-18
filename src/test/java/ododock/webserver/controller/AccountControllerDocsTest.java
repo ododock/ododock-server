@@ -5,13 +5,14 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
-import ododock.webserver.request.account.CompleteDaoAccountRegister;
+import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
-import ododock.webserver.request.account.RequestVerificationCode;
 import ododock.webserver.response.ValidateResponse;
 import ododock.webserver.response.account.AccountCreateResponse;
+import ododock.webserver.response.account.AccountVerified;
 import ododock.webserver.service.AccountService;
 import ododock.webserver.service.MailService;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
@@ -78,14 +81,14 @@ public class AccountControllerDocsTest {
                 .andExpect(status().isOk())
                 .andDo(
                         document("account/validate-email",
-                        resourceDetails().tag("Account").description("email 중복여부 검증 엔드포인트"),
-                        queryParameters(
-                            parameterWithName("email").description("중복여부 검증할 email")
-                        ),
-                        responseFields(
-                                fieldWithPath("availability").description("주어진 email 사용가능 여부")
-                        )
-                ));
+                                resourceDetails().tag("Account").description("email 중복여부 검증 엔드포인트"),
+                                queryParameters(
+                                        parameterWithName("email").description("중복여부 검증할 email")
+                                ),
+                                responseFields(
+                                        fieldWithPath("availability").description("주어진 email 사용가능 여부")
+                                )
+                        ));
     }
 
     @Test
@@ -187,12 +190,19 @@ public class AccountControllerDocsTest {
 
     @Test
     @WithMockUser
-    void completeDaoAccountRegister_Docs() throws Exception {
+    void verifyDaoAccountEmail_Docs() throws Exception {
         // given
-        final CompleteDaoAccountRegister request = CompleteDaoAccountRegister.builder()
+        final CompleteDaoAccountVerification request = CompleteDaoAccountVerification.builder()
                 .email("testuser@oddk.xyz")
                 .code("5252")
                 .build();
+        final AccountVerified response = AccountVerified.builder()
+                .code(UUID.randomUUID().toString())
+                .expiredAt(LocalDateTime.now().plusMinutes(5L))
+                .build();
+
+        given(accountService.verifyDaoAccountEmail(1L, request)).willReturn(response);
+
 
         // expected
         mockMvc.perform(
@@ -210,10 +220,13 @@ public class AccountControllerDocsTest {
                         requestFields(
                                 fieldWithPath("email").description("회원가입 완료할 계정의 이메일"),
                                 fieldWithPath("code").description("회원가입 완료할 계정의 이메일로 발급된 이메일 검증 코드")
+                        ),
+                        responseFields(
+                                fieldWithPath("code").description("비밀번호 재설정 시 사용되는 코드"),
+                                fieldWithPath("expiredAt").description("비밀번호 재설정 코드 만료 시간")
                         )
                 ));
     }
-
 
     @Test
     @WithMockUser
@@ -270,6 +283,35 @@ public class AccountControllerDocsTest {
                         ),
                         requestFields(
                                 fieldWithPath("password").description("변경할 비밀번호")
+                        )
+                ));
+    }
+
+    @Test
+    @WithMockUser
+    void resetAccountPassword_Docs() throws Exception {
+        // given
+        final AccountPasswordReset request = AccountPasswordReset.builder()
+                .code(UUID.randomUUID().toString())
+                .newPassword("123456")
+                .build();
+
+        // expected
+        mockMvc.perform(
+                        put("/api/v1/accounts/{accountId}/password", 1L)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("account/reset-account-password",
+                        resourceDetails().tag("Account").description("DB 회원가입 계정의 비밀번호 재설정 엔드포인트"),
+                        pathParameters(
+                                parameterWithName("accountId").description("회원가입 완료할 DB 계정 ID")
+                        ),
+                        requestFields(
+                                fieldWithPath("code").description("비밀번호를 재설정할 계정에 발급된 인증 코드"),
+                                fieldWithPath("newPassword").description("비밀번호를 재설정할 계정의 새 비밀번호")
                         )
                 ));
     }

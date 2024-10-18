@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.account.SocialAccount;
+import ododock.webserver.domain.account.VerificationInfo;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.exception.InvalidAccountPropertyException;
 import ododock.webserver.exception.InvalidVerificationCodeException;
@@ -14,11 +15,13 @@ import ododock.webserver.exception.VerificationCodeExpiredException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.request.account.AccountCreate;
+import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
-import ododock.webserver.request.account.CompleteDaoAccountRegister;
+import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
 import ododock.webserver.request.account.OAuthAccountConnect;
 import ododock.webserver.response.account.AccountCreateResponse;
+import ododock.webserver.response.account.AccountVerified;
 import ododock.webserver.security.response.OAuth2UserInfo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -126,14 +129,25 @@ public class AccountService {
     }
 
     @Transactional
+    public void resetAccountPassword(final Long accountId, final AccountPasswordReset request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+        final Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        if (account.getVerificationInfo() == null) {
+            throw new InvalidVerificationCodeException("verification code not found");
+        }
+        account.getVerificationInfo().validate(request.code());
+        account.updatePassword(passwordEncoder.encode(request.newPassword()));
+    }
+
+    @Transactional
     public void sendEmailVerificationCode(final Long accountId, final String email) throws Exception {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         if (!account.getEmail().equalsIgnoreCase(email)) {
             throw new InvalidAccountPropertyException(email);
         }
-        account.generateVerificationCode();
-        mailService.sendVerificationCode(account.getEmail(), account.getVerificationInfo().getCode());
+        VerificationInfo verificationInfo = account.generateVerificationCode();
+        mailService.sendVerificationCode(account.getEmail(), verificationInfo.getCode());
     }
 
     @Transactional
@@ -150,13 +164,18 @@ public class AccountService {
     }
 
     @Transactional
-    public void activateDaoAccountRegister(final Long userId, final CompleteDaoAccountRegister request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+    public AccountVerified verifyDaoAccountEmail(final Long userId, final CompleteDaoAccountVerification request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
         Account foundAccount = accountRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, userId));
+        if (foundAccount.getVerificationInfo() == null) {
+            throw new InvalidVerificationCodeException("verification code not found");
+        }
         if (foundAccount.getVerificationInfo().validate(request.code())) {
             log.info("user has been activated");
             foundAccount.activate();
+            return AccountVerified.of(foundAccount.generateResetPasswordCode());
         }
+        throw new InvalidVerificationCodeException("Illegal account verification request");
     }
 
     @Transactional

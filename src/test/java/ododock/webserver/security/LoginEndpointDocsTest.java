@@ -10,8 +10,7 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.request.account.AccountCreate;
-import ododock.webserver.request.account.CompleteDaoAccountRegister;
-import ododock.webserver.request.account.RequestVerificationCode;
+import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.response.Token;
@@ -95,9 +94,9 @@ public class LoginEndpointDocsTest {
         Account createdAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
         accountService.sendEmailVerificationCode(createdAccount.getId(), createdAccount.getEmail());
         Account foundAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
-        accountService.activateDaoAccountRegister(
+        accountService.verifyDaoAccountEmail(
                 createdAccount.getId(),
-                CompleteDaoAccountRegister.builder()
+                CompleteDaoAccountVerification.builder()
                         .code(foundAccount.getVerificationInfo().getCode())
                         .email(foundAccount.getEmail())
                         .build());
