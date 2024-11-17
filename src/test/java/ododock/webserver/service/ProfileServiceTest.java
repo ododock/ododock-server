@@ -47,7 +47,7 @@ public class ProfileServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password("password")
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
@@ -72,7 +72,7 @@ public class ProfileServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password("password")
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))

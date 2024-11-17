@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.account.SocialAccount;
-import ododock.webserver.domain.account.VerificationInfo;
 import ododock.webserver.domain.profile.Profile;
-import ododock.webserver.exception.InvalidAccountPropertyException;
 import ododock.webserver.exception.InvalidVerificationCodeException;
 import ododock.webserver.exception.ResourceAlreadyExistsException;
 import ododock.webserver.exception.ResourceNotFoundException;
@@ -19,9 +17,7 @@ import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
 import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
-import ododock.webserver.request.account.OAuthAccountConnect;
-import ododock.webserver.response.account.AccountCreateResponse;
-import ododock.webserver.response.account.AccountVerified;
+import ododock.webserver.request.account.OAuthAccountMerge;
 import ododock.webserver.security.response.OAuth2UserInfo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +34,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final ProfileRepository profileRepository;
-    private final MailService mailService;
+    private final VerificationService verificationService;
 
     @Transactional(readOnly = true)
     public boolean isAvailableEmail(final String email) {
@@ -46,7 +42,7 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountCreateResponse createDaoAccount(final AccountCreate request) throws Exception {
+    public void createDaoAccount(final AccountCreate request) throws Exception {
         if (!isAvailableEmail(request.email())) {
             throw new ResourceAlreadyExistsException(Account.class, request.email());
         }
@@ -64,10 +60,6 @@ public class AccountService {
                 .build();
         newAccount.daoSignedUp();
         accountRepository.save(newAccount);
-        return AccountCreateResponse.builder()
-                .sub(newAccount.getId())
-                .profileId(newAccount.getOwnProfile().getId())
-                .build();
     }
 
     @Transactional
@@ -89,14 +81,14 @@ public class AccountService {
     }
 
     /**
-     * merge Social Account specified by {@link ododock.webserver.request.account.OAuthAccountConnect} into given Account
+     * merge Social Account specified by {@link OAuthAccountMerge} into given Account
      *
      * @param accountId
      * @param request   which contains OAuth2 Provider and Account ID will be merged
      * @return
      */
     @Transactional
-    public Account connectSocialAccount(final Long accountId, final OAuthAccountConnect request) {
+    public Account mergeSocialAccount(final Long accountId, final OAuthAccountMerge request) {
         final Account originAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException("DB Account with id not found", accountId));
         final String targetProvider = request.oauthProvider();
@@ -132,22 +124,12 @@ public class AccountService {
     public void resetAccountPassword(final Long accountId, final AccountPasswordReset request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
         final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        if (account.getVerificationInfo() == null) {
-            throw new InvalidVerificationCodeException("verification code not found");
+        if (!account.getEmail().equals(request.email())) {
+            throw new InvalidVerificationCodeException("email not matched");
         }
-        account.getVerificationInfo().validate(request.code());
-        account.updatePassword(passwordEncoder.encode(request.newPassword()));
-    }
-
-    @Transactional
-    public void sendEmailVerificationCode(final Long accountId, final String email) throws Exception {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        if (!account.getEmail().equalsIgnoreCase(email)) {
-            throw new InvalidAccountPropertyException(email);
+        if (this.verificationService.verifyCode(request.email(), request.verificationCode())) {
+            account.updatePassword(passwordEncoder.encode(request.newPassword()));
         }
-        VerificationInfo verificationInfo = account.generateVerificationCode();
-        mailService.sendVerificationCode(account.getEmail(), verificationInfo.getCode());
     }
 
     @Transactional
@@ -164,18 +146,11 @@ public class AccountService {
     }
 
     @Transactional
-    public AccountVerified verifyDaoAccountEmail(final Long userId, final CompleteDaoAccountVerification request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+    public void verifyDaoAccountEmail(final Long userId, final CompleteDaoAccountVerification request) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
         Account foundAccount = accountRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, userId));
-        if (foundAccount.getVerificationInfo() == null) {
-            throw new InvalidVerificationCodeException("verification code not found");
-        }
-        if (foundAccount.getVerificationInfo().validate(request.code())) {
-            log.info("user has been activated");
-            foundAccount.activate();
-            return AccountVerified.of(foundAccount.generateResetPasswordCode());
-        }
-        throw new InvalidVerificationCodeException("Illegal account verification request");
+        this.verificationService.verifyCode(request.email(), request.verificationCode());
+        foundAccount.activate();
     }
 
     @Transactional

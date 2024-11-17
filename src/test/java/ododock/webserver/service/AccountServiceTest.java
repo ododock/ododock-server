@@ -4,15 +4,14 @@ import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.Role;
+import ododock.webserver.domain.account.VerificationInfo;
 import ododock.webserver.domain.profile.Profile;
-import ododock.webserver.exception.InvalidVerificationCodeException;
-import ododock.webserver.exception.VerificationCodeExpiredException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ProfileRepository;
+import ododock.webserver.repository.VerificationInfoRepository;
 import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
-import ododock.webserver.response.account.AccountCreateResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +39,12 @@ public class AccountServiceTest {
     private AccountRepository accountRepository;
 
     @Autowired
+    private VerificationService verificationService;
+
+    @Autowired
+    private VerificationInfoRepository verificationInfoRepository;
+
+    @Autowired
     private ProfileRepository profileRepository;
 
     @Autowired
@@ -54,7 +59,7 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
@@ -76,24 +81,23 @@ public class AccountServiceTest {
         // given
         final AccountCreate request = AccountCreate.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password("password")
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
                 .build();
 
         // when
-        AccountCreateResponse result = accountService.createDaoAccount(request);
-
+        accountService.createDaoAccount(request);
 
         // then
-        Optional<Account> account = accountRepository.findByEmail("test-user@ododock.io");
+        Optional<Account> account = accountRepository.findByEmail("test-user@oddk.xyz");
         Optional<Profile> profile = profileRepository.findByNickname("test-user");
 
         assertThat(account.isPresent()).isTrue();
-        assertThat(result.sub()).isEqualTo(account.get().getId());
+        assertThat(account.get().getId()).isNotNull();
         assertThat(profile.isPresent()).isTrue();
-        assertThat(result.profileId()).isEqualTo(profile.get().getId());
+        assertThat(account.get().getOwnProfile().getId()).isEqualTo(profile.get().getId());
     }
 
     @Test
@@ -102,7 +106,7 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
@@ -117,7 +121,7 @@ public class AccountServiceTest {
         accountService.updateAccountPassword(id, request);
 
         // then
-        Optional<Account> found = accountRepository.findByEmail("test-user@ododock.io");
+        Optional<Account> found = accountRepository.findByEmail("test-user@oddk.xyz");
         assertThat(found.isPresent()).isTrue();
         assertThat(passwordEncoder.matches("123456", found.get().getPassword())).isTrue();
     }
@@ -125,32 +129,36 @@ public class AccountServiceTest {
 
     @Test
     @Transactional
-    void resetAccountPassword() throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+    void resetAccountPassword() throws Exception {
         // given
-        final Account account = Account.builder()
-                .nickname("test-user")
-                .email("test-user@ododock.io")
-                .password(passwordEncoder.encode("password"))
+        final AccountCreate createRequest = AccountCreate.builder()
+                .nickname("john-doe")
+                .email("test-user@oddk.xyz")
+                .password("password")
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
-                .roles(Set.of(Role.USER))
                 .build();
-        account.generateResetPasswordCode();
-        Long id = accountRepository.save(account).getId();
-        AccountPasswordReset request = AccountPasswordReset.builder()
-                .code(account.getVerificationInfo().getCode())
-                .newPassword("123456")
+
+        accountService.createDaoAccount(createRequest);
+        Account account = accountRepository.findByEmail(createRequest.email()).orElseThrow(IllegalStateException::new);
+
+        verificationService.issueVerificationCode(createRequest.email());
+        VerificationInfo verificationInfo = verificationInfoRepository.findByTargetEmail(account.getEmail())
+                .orElseThrow(IllegalStateException::new);
+
+        AccountPasswordReset resetRequest = AccountPasswordReset.builder()
+                .newPassword("newPassword")
+                .email(account.getEmail())
+                .verificationCode(verificationInfo.getCode())
                 .build();
 
         // when
-        accountService.resetAccountPassword(id, request);
+        accountService.resetAccountPassword(account.getId(), resetRequest);
 
         // then
-        Optional<Account> found = accountRepository.findByEmail("test-user@ododock.io");
+        Optional<Account> found = accountRepository.findByEmail("test-user@oddk.xyz");
         assertThat(found.isPresent()).isTrue();
-        assertThat(Optional.ofNullable(found.get().getVerificationInfo()).isPresent()).isTrue();
-        assertThat(found.get().getVerificationInfo().getCode()).isEqualTo(request.code());
-        assertThat(passwordEncoder.matches("123456", found.get().getPassword())).isTrue();
+        assertThat(passwordEncoder.matches("newPassword", found.get().getPassword())).isTrue();
     }
 
     @Test
@@ -159,7 +167,7 @@ public class AccountServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
@@ -171,7 +179,7 @@ public class AccountServiceTest {
         accountService.deleteAccount(id);
 
         // then
-        Optional<Account> found = accountRepository.findByEmail("test-user@ododock.io");
+        Optional<Account> found = accountRepository.findByEmail("test-user@oddk.xyz");
         assertThat(found).isEmpty();
     }
 
