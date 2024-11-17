@@ -8,14 +8,16 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.VerificationInfo;
 import ododock.webserver.repository.AccountRepository;
+import ododock.webserver.repository.VerificationInfoRepository;
 import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.request.account.CompleteDaoAccountVerification;
-import ododock.webserver.response.account.AccountCreateResponse;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.service.AccountService;
 import ododock.webserver.service.MailService;
+import ododock.webserver.service.VerificationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +35,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
@@ -61,7 +62,13 @@ public class LoginEndpointDocsTest {
     private AccountService accountService;
 
     @Autowired
+    private VerificationService verificationService;
+
+    @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private VerificationInfoRepository verificationInfoRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -83,29 +90,35 @@ public class LoginEndpointDocsTest {
                         .withResponseDefaults(prettyPrint()))
                 .build();
 
-        AccountCreateResponse response = accountService.createDaoAccount(AccountCreate.builder()
-                .nickname("test-user")
-                .email("test-user@oddk.xyz")
-                .fullname("testuser")
+        AccountCreate request = AccountCreate.builder()
+                .email("john.doe@oddk.xyz")
                 .password("password")
-                .birthDate(LocalDate.of(1993, 10, 23))
-                .attributes(Map.of())
-                .build());
-        Account createdAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
-        accountService.sendEmailVerificationCode(createdAccount.getId(), createdAccount.getEmail());
-        Account foundAccount = accountRepository.findById(response.sub()).orElseThrow(IllegalStateException::new);
+                .fullname("John Doe")
+                .birthDate(LocalDate.of(1997, 1, 23))
+                .nickname(("johnDoe123"))
+                .build();
+
+        accountService.createDaoAccount(request);
+
+        Account createdAccount = accountRepository.findByEmail(request.email())
+                .orElseThrow(IllegalStateException::new);
+        verificationService.issueVerificationCode(request.email());
+
+        VerificationInfo verificationInfo = verificationInfoRepository.findByTargetEmail(createdAccount.getEmail())
+                .orElseThrow(IllegalStateException::new);
+
         accountService.verifyDaoAccountEmail(
                 createdAccount.getId(),
                 CompleteDaoAccountVerification.builder()
-                        .code(foundAccount.getVerificationInfo().getCode())
-                        .email(foundAccount.getEmail())
+                        .verificationCode(verificationInfo.getCode())
+                        .email(request.email())
                         .build());
     }
 
     @Test
     public void login_Docs(RestDocumentationContextProvider restDocumentation) throws Exception {
         LoginRequest request = LoginRequest.builder()
-                .email("test-user@oddk.xyz")
+                .email("john.doe@oddk.xyz")
                 .password("password")
                 .build();
 

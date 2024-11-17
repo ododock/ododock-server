@@ -8,6 +8,6 @@ public record CompleteDaoAccountVerification(
         @NotBlank
         String email,
         @NotBlank
-        String code
+        String verificationCode
 ) {
 }

@@ -72,11 +72,10 @@ public class SocialLoginEndpointDocsTest {
 
     @Test
     public void socialLoginSuccessResultResponse_Docs() throws Exception {
-
         mockMvc.perform(get("/oauth2/authorization/google"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/auth")))
-                .andDo(document("oauth2-login-success-result",
+                .andDo(document("OAuth2/oauth2-login-success-result",
                         resourceDetails().tag("Auth")
                                 .description("/oauth2/authorization/{provider} 주소에 대해 하이퍼링크로 요청함."
                                         + "사용자는 하이퍼링크를 통해 oauth provider가 제공하는 로그인창으로 이동하여 로그인을 수행함."

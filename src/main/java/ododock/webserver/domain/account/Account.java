@@ -9,7 +9,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ConstraintMode;
 import jakarta.persistence.Convert;
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -118,10 +117,6 @@ public class Account extends BaseEntity {
     @Column(name = "enabled", nullable = false)
     private Boolean enabled;
 
-    @Nullable
-    @Embedded
-    private VerificationInfo verificationInfo;
-
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "account_roles",
             joinColumns = @JoinColumn(name = "account_id"),
@@ -168,16 +163,6 @@ public class Account extends BaseEntity {
 
     public void updateAttributes(final Map<String, List<String>> attributes) {
         this.attributes = attributes;
-    }
-
-    public VerificationInfo generateVerificationCode() {
-        this.verificationInfo = new VerificationInfo();
-        return this.verificationInfo.generateVerificationCode();
-    }
-
-    public VerificationInfo generateResetPasswordCode() {
-        this.verificationInfo = new VerificationInfo();
-        return  this.verificationInfo.generatePasswordResetCode();
     }
 
     public void activate() {

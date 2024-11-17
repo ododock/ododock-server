@@ -9,10 +9,8 @@ import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
 import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
-import ododock.webserver.request.account.OAuthAccountConnect;
+import ododock.webserver.request.account.OAuthAccountMerge;
 import ododock.webserver.response.ValidateResponse;
-import ododock.webserver.response.account.AccountCreateResponse;
-import ododock.webserver.response.account.AccountVerified;
 import ododock.webserver.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,35 +37,28 @@ public class AccountController {
     }
 
     @PostMapping("/api/v1/accounts")
-    public AccountCreateResponse createDaoAccount(
+    public ResponseEntity<Void> createDaoAccount(
             final @Valid @RequestBody AccountCreate request
     ) throws Exception {
-        return accountService.createDaoAccount(request);
-    }
-
-    @PutMapping("/api/v1/accounts/{accountId}/verification-code")
-    public ResponseEntity<Void> sendVerificationCode(
-            final @PathVariable("accountId") Long accountId,
-            final @RequestParam String email
-    ) throws Exception {
-        accountService.sendEmailVerificationCode(accountId, email);
+        accountService.createDaoAccount(request);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/api/v1/accounts/{accountId}/verification-code")
-    public AccountVerified verifyDaoAccountEmail(
+    @PostMapping("/api/v1/accounts/{accountId}/verification")
+    public ResponseEntity<Void> verifyDaoAccountEmail(
             final @PathVariable Long accountId,
             final @RequestBody CompleteDaoAccountVerification request
     ) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
-        return accountService.verifyDaoAccountEmail(accountId, request);
+        accountService.verifyDaoAccountEmail(accountId, request);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/api/v1/accounts/{accountId}/social-accounts")
-    public ResponseEntity<Void> connectSocialAccount(
+    public ResponseEntity<Void> mergeSocialAccount(
             final @PathVariable Long accountId,
-            final @RequestBody OAuthAccountConnect request
+            final @RequestBody OAuthAccountMerge request
     ) {
-        accountService.connectSocialAccount(accountId, request);
+        accountService.mergeSocialAccount(accountId, request);
         return ResponseEntity.ok().build();
     }
 

@@ -38,7 +38,7 @@ public class AccountQueryServiceTest {
         // given
         final Account account = Account.builder()
                 .nickname("test-user")
-                .email("test-user@ododock.io")
+                .email("test-user@oddk.xyz")
                 .password(passwordEncoder.encode("password"))
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1991, 5, 22))
@@ -51,7 +51,7 @@ public class AccountQueryServiceTest {
 
         // then
         assertThat(result.sub()).isEqualTo(id);
-        assertThat(result.email()).isEqualTo("test-user@ododock.io");
+        assertThat(result.email()).isEqualTo("test-user@oddk.xyz");
         assertThat(result.fullname()).isEqualTo("John Doe");
         assertThat(result.birthDate()).isEqualTo("1991-05-22");
     }

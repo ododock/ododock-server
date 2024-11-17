@@ -108,7 +108,7 @@ public class SocialLoginSuccessResultResponseDocs {
 
     @Test
     public void testOAuth2LoginSuccess() throws Exception {
-        mockMvc.perform(get("/login/oauth2/code/google"))
+        mockMvc.perform(get("/login/oauth2/verificationCode/google"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result -> {
                     String location = result.getResponse().getHeader("Location");
@@ -120,7 +120,7 @@ public class SocialLoginSuccessResultResponseDocs {
                     assertThat(queryParams.getFirst("access_token")).isNotBlank();
                     assertThat(queryParams.getFirst("refresh_token")).isNotBlank();
                 })
-                .andDo(document("login-oauth2-code-google",
+                .andDo(document("login-oauth2-verificationCode-google",
                         resourceDetails().tag("Auth")
                                 .description("소셜 로그인 성공 시 callback주소로 query param에 아래의 헤더 정보가 담겨 리다이렉트 됨."),
                         preprocessRequest(prettyPrint()),

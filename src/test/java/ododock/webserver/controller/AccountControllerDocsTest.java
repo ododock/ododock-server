@@ -9,10 +9,9 @@ import ododock.webserver.request.account.AccountPasswordReset;
 import ododock.webserver.request.account.AccountPasswordUpdate;
 import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.request.account.CompleteSocialAccountRegister;
-import ododock.webserver.request.account.OAuthAccountConnect;
+import ododock.webserver.request.account.OAuthAccountMerge;
 import ododock.webserver.response.ValidateResponse;
 import ododock.webserver.response.account.AccountCreateResponse;
-import ododock.webserver.response.account.AccountVerified;
 import ododock.webserver.service.AccountService;
 import ododock.webserver.service.MailService;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -107,8 +105,6 @@ public class AccountControllerDocsTest {
                 .profileId(10L)
                 .build();
 
-        given(accountService.createDaoAccount(requset)).willReturn(response);
-
         // expected
         mockMvc.perform(
                         post("/api/v1/accounts")
@@ -126,18 +122,14 @@ public class AccountControllerDocsTest {
                                 fieldWithPath("birthDate").description("생성할 계정 유저 생년월일").optional(),
                                 fieldWithPath("nickname").description("생성할 계정의 프로필 닉네임").optional(),
                                 fieldWithPath("attributes").description("생성할 계정 추가 속성필드").optional()
-                        ),
-                        responseFields(
-                                fieldWithPath("sub").description("생성된 계정 ID"),
-                                fieldWithPath("profileId").description("생성된 프로필 ID")
                         )
                 ));
     }
 
     @Test
-    void connectSocialAccount_Docs() throws Exception {
+    void mergeSocialAccount_Docs() throws Exception {
         // given
-        final OAuthAccountConnect requset = OAuthAccountConnect.builder()
+        final OAuthAccountMerge requset = OAuthAccountMerge.builder()
                 .targetAccountId(2L)
                 .oauthProvider("naver")
                 .build();
@@ -151,7 +143,7 @@ public class AccountControllerDocsTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("account/connect-social-account",
+                .andDo(document("account/merge-social-account",
                         resourceDetails().tag("Account").description("기존의 DB 계정에 소셜 계정 연동 엔드포인트"),
                         pathParameters(
                                 parameterWithName("accountId").description("연동을 요청한 DB 계정 ID")
@@ -165,48 +157,16 @@ public class AccountControllerDocsTest {
 
     @Test
     @WithMockUser
-    void sendVerificationCode_Docs() throws Exception {
-        // given
-
-        // expected
-        mockMvc.perform(
-                        put("/api/v1/accounts/{accountId}/verification-code", 1L)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .queryParam("email", "testuser@oddk.xyz")
-                )
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document("account/send-verification-code",
-                        resourceDetails().tag("Account").description("DB 계정의 이메일 인증 코드 요청"),
-                        queryParameters(
-                                parameterWithName("email").description("회원가입한 DB계정의 등록 이메일(인증코드 발급 주소)")
-                        ),
-                        pathParameters(
-                                parameterWithName("accountId").description("인증 코드를 발송한 DB 계정 ID")
-                        )
-                ));
-    }
-
-
-    @Test
-    @WithMockUser
     void verifyDaoAccountEmail_Docs() throws Exception {
         // given
         final CompleteDaoAccountVerification request = CompleteDaoAccountVerification.builder()
                 .email("testuser@oddk.xyz")
-                .code("5252")
+                .verificationCode("5252")
                 .build();
-        final AccountVerified response = AccountVerified.builder()
-                .code(UUID.randomUUID().toString())
-                .expiredAt(LocalDateTime.now().plusMinutes(5L))
-                .build();
-
-        given(accountService.verifyDaoAccountEmail(1L, request)).willReturn(response);
-
 
         // expected
         mockMvc.perform(
-                        post("/api/v1/accounts/{accountId}/verification-code", 1L)
+                        post("/api/v1/accounts/{accountId}/verification", 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(request))
                 )
@@ -219,11 +179,7 @@ public class AccountControllerDocsTest {
                         ),
                         requestFields(
                                 fieldWithPath("email").description("회원가입 완료할 계정의 이메일"),
-                                fieldWithPath("code").description("회원가입 완료할 계정의 이메일로 발급된 이메일 검증 코드")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").description("비밀번호 재설정 시 사용되는 코드"),
-                                fieldWithPath("expiredAt").description("비밀번호 재설정 코드 만료 시간")
+                                fieldWithPath("verificationCode").description("회원가입 완료할 계정의 이메일로 발급된 이메일 검증 코드")
                         )
                 ));
     }
@@ -292,7 +248,8 @@ public class AccountControllerDocsTest {
     void resetAccountPassword_Docs() throws Exception {
         // given
         final AccountPasswordReset request = AccountPasswordReset.builder()
-                .code(UUID.randomUUID().toString())
+                .email("test-user@oddk.xyz")
+                .verificationCode(UUID.randomUUID().toString())
                 .newPassword("123456")
                 .build();
 
@@ -310,7 +267,8 @@ public class AccountControllerDocsTest {
                                 parameterWithName("accountId").description("회원가입 완료할 DB 계정 ID")
                         ),
                         requestFields(
-                                fieldWithPath("code").description("비밀번호를 재설정할 계정에 발급된 인증 코드"),
+                                fieldWithPath("email").description("비밀번호를 재설정할 계정의 이메일"),
+                                fieldWithPath("verificationCode").description("비밀번호를 재설정할 계정에 발급된 인증 코드"),
                                 fieldWithPath("newPassword").description("비밀번호를 재설정할 계정의 새 비밀번호")
                         )
                 ));
@@ -355,6 +313,5 @@ public class AccountControllerDocsTest {
                         )
                 ));
     }
-
 
 }
