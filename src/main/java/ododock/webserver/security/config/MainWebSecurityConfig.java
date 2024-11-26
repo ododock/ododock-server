@@ -99,6 +99,7 @@ public class MainWebSecurityConfig {
                         .requestMatchers(
                                 new RequestParameterMatcher(HttpMethod.GET, "/api/v1/profiles", List.of("nickname"))
                         ).permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/verifications").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/accounts/{userId}/verification-code").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/{userId}/verification-code").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/accounts").permitAll()
