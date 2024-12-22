@@ -36,7 +36,7 @@ public abstract class Content {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "published_date", nullable = false)
+    @Column(name = "published_date", nullable = false, updatable = false)
     private LocalDate publishedDate;
 
 }
