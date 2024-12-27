@@ -2,18 +2,18 @@ package ododock.webserver.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.security.RequestPathMatcher;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.handler.MainAuthenticationFailureHandler;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
-import ododock.webserver.security.service.AuthService;
-import ododock.webserver.security.service.JwtService;
-import ododock.webserver.security.util.RequestParameterMatcher;
+import ododock.webserver.security.AuthService;
+import ododock.webserver.security.JwtService;
+import ododock.webserver.web.ResourcePath;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -34,8 +34,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -86,26 +84,15 @@ public class MainWebSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .logout(c -> c
-                        .logoutUrl("/api/v1/auth/logout")
+                        .logoutUrl(ResourcePath.AUTH_LOGOUT_URL)
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
                         .logoutSuccessUrl("http://localhost:3000"))
                 .sessionManagement(c -> c
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers(
-                                new RequestParameterMatcher(HttpMethod.GET, "/api/v1/accounts", List.of("email"))
-                        ).permitAll()
-                        .requestMatchers(
-                                new RequestParameterMatcher(HttpMethod.GET, "/api/v1/profiles", List.of("nickname"))
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/accounts/{userId}/verification-code").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/accounts/{userId}/verification-code").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/accounts").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/oauth2/**").permitAll()
-                        .requestMatchers("/static/docs/**").permitAll()
+                        .requestMatchers(RequestPathMatcher.PERMIT_ALL_MATCHER).permitAll()
+                        .requestMatchers(RequestPathMatcher.AUTHENTICATED_MATCHER).authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(c -> c

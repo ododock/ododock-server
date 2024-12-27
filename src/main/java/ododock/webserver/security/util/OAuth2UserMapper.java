@@ -44,4 +44,5 @@ public class OAuth2UserMapper {
     private OAuth2UserMapper() {
         throw new UnsupportedOperationException();
     }
+
 }

@@ -2,14 +2,12 @@ package ododock.webserver.service;
 
 import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
-import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.Role;
-import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.account.*;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.repository.ProfileRepository;
-import ododock.webserver.response.ProfileDetailsResponse;
+import ododock.webserver.web.v1.dto.response.ProfileDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +17,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest
 @Transactional
 public class ProfileServiceTest {
@@ -31,9 +30,6 @@ public class ProfileServiceTest {
 
     @Autowired
     private ProfileService profileService;
-
-    @Autowired
-    private ProfileRepository profileRepository;
 
     @Autowired
     private AccountService accountService;
@@ -56,11 +52,8 @@ public class ProfileServiceTest {
         accountRepository.save(account);
 
         // when
-        Optional<Profile> profile = profileRepository.findByNickname("test-user");
+        Optional<Account> accountOpt = accountRepository.findByOwnProfile_Nickname("test-user");
         boolean result = profileService.isAvailableNickname("test-user");
-
-        System.out.println(profile.isPresent());
-        System.out.println(profile.get().getNickname());
 
         // then
         assertThat(result).isFalse();
@@ -83,15 +76,14 @@ public class ProfileServiceTest {
         em.flush();
         createdProfile.updateProfileImage("http://test.com/temp.png", "png");
         em.flush();
-        Long profileId = createdProfile.getId();
 
         // when
-        ProfileDetailsResponse result = profileService.getProfile(profileId);
+        ProfileDetailsResponse result = profileService.getProfile(createdAccount.getId());
 
         // then
         assertThat(result.nickname()).isEqualTo("test-user");
-        assertThat(result.imageSource()).isEqualTo("http://test.com/temp.png");
-        assertThat(result.fileType()).isEqualTo("png");
+        assertThat(result.profileImage().getImageSource()).isEqualTo("http://test.com/temp.png");
+        assertThat(result.profileImage().getFileType()).isEqualTo("png");
 
     }
 

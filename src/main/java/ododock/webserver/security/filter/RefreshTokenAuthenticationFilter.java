@@ -5,7 +5,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ododock.webserver.security.handler.TokenReissueSuccessHandler;
-import ododock.webserver.security.service.JwtService;
+import ododock.webserver.security.JwtService;
+import ododock.webserver.web.ResourcePath;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -19,7 +20,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String REFRESH_TOKEN = "refresh_token";
-    public static final String PROCESSING_URI = "/api/v1/auth/token";
+    public static final String PROCESSING_URI = ResourcePath.AUTH_REFRESH_URL;
     private final ObjectMapper objectMapper;
 
     public RefreshTokenAuthenticationFilter(final JwtDecoder jwtDecoder, final JwtService jwtService, final ObjectMapper objectMapper) {

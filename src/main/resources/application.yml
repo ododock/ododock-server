@@ -80,8 +80,14 @@ app:
   jwt:
     access-token-expiry: 60
     refresh-token-expiry: 1440
-
   client:
+    curation:
+      base-uri: ${CURATION_BASE_URI}
+      key: ${CURATION_KEY}
+      key-label: ${CURATION_KEY_LABEL}
+      origin: ${CURATION_ORIGIN}
+
+
     type:
       book-info:
         base-uri: ${BOOK_INFO_BASE_URI}

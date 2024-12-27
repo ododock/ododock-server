@@ -5,7 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.Profile;
 
 @Entity
 @Getter
@@ -32,9 +33,9 @@ public class Template {
     private Boolean visibility;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "profile_id",
+    @JoinColumn(name = "account_id",
             nullable = false, updatable = false, insertable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Profile ownerProfile;
+    private Account ownerAccount;
 
 }

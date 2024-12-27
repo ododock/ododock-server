@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.TokenRecord;
+import ododock.webserver.domain.account.AccountService;
+import ododock.webserver.domain.notification.MailService;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.request.account.AccountCreate;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.UserPrincipal;
-import ododock.webserver.security.service.JwtService;
-import ododock.webserver.service.AccountService;
-import ododock.webserver.service.MailService;
+import ododock.webserver.web.ResourcePath;
+import ododock.webserver.web.v1.dto.account.AccountCreate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,14 +35,13 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -114,18 +112,22 @@ public class TokenRefreshEndpointDocsTest {
         String refreshToken = tokenRecord.getRefreshTokenValue();
 
         // When & Then
-        mockMvc.perform(post("/api/v1/auth/token")
-                        .cookie(new Cookie("refresh_token", refreshToken)))
+        mockMvc.perform(
+                        post(ResourcePath.AUTH_REFRESH_URL)
+                                .cookie(new Cookie("refresh_token", refreshToken)))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("refresh-token",
-                        resourceDetails().tag("Auth").description("리프레시 토큰을 통한 액세스/리프레시 토큰 갱신 엔드포인트"),
-                        responseFields(
-                                fieldWithPath("sub").description("유저 ID"),
-                                fieldWithPath("accessToken").description("새로 발급된 액세스 토큰"),
-                                fieldWithPath("refreshToken").description("새로 발급된 리프레시 토큰")
+                .andDo(
+                        document("refresh-token",
+                                resourceDetails()
+                                        .tag("Auth").description("리프레시 토큰을 통한 액세스/리프레시 토큰 갱신 엔드포인트"),
+                                responseFields(
+                                        fieldWithPath("sub").description("유저 ID"),
+                                        fieldWithPath("accessToken").description("새로 발급된 액세스 토큰"),
+                                        fieldWithPath("refreshToken").description("새로 발급된 리프레시 토큰")
+                                )
                         )
-                ));
+                );
     }
 
 }

@@ -2,9 +2,10 @@ package ododock.webserver.service;
 
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.AccountQueryService;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.response.account.AccountDetailsResponse;
+import ododock.webserver.web.v1.dto.response.account.AccountDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,7 +51,7 @@ public class AccountQueryServiceTest {
         AccountDetailsResponse result = accountQueryService.getAccountDetails(id);
 
         // then
-        assertThat(result.sub()).isEqualTo(id);
+        assertThat(result.accountId()).isEqualTo(id);
         assertThat(result.email()).isEqualTo("test-user@oddk.xyz");
         assertThat(result.fullname()).isEqualTo("John Doe");
         assertThat(result.birthDate()).isEqualTo("1991-05-22");

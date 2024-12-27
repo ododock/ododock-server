@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.web.ResourcePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static io.restassured.RestAssured.given;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,6 +31,7 @@ import static org.springframework.restdocs.restassured.RestAssuredRestDocumentat
 @AutoConfigureRestDocs
 public class LogoutEndpointDocsTest {
 
+    private static final String BASE_URL = ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.AUTH;
     private RequestSpecification spec;
 
     @BeforeEach
@@ -55,7 +55,7 @@ public class LogoutEndpointDocsTest {
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint())))
                 .when()
-                .post("/api/v1/auth/logout")
+                .post(BASE_URL + ResourcePath.LOGOUT)
                 .then()
                 .statusCode(HttpStatus.FOUND.value())
                 .extract()
