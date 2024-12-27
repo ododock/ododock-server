@@ -71,7 +71,7 @@ spring:
 
 springdoc:
   api-docs:
-    path: /build/api-spec/openapi3.yaml
+    path: /build/api-spec/openapi3.json
   swagger-ui:
     enabled: true
     path: /swagger-ui.html

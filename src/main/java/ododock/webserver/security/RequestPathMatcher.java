@@ -22,6 +22,8 @@ public final class RequestPathMatcher {
 
     static {
         PERMIT_ALL_MATCHER = new OrRequestMatcher(
+                new AntPathRequestMatcher(ResourcePath.DOCS + "/**", GET),
+
                 new AntPathRequestMatcher(ResourcePath.OAUTH2 + "/authorization" + "/**"),
                 new AntPathRequestMatcher(ResourcePath.OAUTH_CALLBACK),
                 new AntPathRequestMatcher(ResourcePath.AUTH_PROCESSING_URL, "POST"),
@@ -35,8 +37,7 @@ public final class RequestPathMatcher {
                 new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS, POST),
                 new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + ResourcePath.VERIFICATION, POST),
                 new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_ID + "}", GET),
-                new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_NAME + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PASSWORD, PUT),
-                new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.DOCS + "/**", GET)
+                new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_NAME + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PASSWORD, PUT)
         );
         AUTHENTICATED_MATCHER = new OrRequestMatcher(
                 new AntPathRequestMatcher(ResourcePath.API + "/**")
