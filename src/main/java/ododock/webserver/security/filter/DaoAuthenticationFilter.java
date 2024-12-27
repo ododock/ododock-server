@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import ododock.webserver.security.handler.MainAuthenticationFailureHandler;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
+import ododock.webserver.web.ResourcePath;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +21,7 @@ public class DaoAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     public DaoAuthenticationFilter(AuthenticationManager authenticationManager, DaoAuthenticationSuccessHandler successHandler) {
         this.authenticationManager = authenticationManager;
-        this.setFilterProcessesUrl("/api/v1/auth/login");
+        this.setFilterProcessesUrl(ResourcePath.AUTH_PROCESSING_URL);
         this.setAuthenticationSuccessHandler(successHandler);
         this.setAuthenticationFailureHandler(new MainAuthenticationFailureHandler());
     }

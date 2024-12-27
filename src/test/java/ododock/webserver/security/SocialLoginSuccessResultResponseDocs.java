@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
-import ododock.webserver.security.service.JwtService;
+import ododock.webserver.web.ResourcePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +38,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
@@ -46,9 +47,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.headers.HeaderDocumentation.responseHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -59,6 +58,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 public class SocialLoginSuccessResultResponseDocs {
+
+    public static final String BASE_URL = ResourcePath.OAUTH2 + ResourcePath.AUTHORIZATION;
 
     @Autowired
     private WebApplicationContext context;
@@ -81,16 +82,26 @@ public class SocialLoginSuccessResultResponseDocs {
             HttpServletResponse response = invocation.getArgument(1);
             FilterChain filterChain = invocation.getArgument(2);
 
+            Map<String, Object> oauth2UserAttributes = Map.of(
+                    "resultCode", "00",
+                    "message", "success",
+                    "response", Map.of(
+                            "id", UUID.randomUUID().toString(),
+                            "email", "testuser@oddk.xyz",
+                            "accountId", 1L
+                    ),
+                    "nameAttribute", "response"
+            );
             OAuth2User oAuth2User = new DefaultOAuth2User(
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                    Map.of("sub", "1", "accountId", "1", "authorizedClientRegistrationId", "google"),
-                    "sub"
+                    oauth2UserAttributes,
+                    "response"
             );
 
             OAuth2AuthenticationToken authenticationToken = new OAuth2AuthenticationToken(
                     oAuth2User,
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                    "google"
+                    "naver"
             );
 
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -108,7 +119,8 @@ public class SocialLoginSuccessResultResponseDocs {
 
     @Test
     public void testOAuth2LoginSuccess() throws Exception {
-        mockMvc.perform(get("/login/oauth2/verificationCode/google"))
+        mockMvc.perform(
+                        get(BASE_URL + "/naver"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(result -> {
                     String location = result.getResponse().getHeader("Location");
@@ -116,22 +128,25 @@ public class SocialLoginSuccessResultResponseDocs {
                     MultiValueMap<String, String> queryParams = uriComponents.getQueryParams();
 
                     assertThat(queryParams.getFirst("sub")).isEqualTo("1");
-                    assertThat(queryParams.getFirst("provider")).isEqualTo("google");
+                    assertThat(queryParams.getFirst("provider")).isEqualTo("naver");
                     assertThat(queryParams.getFirst("access_token")).isNotBlank();
                     assertThat(queryParams.getFirst("refresh_token")).isNotBlank();
                 })
-                .andDo(document("login-oauth2-verificationCode-google",
-                        resourceDetails().tag("Auth")
-                                .description("소셜 로그인 성공 시 callback주소로 query param에 아래의 헤더 정보가 담겨 리다이렉트 됨."),
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        responseHeaders(
-                                headerWithName("Location").description("The URL to redirect to with query parameters: "
-                                        + "`sub` - 소셜 로그인한 유저 ID, "
-                                        + "`provider` - 소셜 로그인한 유저의 provider, "
-                                        + "`access_token` - 소셜 로그인한 유저의 액세스 토큰, "
-                                        + "`refresh_token` - 소셜 로그인한 유저의 리프레시 토큰")
-                        )));
+                .andDo(
+                        document("login-oauth2-naver",
+                                resourceDetails()
+                                        .tag("Auth").description("소셜 로그인 성공 시 callback주소로 query param에 아래의 헤더 정보가 담겨 리다이렉트 됨."),
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                responseHeaders(
+                                        headerWithName("Location").description("The URL to redirect to with query parameters: "
+                                                + "`sub` - 소셜 로그인한 유저 ID, "
+                                                + "`provider` - 소셜 로그인한 유저의 provider, "
+                                                + "`access_token` - 소셜 로그인한 유저의 액세스 토큰, "
+                                                + "`refresh_token` - 소셜 로그인한 유저의 리프레시 토큰")
+                                )
+                        )
+                );
     }
 
 }

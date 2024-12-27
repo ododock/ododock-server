@@ -8,16 +8,18 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.VerificationInfo;
+import ododock.webserver.domain.account.AccountManageService;
+import ododock.webserver.domain.account.AccountService;
+import ododock.webserver.domain.notification.MailService;
+import ododock.webserver.domain.verification.VerificationInfo;
+import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.VerificationInfoRepository;
-import ododock.webserver.request.account.AccountCreate;
-import ododock.webserver.request.account.CompleteDaoAccountVerification;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.response.Token;
-import ododock.webserver.service.AccountService;
-import ododock.webserver.service.MailService;
-import ododock.webserver.service.VerificationService;
+import ododock.webserver.web.ResourcePath;
+import ododock.webserver.web.v1.dto.account.AccountCreate;
+import ododock.webserver.web.v1.dto.account.CompleteDaoAccountVerification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,18 +42,14 @@ import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resour
 import static com.epages.restdocs.apispec.RestAssuredRestDocumentationWrapper.document;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.documentationConfiguration;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
-@Import(RestDocsConfig.class)
+@Import({RestDocsConfig.class})
 @AutoConfigureRestDocs
 public class LoginEndpointDocsTest {
 
@@ -60,6 +58,9 @@ public class LoginEndpointDocsTest {
 
     @Autowired
     private AccountService accountService;
+
+    @Autowired
+    private AccountManageService accountManageService;
 
     @Autowired
     private VerificationService verificationService;
@@ -107,8 +108,7 @@ public class LoginEndpointDocsTest {
         VerificationInfo verificationInfo = verificationInfoRepository.findByTargetEmail(createdAccount.getEmail())
                 .orElseThrow(IllegalStateException::new);
 
-        accountService.verifyDaoAccountEmail(
-                createdAccount.getId(),
+        accountManageService.verifyDaoAccountEmail(
                 CompleteDaoAccountVerification.builder()
                         .verificationCode(verificationInfo.getCode())
                         .email(request.email())
@@ -144,7 +144,7 @@ public class LoginEndpointDocsTest {
                 .contentType(ContentType.JSON)
                 .body(objectMapper.writeValueAsString(request))
                 .when()
-                .post("/api/v1/auth/login")
+                .post(ResourcePath.AUTH_PROCESSING_URL)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -155,7 +155,6 @@ public class LoginEndpointDocsTest {
         assertThat(Long.valueOf(token.sub()).equals(account.getId())).isTrue();
         assertThat(token.accessToken()).isNotBlank();
         assertThat(token.refreshToken()).isNotBlank();
-
     }
 
 }

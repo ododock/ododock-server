@@ -1,20 +1,22 @@
 package ododock.webserver.service;
 
 import jakarta.persistence.EntityManager;
-import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.AccountManageService;
+import ododock.webserver.domain.account.AccountService;
 import ododock.webserver.domain.account.Role;
-import ododock.webserver.domain.account.VerificationInfo;
-import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.notification.GMailService;
+import ododock.webserver.domain.verification.VerificationInfo;
+import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.repository.ProfileRepository;
 import ododock.webserver.repository.VerificationInfoRepository;
-import ododock.webserver.request.account.AccountCreate;
-import ododock.webserver.request.account.AccountPasswordReset;
-import ododock.webserver.request.account.AccountPasswordUpdate;
+import ododock.webserver.web.v1.dto.account.AccountCreate;
+import ododock.webserver.web.v1.dto.account.AccountPasswordReset;
+import ododock.webserver.web.v1.dto.account.AccountPasswordUpdate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,13 +47,13 @@ public class AccountServiceTest {
     private VerificationInfoRepository verificationInfoRepository;
 
     @Autowired
-    private ProfileRepository profileRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @MockBean
+    private GMailService mailService;
+
     @Autowired
-    private CleanUp cleanUp;
+    private AccountManageService accountManageService;
 
     @Test
     @Transactional
@@ -92,12 +94,11 @@ public class AccountServiceTest {
 
         // then
         Optional<Account> account = accountRepository.findByEmail("test-user@oddk.xyz");
-        Optional<Profile> profile = profileRepository.findByNickname("test-user");
 
         assertThat(account.isPresent()).isTrue();
         assertThat(account.get().getId()).isNotNull();
-        assertThat(profile.isPresent()).isTrue();
-        assertThat(account.get().getOwnProfile().getId()).isEqualTo(profile.get().getId());
+        assertThat(account.get().getOwnProfile().getNickname()).isEqualTo("test-user");
+        assertThat(account.get().getOwnProfile().getFullname()).isEqualTo("John Doe");
     }
 
     @Test
@@ -148,12 +149,11 @@ public class AccountServiceTest {
 
         AccountPasswordReset resetRequest = AccountPasswordReset.builder()
                 .newPassword("newPassword")
-                .email(account.getEmail())
                 .verificationCode(verificationInfo.getCode())
                 .build();
 
         // when
-        accountService.resetAccountPassword(account.getId(), resetRequest);
+        accountManageService.resetAccountPassword(createRequest.email(), resetRequest);
 
         // then
         Optional<Account> found = accountRepository.findByEmail("test-user@oddk.xyz");

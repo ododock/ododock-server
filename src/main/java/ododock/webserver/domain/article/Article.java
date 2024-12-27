@@ -1,30 +1,14 @@
 package ododock.webserver.domain.article;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ConstraintMode;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.common.BaseEntity;
-import ododock.webserver.domain.profile.Category;
-import ododock.webserver.domain.profile.Profile;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,33 +41,33 @@ public class Article extends BaseEntity {
     private boolean visibility;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "profile_id",
+    @JoinColumn(name = "account_id",
             nullable = false, updatable = false, insertable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Profile ownerProfile;
+    private Account ownerAccount;
+
+    @Nullable
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
+    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private Category category;
 
     @ElementCollection
     @CollectionTable(name = "article_tags",
             joinColumns = @JoinColumn(name = "article_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     )
-    private Set<Tag> tags = new HashSet<>();
-
-    @Nullable
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Category category;
+    private Set<Tag> tags;
 
     @Builder
     public Article(final String title,
                    final String body,
-                   @Nullable final Set<String> tags,
+                   final Set<String> tags,
                    @Nullable final Category category,
                    final boolean visibility) {
         this.title = title;
         this.body = body;
-        this.tags.addAll(tags.stream()
-                .map(Tag::new)
-                .collect(Collectors.toSet()));
+        this.tags = tags.stream()
+                .filter(tag -> !tag.isBlank())
+                .map(Tag::new).collect(Collectors.toSet());
         if (category != null) {
             category.getArticles().add(this);
             this.updateCategory(category);

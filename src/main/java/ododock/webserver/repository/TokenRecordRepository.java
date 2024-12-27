@@ -1,6 +1,6 @@
 package ododock.webserver.repository;
 
-import ododock.webserver.domain.account.TokenRecord;
+import ododock.webserver.security.TokenRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
