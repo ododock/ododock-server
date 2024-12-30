@@ -1,8 +1,12 @@
 package ododock.webserver.domain.content;
 
+import ododock.webserver.domain.dto.PopularBookListOptions;
+
+import java.util.List;
+
 public interface CurationService {
 
-    void listPopularContents();
+    List<Book> listPopularContents(PopularBookListOptions listOptions);
 
     void listTrendingContents();
 
