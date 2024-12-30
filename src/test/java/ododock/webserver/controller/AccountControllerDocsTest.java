@@ -65,6 +65,7 @@ public class AccountControllerDocsTest {
     private MailService mailService;
 
     @Test
+    @WithMockUser
     void validateEmail_Docs() throws Exception {
         // given
         final ValidateResponse response = ValidateResponse.of(true);
@@ -121,6 +122,7 @@ public class AccountControllerDocsTest {
 
 
     @Test
+    @WithMockUser
     void createDaoAccount_Docs() throws Exception {
         // given
         final AccountCreate requset = AccountCreate.builder()
@@ -162,6 +164,7 @@ public class AccountControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void mergeSocialAccount_Docs() throws Exception {
         // given
         final OAuthAccountMerge requset = OAuthAccountMerge.builder()
@@ -254,6 +257,7 @@ public class AccountControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void updateAccountPassword_Docs() throws Exception {
         // given
         final AccountPasswordUpdate requset = AccountPasswordUpdate.builder()
@@ -316,6 +320,7 @@ public class AccountControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void deleteAccount_Docs() throws Exception {
         // given
 
@@ -338,6 +343,7 @@ public class AccountControllerDocsTest {
     }
 
     @Test
+    @WithMockUser
     void deleteSocialAccount_Docs() throws Exception {
         // given
 

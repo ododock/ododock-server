@@ -4,7 +4,7 @@ public final class ResourcePath {
 
     // api
     public static final String API = "/api";
-    public static final String API_VERSION = "/v1";
+    public static final String API_VERSION = "/v1alpha1";
 
     // path varaibles
     public static final String PATH_VAR_ID = "id";
@@ -38,9 +38,6 @@ public final class ResourcePath {
     public static final String OAUTH2 = "/oauth2";
     public static final String AUTHORIZATION = "/authorization";
     public static final String CALLBACK = "/callback";
-//    public static final String OAUTH_CALLBACK_URL = "http://localhost:3000/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s";
     public static final String OAUTH_CALLBACK = LOCALHOST + OAUTH2 + CALLBACK +"sub=%s&provider=%s&access_token=%s&refresh_token=%s";
-
-
 
 }

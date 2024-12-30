@@ -5,6 +5,7 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.domain.account.ProfileImage;
 import ododock.webserver.domain.account.ProfileService;
+import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1.ProfileController;
 import ododock.webserver.web.v1.dto.ProfileUpdate;
 import ododock.webserver.web.v1.dto.response.ProfileDetailsResponse;
@@ -36,6 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs()
 public class ProfileControllerDocsTest {
 
+    private static final String BASE_PATH = ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -62,7 +65,7 @@ public class ProfileControllerDocsTest {
 
         // expected
         mockMvc.perform(
-                        get("/api/v1/accounts/{id}/profile", 1L)
+                        get(BASE_PATH + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PROFILE, 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8))
                 .andDo(print())
@@ -108,7 +111,7 @@ public class ProfileControllerDocsTest {
 
         // expected
         mockMvc.perform(
-                        patch("/api/v1/accounts/{id}/profile", 1L)
+                        patch(BASE_PATH + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PROFILE, 1L)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .characterEncoding(StandardCharsets.UTF_8)
                                 .content(objectMapper.writeValueAsString(request)))
