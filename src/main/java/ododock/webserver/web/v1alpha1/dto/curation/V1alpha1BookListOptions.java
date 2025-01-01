@@ -1,14 +1,19 @@
 package ododock.webserver.web.v1alpha1.dto.curation;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class V1alpha1BookListOptions extends V1alpha1ListOptions {
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private Integer gender;
     private Integer fromAge;

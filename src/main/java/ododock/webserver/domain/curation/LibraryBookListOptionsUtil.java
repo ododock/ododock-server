@@ -1,7 +1,6 @@
 package ododock.webserver.domain.curation;
 
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.config.domain.LibraryCurationClientProperties;
 import ododock.webserver.domain.curation.dto.LibraryBookListOptions;
 import org.springframework.util.MultiValueMap;
 
@@ -11,7 +10,7 @@ public class LibraryBookListOptionsUtil {
     private final static String API_KEY_LABEL = "authKey";
     private final String apiKey;
 
-    public void applyPopularBookListOptions(LibraryCurationClientProperties clientProperties, MultiValueMap<String, String> params, LibraryBookListOptions listOptions) {
+    public void applyPopularBookListOptions(MultiValueMap<String, String> params, LibraryBookListOptions listOptions) {
         params.add(API_KEY_LABEL, apiKey);
         params.add("format", "json");
         if (listOptions.getStartDt() != null) {

@@ -21,7 +21,7 @@ public class DomainServiceConfig {
     }
 
     @Bean
-    public WebClient curationContentClient(LibraryCurationClientProperties curationClientProperties) {
+    public WebClient bookCurationClient(LibraryCurationClientProperties curationClientProperties) {
         DefaultUriBuilderFactory factory = new DefaultUriBuilderFactory(curationClientProperties.baseUrl());
         factory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
         return WebClient.builder()
@@ -30,7 +30,7 @@ public class DomainServiceConfig {
     }
 
     @Bean
-    public LibraryBookListOptionsUtil naruListOptionsUtil(LibraryCurationClientProperties curationClientProperties) {
+    public LibraryBookListOptionsUtil libraryBookListOptionsUtil(LibraryCurationClientProperties curationClientProperties) {
         return new LibraryBookListOptionsUtil(curationClientProperties.apiKey());
     }
 

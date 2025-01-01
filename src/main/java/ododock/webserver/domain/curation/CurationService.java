@@ -6,7 +6,7 @@ import reactor.core.publisher.Flux;
 
 public interface CurationService {
 
-    Flux<LibraryBook> listPopularContents(LibraryBookListOptions listOptions);
+    Flux<LibraryBook> listPopularBook(LibraryBookListOptions listOptions);
 
     void listTrendingContents();
 

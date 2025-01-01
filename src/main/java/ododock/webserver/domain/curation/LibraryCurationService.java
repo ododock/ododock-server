@@ -26,16 +26,16 @@ public class LibraryCurationService implements CurationService {
     private final V1alpha1BookCurationConverter curationConverter;
 
     public LibraryCurationService(LibraryCurationClientProperties clientProperties, WebClient curationWebClient) {
-        this.listOptionsUtil = new LibraryBookListOptionsUtil(clientProperties.apiKey());
         this.clientProperties = clientProperties;
         this.curationWebClient = curationWebClient;
+        this.listOptionsUtil = new LibraryBookListOptionsUtil(clientProperties.apiKey());
         this.curationConverter = new V1alpha1BookCurationConverter();
     }
 
     @Override
-    public Flux<LibraryBook> listPopularContents(LibraryBookListOptions listOptions) {
+    public Flux<LibraryBook> listPopularBook(LibraryBookListOptions listOptions) {
         LinkedMultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-        this.listOptionsUtil.applyPopularBookListOptions(this.clientProperties, queryParams, listOptions);
+        this.listOptionsUtil.applyPopularBookListOptions(queryParams, listOptions);
 
         return this.curationWebClient.get()
                 .uri(uriBuilder -> {

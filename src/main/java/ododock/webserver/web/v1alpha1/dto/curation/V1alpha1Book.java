@@ -1,7 +1,9 @@
 package ododock.webserver.web.v1alpha1.dto.curation;
 
 import lombok.Data;
+import lombok.ToString;
 
+@ToString
 @Data
 public class V1alpha1Book {
 
