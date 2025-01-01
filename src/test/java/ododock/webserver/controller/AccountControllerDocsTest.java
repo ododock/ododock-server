@@ -2,7 +2,7 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
-import ododock.webserver.common.TestSecurityConfig;
+import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.domain.account.AccountManageService;
 import ododock.webserver.domain.account.AccountService;
 import ododock.webserver.domain.account.Role;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AccountController.class)
-@Import({RestDocsConfig.class, TestSecurityConfig.class})
+@Import({RestDocsConfig.class, TestMvcSecurityConfig.class})
 @AutoConfigureRestDocs
 public class AccountControllerDocsTest {
 

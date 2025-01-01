@@ -2,7 +2,7 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
-import ododock.webserver.common.TestSecurityConfig;
+import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.domain.account.ProfileImage;
 import ododock.webserver.domain.account.ProfileService;
 import ododock.webserver.web.ResourcePath;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = ProfileController.class)
-@Import({RestDocsConfig.class, TestSecurityConfig.class})
+@Import({RestDocsConfig.class, TestMvcSecurityConfig.class})
 @AutoConfigureRestDocs()
 public class ProfileControllerDocsTest {
 

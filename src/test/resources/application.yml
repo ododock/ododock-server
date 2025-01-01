@@ -76,6 +76,8 @@ logging:
     p6spy: debug
     org.apache.coyote: debug
     org.springframework.security: debug
+    org.springframework.web.reactive: debug
+    reactor.netty.http.client: debug
 
 # app config
 app:
@@ -86,3 +88,11 @@ app:
     issuer: "http://dev.oddk.xyz"
     access-token-expiry: 60
     refresh-token-expiry: 1440
+
+  clients:
+    curation:
+      base-url: "http://library.mock.oddk.xyz"
+      api-key: "mock-api-key"
+    content:
+      base-url: "http://content.mock.oddk.xyz"
+      api-key: "mock-api-key"

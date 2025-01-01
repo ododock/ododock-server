@@ -1,4 +1,4 @@
-package ododock.webserver.web.v1.dto.response;
+package ododock.webserver.web.v1alpha1.dto.response;
 
 import org.springframework.lang.Nullable;
 

@@ -29,6 +29,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
@@ -45,6 +46,9 @@ dependencies {
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+    // dns resolver
+    runtimeOnly 'io.netty:netty-resolver-dns-native-macos:4.1.104.Final:osx-aarch_64' // MacOS Silicon 라이브러리 누락 문제
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -60,9 +64,12 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // Docs
+    testImplementation 'io.projectreactor:reactor-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-webtestclient'
     testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
     testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+    testImplementation 'com.epages:restdocs-api-spec-webtestclient:0.18.2'
     testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 
 }
