@@ -88,3 +88,11 @@ app:
     issuer: "http://dev.oddk.xyz"
     access-token-expiry: 60
     refresh-token-expiry: 1440
+
+  clients:
+    curation:
+      base-url: "http://library.mock.oddk.xyz"
+      api-key: "mock-api-key"
+    content:
+      base-url: "http://content.mock.oddk.xyz"
+      api-key: "mock-api-key"
