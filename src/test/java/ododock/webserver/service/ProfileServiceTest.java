@@ -4,7 +4,7 @@ import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.*;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.web.v1.dto.response.ProfileDetailsResponse;
+import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

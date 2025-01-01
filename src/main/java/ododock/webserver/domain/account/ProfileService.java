@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import ododock.webserver.web.exception.ResourceAlreadyExistsException;
 import ododock.webserver.web.exception.ResourceNotFoundException;
 import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.web.v1.dto.ProfileUpdate;
-import ododock.webserver.web.v1.dto.response.ProfileDetailsResponse;
+import ododock.webserver.web.v1alpha1.dto.request.ProfileUpdate;
+import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

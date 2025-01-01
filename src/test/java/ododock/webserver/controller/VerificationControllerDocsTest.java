@@ -6,7 +6,7 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestSecurityConfig;
 import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1.VerificationController;
+import ododock.webserver.web.v1alpha1.VerificationController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;

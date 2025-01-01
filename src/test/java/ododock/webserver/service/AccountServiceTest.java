@@ -5,14 +5,14 @@ import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountManageService;
 import ododock.webserver.domain.account.AccountService;
 import ododock.webserver.domain.account.Role;
-import ododock.webserver.domain.notification.GMailService;
+import ododock.webserver.domain.notification.GoogleMailService;
 import ododock.webserver.domain.verification.VerificationInfo;
 import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.VerificationInfoRepository;
-import ododock.webserver.web.v1.dto.account.AccountCreate;
-import ododock.webserver.web.v1.dto.account.AccountPasswordReset;
-import ododock.webserver.web.v1.dto.account.AccountPasswordUpdate;
+import ododock.webserver.web.v1alpha1.dto.account.AccountCreate;
+import ododock.webserver.web.v1alpha1.dto.account.AccountPasswordReset;
+import ododock.webserver.web.v1alpha1.dto.account.AccountPasswordUpdate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,7 +50,7 @@ public class AccountServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @MockBean
-    private GMailService mailService;
+    private GoogleMailService mailService;
 
     @Autowired
     private AccountManageService accountManageService;

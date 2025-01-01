@@ -6,9 +6,9 @@ import ododock.webserver.web.exception.ResourceNotFoundException;
 import ododock.webserver.repository.AccountRepository;
 import ododock.webserver.repository.ArticleRepository;
 import ododock.webserver.repository.CategoryRepository;
-import ododock.webserver.web.v1.dto.ArticleCreate;
-import ododock.webserver.web.v1.dto.ArticleUpdate;
-import ododock.webserver.web.v1.dto.response.ArticleDetailsResponse;
+import ododock.webserver.web.v1alpha1.dto.request.ArticleCreate;
+import ododock.webserver.web.v1alpha1.dto.request.ArticleUpdate;
+import ododock.webserver.web.v1alpha1.dto.response.ArticleDetailsResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

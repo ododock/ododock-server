@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.common.BaseEntity;
+import ododock.webserver.domain.BaseEntity;
 
 import java.util.Set;
 import java.util.stream.Collectors;

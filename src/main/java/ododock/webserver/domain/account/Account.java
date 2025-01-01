@@ -10,7 +10,7 @@ import ododock.webserver.domain.AttributesMapConverter;
 import ododock.webserver.domain.article.Article;
 import ododock.webserver.domain.article.Category;
 import ododock.webserver.domain.article.Template;
-import ododock.webserver.domain.common.BaseEntity;
+import ododock.webserver.domain.BaseEntity;
 import ododock.webserver.web.exception.ResourceNotFoundException;
 import org.springframework.lang.Nullable;
 

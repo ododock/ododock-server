@@ -11,7 +11,7 @@ import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1.dto.account.AccountCreate;
+import ododock.webserver.web.v1alpha1.dto.account.AccountCreate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
