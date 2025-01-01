@@ -11,7 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class MvcGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(AbstractDomainException.class)
     private ResponseEntity<Object> handleDomainException(final AbstractDomainException ex, final WebRequest request) {
@@ -26,6 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleRootException(final Exception ex, final WebRequest request) {
+        log.info(ex.toString());
         final HttpHeaders headers = new HttpHeaders();
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         final ProblemDetail body = createProblemDetail(

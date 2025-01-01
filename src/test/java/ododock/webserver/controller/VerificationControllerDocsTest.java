@@ -3,7 +3,7 @@ package ododock.webserver.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import ododock.webserver.common.RestDocsConfig;
-import ododock.webserver.common.TestSecurityConfig;
+import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.VerificationController;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = VerificationController.class)
-@Import({RestDocsConfig.class, TestSecurityConfig.class})
+@Import({RestDocsConfig.class, TestMvcSecurityConfig.class})
 @AutoConfigureRestDocs
 public class VerificationControllerDocsTest {
 

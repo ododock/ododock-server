@@ -2,7 +2,7 @@ package ododock.webserver.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
-import ododock.webserver.common.TestSecurityConfig;
+import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.domain.article.Category;
 import ododock.webserver.domain.article.CategoryService;
 import ododock.webserver.web.ResourcePath;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = CategoryController.class)
-@Import({RestDocsConfig.class, TestSecurityConfig.class})
+@Import({RestDocsConfig.class, TestMvcSecurityConfig.class})
 @AutoConfigureRestDocs()
 public class CategoryControllerDocsTest {
 
