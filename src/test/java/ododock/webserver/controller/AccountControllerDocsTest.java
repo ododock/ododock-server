@@ -80,9 +80,10 @@ public class AccountControllerDocsTest {
                 .andDo(
                         document("account/validate-email",
                                 resourceDetails()
-                                        .tag("Account").description("email 중복여부 검증 엔드포인트"),
+                                        .tag("Account").description("email 중복여부 검증 엔드포인트")
+                                        .summary("닉네임 또는 이메일 중복여부는 각각 호출해야하며, 한번의 API호출로 모두 검증할 수 없음"),
                                 queryParameters(
-                                        parameterWithName("email").description("중복여부 검증할 email")
+                                        parameterWithName("email").description("중복여부 검증할 email").optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("availability").description("주어진 email 사용가능 여부")
@@ -109,9 +110,10 @@ public class AccountControllerDocsTest {
                 .andDo(
                         document("account/validate-nickname",
                                 resourceDetails()
-                                        .tag("Account").description("계정 nickname 중복여부 검증 엔드포인트"),
+                                        .tag("Account").description("계정 nickname 중복여부 검증 엔드포인트")
+                                        .summary("닉네임 또는 이메일 중복여부는 각각 호출해야하며, 한번의 API호출로 모두 검증할 수 없음"),
                                 queryParameters(
-                                        parameterWithName("nickname").description("검증할 닉네임")
+                                        parameterWithName("nickname").description("검증할 닉네임").optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("availability").description("닉네임 존재여부")
