@@ -19,10 +19,14 @@ spring:
       enabled: true
       path: /h2-console
 
+# Logging
 logging:
   level:
     p6spy: debug
+    org.apache.coyote: debug
     org.springframework.security: debug
+    org.springframework.web.reactive: debug
+    reactor.netty.http.client: debug
 
 app:
   security:

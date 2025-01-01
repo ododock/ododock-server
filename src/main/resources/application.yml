@@ -68,6 +68,13 @@ spring:
             user-name-attribute: response
 
 # Logging
+logging:
+  level:
+    p6spy: debug
+    org.apache.coyote: debug
+    org.springframework.security: debug
+    org.springframework.web.reactive: debug
+    reactor.netty.http.client: debug
 
 springdoc:
   api-docs:
@@ -80,27 +87,10 @@ app:
   jwt:
     access-token-expiry: 60
     refresh-token-expiry: 1440
-  client:
+  clients:
     curation:
-      base-uri: ${CURATION_BASE_URI}
-      key: ${CURATION_KEY}
-      key-label: ${CURATION_KEY_LABEL}
-      origin: ${CURATION_ORIGIN}
-
-
-    type:
-      book-info:
-        base-uri: ${BOOK_INFO_BASE_URI}
-        key: ${BOOK_INFO_KEY}
-        key-label: ${BOOK_KEY_LABEL}
-        origin: ${BOOK_KEY_ORIGIN}
-      book-trend:
-        base-uri: ${BOOK_TREND_BASE_URI}
-        key: ${BOOK_TREND_KEY}
-        key-label: ${BOOK_TREND_KEY_LABEL}
-        origin: ${BOOK_TREND_ORIGIN}
-      movie-info:
-        base-uri: ${MOVIE_INFO_BASE_URI}
-        key: ${MOVIE_INFO_KEY}
-        key-label: ${MOVIE_INFO_KEY_LABEL}
-        origin: ${MOVIE_INFO_ORIGIN}
+      base-url: ${CURATION_BASE_URI}
+      api-key: ${CURATION_API_KEY}
+    content:
+      base-url: ${CONTENT_BASE_URI}
+      api-key: ${CONTENT_API_KEY}

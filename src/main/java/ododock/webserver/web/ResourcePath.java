@@ -26,6 +26,8 @@ public final class ResourcePath {
     public static final String ARTICLES = "/articles";
     public static final String ARTICLE_SUBRESOURCE_TAGS = "/tags";
     public static final String CONTENTS = "/contents";
+    public static final String CURATIONS = "/curations";
+    public static final String CURATIONS_SUBRESOURCE_POPULAR_BOOKS = "/popular-books";
 
     // static
     public static final String DOCS = "/static/docs";

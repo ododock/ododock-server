@@ -14,11 +14,15 @@ spring:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.MySQLDialect
 
+# Logging
 logging:
   level:
     p6spy: debug
     org.apache.coyote: debug
     org.springframework.security: debug
+    org.springframework.web.reactive: debug
+    reactor.netty.http.client: debug
+
 
 app:
   security:
