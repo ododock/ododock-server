@@ -29,7 +29,7 @@ public class ProfileService {
 
     @Transactional
     public void updateProfile(final Long accountId, final ProfileUpdate request) {
-        if (isAvailableNickname(request.nickname())) {
+        if (!isAvailableNickname(request.nickname())) {
             throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
         }
         Account ownerAccount = accountRepository.findById(accountId)
