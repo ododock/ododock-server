@@ -76,11 +76,11 @@ public class CategoryControllerDocsTest {
                                 responseFields(
                                         fieldWithPath("ownerId").description("카테고리 소유자 Account ID").optional(),
                                         fieldWithPath("totalSize").description("등록된 카테고리 갯수").optional(),
-                                        subsectionWithPath("content").description("카테고리 목록"),
-                                        fieldWithPath("content[].categoryId").description("조회된 카테고리 ID"),
-                                        fieldWithPath("content[].name").description("조회된 카테고리 이름"),
-                                        fieldWithPath("content[].position").description("조회된 카테고리 순서 index"),
-                                        fieldWithPath("content[].visibility").description("카테고리 공개설정")
+                                        subsectionWithPath("body").description("카테고리 목록"),
+                                        fieldWithPath("body[].categoryId").description("조회된 카테고리 ID"),
+                                        fieldWithPath("body[].name").description("조회된 카테고리 이름"),
+                                        fieldWithPath("body[].position").description("조회된 카테고리 순서 index"),
+                                        fieldWithPath("body[].visibility").description("카테고리 공개설정")
                                 )
                         )
                 );
@@ -170,11 +170,11 @@ public class CategoryControllerDocsTest {
                                 responseFields(
                                         fieldWithPath("ownerId").description("수정한 카테고리의 소유자 프로필 ID"),
                                         fieldWithPath("totalSize").description("수정된 카테고리의 전체 사이즈"),
-                                        fieldWithPath("content").description("수정 이후 카테고리 목록"),
-                                        fieldWithPath("content[].categoryId").description("카테고리 ID"),
-                                        fieldWithPath("content[].name").description("카테고리 이름"),
-                                        fieldWithPath("content[].position").description("카테고리 순서 인덱스"),
-                                        fieldWithPath("content[].visibility").description("카테고리의 글에 대해 설정된 공개여부 기본 값")
+                                        fieldWithPath("body").description("수정 이후 카테고리 목록"),
+                                        fieldWithPath("body[].categoryId").description("카테고리 ID"),
+                                        fieldWithPath("body[].name").description("카테고리 이름"),
+                                        fieldWithPath("body[].position").description("카테고리 순서 인덱스"),
+                                        fieldWithPath("body[].visibility").description("카테고리의 글에 대해 설정된 공개여부 기본 값")
                                 )
                         )
                 );
@@ -230,10 +230,10 @@ public class CategoryControllerDocsTest {
                                 responseFields(
                                         fieldWithPath("ownerId").description("수정한 카테고리의 소유자 프로필 ID"),
                                         fieldWithPath("totalSize").description("수정된 카테고리의 전체 사이즈"),
-                                        fieldWithPath("content[].categoryId").description("카테고리 ID"),
-                                        fieldWithPath("content[].name").description("카테고리 이름"),
-                                        fieldWithPath("content[].position").description("카테고리 순서 인덱스"),
-                                        fieldWithPath("content[].visibility").description("카테고리의 글에 대해 설정된 공개여부 기본 값")
+                                        fieldWithPath("body[].categoryId").description("카테고리 ID"),
+                                        fieldWithPath("body[].name").description("카테고리 이름"),
+                                        fieldWithPath("body[].position").description("카테고리 순서 인덱스"),
+                                        fieldWithPath("body[].visibility").description("카테고리의 글에 대해 설정된 공개여부 기본 값")
                                 )
                         )
                 );

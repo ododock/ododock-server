@@ -3,7 +3,8 @@ package ododock.webserver.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestMvcSecurityConfig;
-import ododock.webserver.domain.article.ArticleService;
+import ododock.webserver.domain.article.Article;
+import ododock.webserver.domain.article.ImperativeArticleService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.ArticleController;
 import ododock.webserver.web.v1alpha1.dto.request.ArticleCreate;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -47,7 +49,7 @@ public class ArticleControllerDocsTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ArticleService articleService;
+    private ImperativeArticleService imperativeArticleService;
 
     @Test
     @WithMockUser
@@ -64,7 +66,9 @@ public class ArticleControllerDocsTest {
                 .categoryId(10L)
                 .visibility(true)
                 .build();
-        given(articleService.getArticle(1L)).willReturn(response);
+        Article article = Article.builder().build();
+        // todo need to fill out entity
+        given(imperativeArticleService.getArticle(1L)).willReturn(Mono.just(article));
 
         // expected
         mockMvc.perform(
@@ -107,7 +111,7 @@ public class ArticleControllerDocsTest {
                 .categoryId(1L)
                 .visibility(true)
                 .build();
-        given(articleService.createArticle(request)).willReturn(20L);
+        given(imperativeArticleService.createArticle(request)).willReturn(20L);
 
         // expected
         mockMvc.perform(

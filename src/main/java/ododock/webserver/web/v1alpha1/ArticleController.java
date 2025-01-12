@@ -4,12 +4,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.article.ArticleService;
 import ododock.webserver.web.ResourcePath;
+import ododock.webserver.web.v1alpha1.dto.V1alpha1Article;
 import ododock.webserver.web.v1alpha1.dto.request.ArticleCreate;
 import ododock.webserver.web.v1alpha1.dto.request.ArticleUpdate;
 import ododock.webserver.web.v1alpha1.dto.response.ApiResponse;
-import ododock.webserver.web.v1alpha1.dto.response.ArticleDetailsResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -24,17 +26,27 @@ public class ArticleController {
             value = "/{" + ResourcePath.PATH_VAR_ID + "}",
             produces = APPLICATION_JSON_VALUE
     )
-    public ArticleDetailsResponse getArticle(
+    public Mono<V1alpha1Article> getArticle(
             final @PathVariable Long id
     ) {
         return articleService.getArticle(id);
+    }
+
+    @GetMapping(
+            value = "/{" + ResourcePath.PATH_VAR_ID + "}",
+            produces = APPLICATION_JSON_VALUE
+    )
+    public Flux<V1alpha1Article> listArticles(
+            final @PathVariable Long id
+    ) {
+        return articleService.listArticles(id);
     }
 
     @PostMapping(
             value = "",
             produces = APPLICATION_JSON_VALUE
     )
-    public ApiResponse createArticle(
+    public Mono<V1alpha1Article> createArticle(
             final @Valid @RequestBody ArticleCreate request
     ) {
         Long articleId = articleService.createArticle(request);
@@ -44,12 +56,11 @@ public class ArticleController {
     @PatchMapping(
             value = "/{" + ResourcePath.PATH_VAR_ID + "}"
     )
-    public ResponseEntity<Void> updateArticle(
+    public Mono<V1alpha1Article> updateArticle(
             final @PathVariable Long id,
             final @Valid @RequestBody ArticleUpdate request
     ) {
-        articleService.updateArticle(id, request);
-        return ResponseEntity.ok().build();
+        return articleService.updateArticle(id, request);
     }
 
     @DeleteMapping(

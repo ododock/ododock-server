@@ -3,7 +3,7 @@ package ododock.webserver.domain.curation.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import ododock.webserver.domain.dto.ListOptions;
+import ododock.webserver.domain.ListOptions;
 
 import java.time.LocalDate;
 import java.util.List;

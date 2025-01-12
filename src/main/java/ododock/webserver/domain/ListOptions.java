@@ -1,4 +1,4 @@
-package ododock.webserver.domain.dto;
+package ododock.webserver.domain;
 
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
