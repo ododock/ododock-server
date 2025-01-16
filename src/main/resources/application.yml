@@ -16,7 +16,6 @@ spring:
           auth: true
           starttls:
             enable: true
-
   jpa:
     properties:
       hibernate:
