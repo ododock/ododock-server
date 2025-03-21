@@ -5,13 +5,13 @@ import jakarta.servlet.http.Cookie;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountService;
+import ododock.webserver.domain.account.ProfileImage;
 import ododock.webserver.domain.notification.MailService;
-import ododock.webserver.repository.AccountRepository;
+import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.response.DaoUserDetails;
 import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1alpha1.dto.account.AccountCreate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -89,13 +89,17 @@ public class TokenRefreshEndpointDocsTest {
     @Test
     @Transactional
     public void testRefreshTokenAuthentication() throws Exception {
-        AccountCreate request = AccountCreate.builder()
+        Account request = Account.builder()
                 .fullname("John Doe")
                 .nickname("testuser")
                 .password("password")
                 .email("test-user@oddk.xyz")
                 .birthDate(LocalDate.of(1993, 10, 23))
                 .attributes(Map.of())
+                .profileImage(ProfileImage.builder()
+                        .imageSource("image1")
+                        .fileType("png")
+                        .build())
                 .build();
         accountService.createDaoAccount(request);
 

@@ -6,12 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import ododock.webserver.web.exception.InvalidVerificationCodeException;
-import ododock.webserver.web.exception.VerificationCodeExpiredException;
+import lombok.*;
+import ododock.webserver.web.VerificationCodeException;
 import ododock.webserver.util.CodeGenerator;
 
 import java.time.LocalDateTime;
@@ -20,6 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class VerificationInfo {
 
     private final int CODE_LENGTH = 4;
@@ -42,16 +39,16 @@ public class VerificationInfo {
     @Column(name = "code_expiry_timestamp")
     private LocalDateTime expiryTimestamp;
 
-    private boolean isExpired() throws VerificationCodeExpiredException {
+    private boolean isExpired() throws VerificationCodeException {
         if (!LocalDateTime.now().isBefore(expiryTimestamp)) {
-            throw new VerificationCodeExpiredException("verification verificationCode is expired");
+            throw new VerificationCodeException("Verification code expired");
         }
         return false;
     }
 
-    private boolean isValidCode(final String code) throws InvalidVerificationCodeException {
+    private boolean isValidCode(final String code) throws VerificationCodeException {
         if (!this.code.equals(code)) {
-            throw new InvalidVerificationCodeException("verification verificationCode is invalid");
+            throw new VerificationCodeException("Invalid verification code");
         }
         return this.code.equals(code);
     }
@@ -61,15 +58,14 @@ public class VerificationInfo {
         generateVerificationCode();
     }
 
-    public boolean validate(final String code) throws VerificationCodeExpiredException, InvalidVerificationCodeException {
+    public boolean validate(final String code) throws VerificationCodeException {
         return !isExpired() && isValidCode(code);
     }
 
-    public VerificationInfo generateVerificationCode() {
+    private void generateVerificationCode() {
         this.code = CodeGenerator.generateCode(CODE_LENGTH);
         this.creationTimestamp = LocalDateTime.now();
         this.expiryTimestamp = LocalDateTime.now().plusMinutes(30);
-        return this;
     }
 
 }

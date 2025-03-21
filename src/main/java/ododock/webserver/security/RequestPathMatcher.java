@@ -39,7 +39,10 @@ public final class RequestPathMatcher {
                 new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_ID + "}", GET),
                 new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_NAME + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PASSWORD, PUT),
 
-                new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.CURATIONS + "/**", GET)
+                new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.CURATIONS + "/**", GET),
+
+                // test
+                new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ARTICLES + "/**")
         );
         AUTHENTICATED_MATCHER = new OrRequestMatcher(
                 new AntPathRequestMatcher(ResourcePath.API + "/**")

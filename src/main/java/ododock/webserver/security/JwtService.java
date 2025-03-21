@@ -1,7 +1,7 @@
 package ododock.webserver.security;
 
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.repository.TokenRecordRepository;
+import ododock.webserver.repository.jpa.TokenRecordRepository;
 import ododock.webserver.security.config.JwtProperties;
 import ododock.webserver.security.response.UserPrincipal;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

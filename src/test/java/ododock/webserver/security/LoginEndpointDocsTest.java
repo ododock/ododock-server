@@ -10,15 +10,15 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountManageService;
 import ododock.webserver.domain.account.AccountService;
+import ododock.webserver.domain.account.ProfileImage;
 import ododock.webserver.domain.notification.MailService;
 import ododock.webserver.domain.verification.VerificationInfo;
 import ododock.webserver.domain.verification.VerificationService;
-import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.repository.VerificationInfoRepository;
+import ododock.webserver.repository.jpa.AccountRepository;
+import ododock.webserver.repository.jpa.VerificationInfoRepository;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.response.Token;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1alpha1.dto.account.AccountCreate;
 import ododock.webserver.web.v1alpha1.dto.account.CompleteDaoAccountVerification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -91,19 +91,23 @@ public class LoginEndpointDocsTest {
                         .withResponseDefaults(prettyPrint()))
                 .build();
 
-        AccountCreate request = AccountCreate.builder()
+        Account request = Account.builder()
                 .email("john.doe@oddk.xyz")
                 .password("password")
                 .fullname("John Doe")
                 .birthDate(LocalDate.of(1997, 1, 23))
                 .nickname(("johnDoe123"))
+                .profileImage(ProfileImage.builder()
+                        .imageSource("image1")
+                        .fileType(".png")
+                        .build())
                 .build();
 
         accountService.createDaoAccount(request);
 
-        Account createdAccount = accountRepository.findByEmail(request.email())
+        Account createdAccount = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(IllegalStateException::new);
-        verificationService.issueVerificationCode(request.email());
+        verificationService.issueVerificationCode(request.getEmail());
 
         VerificationInfo verificationInfo = verificationInfoRepository.findByTargetEmail(createdAccount.getEmail())
                 .orElseThrow(IllegalStateException::new);
@@ -111,7 +115,7 @@ public class LoginEndpointDocsTest {
         accountManageService.verifyDaoAccountEmail(
                 CompleteDaoAccountVerification.builder()
                         .verificationCode(verificationInfo.getCode())
-                        .email(request.email())
+                        .email(request.getEmail())
                         .build());
     }
 

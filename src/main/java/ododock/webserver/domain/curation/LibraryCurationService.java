@@ -67,12 +67,12 @@ public class LibraryCurationService implements CurationService {
 
     @Override
     public void listTrendingContents() {
-
+        // todo fillout
     }
 
     @Override
     public void listContentsKeywordsOfMonth() {
-
+        // todo fillout
     }
 
 }

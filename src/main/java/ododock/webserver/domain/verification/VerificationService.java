@@ -2,10 +2,8 @@ package ododock.webserver.domain.verification;
 
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.notification.MailService;
-import ododock.webserver.web.exception.InvalidVerificationCodeException;
-import ododock.webserver.web.exception.ResourceNotFoundException;
-import ododock.webserver.web.exception.VerificationCodeExpiredException;
-import ododock.webserver.repository.VerificationInfoRepository;
+import ododock.webserver.repository.jpa.VerificationInfoRepository;
+import ododock.webserver.web.VerificationCodeException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +22,9 @@ public class VerificationService {
     }
 
     @Transactional(readOnly = true)
-    public boolean verifyCode(final String email, final String code) throws InvalidVerificationCodeException, VerificationCodeExpiredException {
+    public boolean verifyCode(final String email, final String code) throws VerificationCodeException {
         final VerificationInfo verificationInfo = verificationInfoRepository.findByTargetEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException(VerificationInfo.class, email));
+                .orElseThrow(() -> new VerificationCodeException("Invalid verification code"));
         return verificationInfo.validate(code);
     }
 

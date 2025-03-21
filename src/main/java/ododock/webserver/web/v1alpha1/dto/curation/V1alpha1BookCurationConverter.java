@@ -9,7 +9,7 @@ public class V1alpha1BookCurationConverter {
 
     public LibraryBookListOptions toDomainDto(V1alpha1BookListOptions controllerDto) {
         LibraryBookListOptions domainDto = new LibraryBookListOptions();
-        domainDto.setPageOffset(controllerDto.getPageNo());
+        domainDto.setPageOffset(controllerDto.getPageOffset());
         domainDto.setPageSize(controllerDto.getPageSize());
         domainDto.setStartDt(controllerDto.getStartDate());
         domainDto.setEndDt(controllerDto.getEndDate());

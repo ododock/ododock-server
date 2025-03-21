@@ -1,77 +1,75 @@
 package ododock.webserver.domain.article;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.BaseEntity;
+import ododock.webserver.domain.article.dto.V1alpha1BaseBlock;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Entity
 @Getter
-@Table(name = "article",
-        indexes = {
-                @Index(name = "idx_article__profile_id_last_modified_at", columnList = "profile_id, last_modified_at desc")
-        }
-)
+@Document(collection = "article")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "article_id")
-    private Long id;
+    @MongoId
+    private String id;
 
     @Version
-    @Column(name = "version", nullable = false)
+    @Field(name = "version")
     private Long version;
 
-    @Column(name = "title", nullable = false)
+    @Field(name = "title")
     private String title;
 
-    @Column(name = "body", nullable = false)
-    private String body;
+    @Field(name = "body")
+    @Nullable
+    private List<V1alpha1BaseBlock> body = new ArrayList<>();
 
-    @Column(name = "visibility", nullable = false)
+    @Field(name = "visibility")
     private boolean visibility;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "account_id",
-            nullable = false, updatable = false, insertable = false,
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Account ownerAccount;
+    @Field(name = "ownerAccountId")
+    private Long ownerAccountId;
 
     @Nullable
-    @ManyToOne(fetch = FetchType.EAGER, optional = true)
-    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Category category;
+    @DBRef
+    @Field(name = "categoryId")
+    private String categoryId;
 
-    @ElementCollection
-    @CollectionTable(name = "article_tags",
-            joinColumns = @JoinColumn(name = "article_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    )
-    private Set<Tag> tags;
+    @Field(name = "tags")
+    private Set<Tag> tags = new HashSet<>();
 
     @Builder
     public Article(final String title,
-                   final String body,
+                   final List<V1alpha1BaseBlock> body,
                    final Set<String> tags,
-                   @Nullable final Category category,
+                   final Long ownerAccountId,
+                   @Nullable final String categoryId,
                    final boolean visibility) {
         this.title = title;
         this.body = body;
-        this.tags = tags.stream()
+        this.tags = tags == null ? new HashSet<>() : tags.stream()
                 .filter(tag -> !tag.isBlank())
                 .map(Tag::new).collect(Collectors.toSet());
-        if (category != null) {
-            category.getArticles().add(this);
-            this.updateCategory(category);
-        }
+        this.ownerAccountId = ownerAccountId;
+        this.categoryId = categoryId;
         this.visibility = visibility;
     }
 
@@ -79,18 +77,12 @@ public class Article extends BaseEntity {
         this.title = title;
     }
 
-    public void updateBody(final String body) {
+    public void updateBody(final List<V1alpha1BaseBlock> body) {
         this.body = body;
     }
 
-    public void updateCategory(@Nullable final Category category) {
-        if (category == null) {
-            this.category = null;
-            return;
-        }
-        category.getArticles().add(this);
-        this.category = category;
-
+    public void updateCategory(@Nullable final String categoryId) {
+        this.categoryId = categoryId;
     }
 
     public void updateTags(final Set<String> tags) {

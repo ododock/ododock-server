@@ -11,6 +11,12 @@ spring:
           auth: true
           starttls:
             enable: true
+  data:
+    mongodb:
+      repositories:
+        type: reactive
+      ssl:
+        enabled: false
   # Spring data source
   datasource:
     driver-class-name: org.h2.Driver
@@ -88,11 +94,18 @@ app:
     issuer: "http://dev.oddk.xyz"
     access-token-expiry: 60
     refresh-token-expiry: 1440
-
   clients:
-    curation:
+    library-curation:
       base-url: "http://library.mock.oddk.xyz"
       api-key: "mock-api-key"
-    content:
-      base-url: "http://content.mock.oddk.xyz"
+    book-content:
+      base-url: "http://book-info.mock.oddk.xyz"
       api-key: "mock-api-key"
+
+# Embedded mongodb
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+        database-dir: "oddk"

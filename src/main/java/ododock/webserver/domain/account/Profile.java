@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class Profile {
 
     @Column(name = "nickname", nullable = false)
@@ -27,6 +26,10 @@ public class Profile {
     @Nullable
     @Embedded
     private ProfileImage profileImage;
+
+    public Profile() {
+        this.profileImage = ProfileImage.builder().build();
+    }
 
     public void updateNickname(final String nickname) {
         this.nickname = nickname;

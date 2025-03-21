@@ -4,8 +4,9 @@ import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountQueryService;
 import ododock.webserver.domain.account.Role;
-import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.web.v1alpha1.dto.response.account.AccountDetailsResponse;
+import ododock.webserver.repository.jpa.AccountRepository;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
+import ododock.webserver.web.v1alpha1.dto.response.AccountDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -48,13 +49,13 @@ public class AccountQueryServiceTest {
         Long id = accountRepository.save(account).getId();
 
         // when
-        AccountDetailsResponse result = accountQueryService.getAccountDetails(id);
+        Account result = accountQueryService.getAccountDetails(id);
 
         // then
-        assertThat(result.accountId()).isEqualTo(id);
-        assertThat(result.email()).isEqualTo("test-user@oddk.xyz");
-        assertThat(result.fullname()).isEqualTo("John Doe");
-        assertThat(result.birthDate()).isEqualTo("1991-05-22");
+        assertThat(result.getId()).isEqualTo(id);
+        assertThat(result.getEmail()).isEqualTo("test-user@oddk.xyz");
+        assertThat(result.getOwnProfile().getFullname()).isEqualTo("John Doe");
+        assertThat(result.getOwnProfile().getBirthDate()).isEqualTo("1991-05-22");
     }
 
 }
