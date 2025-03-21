@@ -2,6 +2,7 @@ package ododock.webserver.web.v1alpha1.dto.curation;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import ododock.webserver.web.v1alpha1.dto.V1alpha1ListOptions;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;

@@ -12,7 +12,6 @@ public record CategoryDetailsResponse(
 ) {
     public static CategoryDetailsResponse of(Category category) {
         return CategoryDetailsResponse.builder()
-                .categoryId(category.getId())
                 .name(category.getName())
                 .position(category.getPosition())
                 .visibility(category.isVisibility())

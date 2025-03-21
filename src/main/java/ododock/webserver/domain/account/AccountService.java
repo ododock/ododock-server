@@ -2,10 +2,9 @@ package ododock.webserver.domain.account;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ododock.webserver.web.exception.ResourceAlreadyExistsException;
-import ododock.webserver.web.exception.ResourceNotFoundException;
-import ododock.webserver.repository.AccountRepository;
-import ododock.webserver.web.v1alpha1.dto.account.AccountCreate;
+import ododock.webserver.repository.jpa.AccountRepository;
+import ododock.webserver.web.ResourceConflictException;
+import ododock.webserver.web.ResourceNotFoundException;
 import ododock.webserver.web.v1alpha1.dto.account.AccountPasswordUpdate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,25 +31,28 @@ public class AccountService {
     }
 
     @Transactional
-    public void createDaoAccount(final AccountCreate request) throws Exception {
-        if (!isAvailableEmail(request.email())) {
-            throw new ResourceAlreadyExistsException(Account.class, request.email());
+    public void createDaoAccount(final Account account) throws Exception {
+        if (!isAvailableEmail(account.getEmail())) {
+            throw new ResourceConflictException(Account.class, account.getEmail());
         }
-        if (accountRepository.existsByOwnProfile_Nickname(request.nickname())) {
-            throw new ResourceAlreadyExistsException(Account.class, request.nickname());
+        if (accountRepository.existsByOwnProfile_Nickname(account.getOwnProfile().getNickname())) {
+            throw new ResourceConflictException(Account.class, account.getOwnProfile().getNickname());
         }
         final Account newAccount = Account.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .nickname(request.nickname())
-                .birthDate(request.birthDate())
-                .fullname(request.fullname())
+                .email(account.getEmail())
+                .password(passwordEncoder.encode(account.getPassword()))
+                .nickname(account.getOwnProfile().getNickname())
+                .birthDate(account.getOwnProfile().getBirthDate())
+                .fullname(account.getOwnProfile().getFullname())
                 .roles(Set.of(Role.USER))
-                .attributes(request.attributes())
-                .profileImage(ProfileImage.builder()
-                        .imageSource(request.profileImageSource())
-                        .fileType(request.profileImageFileType())
-                        .build())
+                .attributes(account.getAttributes())
+                .profileImage(account.getOwnProfile() == null
+                        ? ProfileImage.builder().build()
+                        : ProfileImage.builder()
+                        .imageSource(account.getOwnProfile().getProfileImage().getImageSource())
+                        .fileType(account.getOwnProfile().getProfileImage().getFileType())
+                        .build()
+                )
                 .build();
         accountRepository.save(newAccount);
     }

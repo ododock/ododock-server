@@ -1,9 +1,9 @@
 package ododock.webserver.domain.account;
 
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.web.exception.ResourceAlreadyExistsException;
-import ododock.webserver.web.exception.ResourceNotFoundException;
-import ododock.webserver.repository.AccountRepository;
+import ododock.webserver.web.ResourceConflictException;
+import ododock.webserver.web.ResourceNotFoundException;
+import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.web.v1alpha1.dto.request.ProfileUpdate;
 import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class ProfileService {
     @Transactional
     public void updateProfile(final Long accountId, final ProfileUpdate request) {
         if (!isAvailableNickname(request.nickname())) {
-            throw new ResourceAlreadyExistsException(Profile.class, request.nickname());
+            throw new ResourceConflictException(Profile.class, request.nickname());
         }
         Account ownerAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));

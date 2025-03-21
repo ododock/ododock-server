@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.print.attribute.standard.Media;
 import java.time.LocalDate;
 
 @Entity
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Table(name = "book")
 @DiscriminatorValue("book")
 @NoArgsConstructor
-public class Book extends Content {
+public class Book extends MediaContent {
 
     @Column(name = "isbn", updatable = false)
     private Long isbn;

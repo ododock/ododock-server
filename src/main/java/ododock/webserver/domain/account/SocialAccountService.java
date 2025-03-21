@@ -1,8 +1,8 @@
 package ododock.webserver.domain.account;
 
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.web.exception.ResourceNotFoundException;
-import ododock.webserver.repository.AccountRepository;
+import ododock.webserver.web.ResourceNotFoundException;
+import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.security.response.OAuth2UserInfo;
 import ododock.webserver.web.v1alpha1.dto.account.CompleteSocialAccountRegister;
 import ododock.webserver.web.v1alpha1.dto.account.OAuthAccountMerge;
@@ -49,7 +49,7 @@ public class SocialAccountService {
     @Transactional
     public Account mergeSocialAccount(final Long accountId, final OAuthAccountMerge request) {
         final Account originAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("DB Account with id not found", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         final String targetProvider = request.oauthProvider();
         originAccount.getSocialAccounts().stream()
                 .filter(a -> a.getProvider().equals(targetProvider))

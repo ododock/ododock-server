@@ -10,56 +10,47 @@ import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.BaseEntity;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Getter
-@Entity
-@Table(name = "category",
-        indexes = {
-            @Index(name = "idx_category__account_id_last_modified_at", columnList = "account_id, last_modified_at desc"),
-            @Index(name = "idx_category__category_id_position", columnList = "account_id, position desc")
-        }
-)
+@Document(collection = "category")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
-    private Long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private Account ownerAccount;
+    @Version
+    @Field(name = "version")
+    private Long version;
 
-    @OneToMany(
-            mappedBy = "category",
-            fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH} // TODO 캐스케이딩 타입 확인
-    )
-    @OnDelete(action = OnDeleteAction.SET_NULL)
-    private List<Article> articles;
+    @Field(name = "owner_account_id")
+    private Long ownerAccountId;
 
-    @Column(name = "name", nullable = false)
+    @Field(name = "name")
     private String name;
 
     @PositiveOrZero
-    @Column(name = "position", nullable = false)
+    @Field(name = "position")
     private Integer position;
 
-    @Column(name = "visibility", nullable = false)
+    @Field(name = "visibility")
     private boolean visibility;
 
     @Builder
-    public Category(final Account ownerAccount, final String name, final Boolean visibility) {
-        ownerAccount.getCategories().add(this);
+    public Category(final Long ownerAccountId, final String name, final Boolean visibility, final Integer position) {
+        this.ownerAccountId = ownerAccountId;
         this.name = name;
-        this.position = ownerAccount.getCategories().size();
         this.visibility = visibility == null || visibility;
-        this.articles = new ArrayList<>();
+        this.position = position;
+//        this.articles = new ArrayList<>();
     }
 
     @Override

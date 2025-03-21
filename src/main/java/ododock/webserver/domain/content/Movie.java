@@ -8,12 +8,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.print.attribute.standard.Media;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "movie")
 @DiscriminatorValue("movie")
-public class Movie extends Content {
+public class Movie extends MediaContent {
 
     @Column(name = "director", updatable = false)
     private String director;

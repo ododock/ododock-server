@@ -7,11 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ododock.webserver.domain.AttributesMapConverter;
-import ododock.webserver.domain.article.Article;
-import ododock.webserver.domain.article.Category;
-import ododock.webserver.domain.article.Template;
 import ododock.webserver.domain.BaseEntity;
-import ododock.webserver.web.exception.ResourceNotFoundException;
+import ododock.webserver.domain.article.Template;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
@@ -50,7 +47,7 @@ public class Account extends BaseEntity {
             orphanRemoval = true,
             cascade = CascadeType.ALL
     )
-    private List<SocialAccount> socialAccounts;
+    private List<SocialAccount> socialAccounts = new ArrayList<>();
 
     @Column(name = "email")
     private String email;
@@ -61,7 +58,7 @@ public class Account extends BaseEntity {
     @Nullable
     @Column(name = "attributes")
     @Convert(converter = AttributesMapConverter.class)
-    private Map<String, List<String>> attributes;
+    private Map<String, List<String>> attributes = new HashMap<>();
 
     @Column(name = "emailVerified", nullable = false)
     private Boolean emailVerified = false;
@@ -86,7 +83,7 @@ public class Account extends BaseEntity {
     )
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     @OneToMany(
             mappedBy = "ownerAccount",
@@ -94,28 +91,11 @@ public class Account extends BaseEntity {
             orphanRemoval = true,
             cascade = CascadeType.ALL
     )
-    @OrderBy("position asc")
-    private List<Category> categories;
-
-    @OneToMany(
-            mappedBy = "ownerAccount",
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            cascade = CascadeType.ALL
-    )
-    @OrderBy("createdDate desc")
-    private List<Article> articles;
-
-    @OneToMany(
-            mappedBy = "ownerAccount",
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            cascade = CascadeType.ALL
-    )
-    private List<Template> templates;
+    private List<Template> templates = new ArrayList<>();
 
     @Builder
     public Account(
+            final Long id,
             final String email,
             final String password,
             final String fullname,
@@ -125,6 +105,7 @@ public class Account extends BaseEntity {
             final Map<String, List<String>> attributes,
             final ProfileImage profileImage
     ) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.accountNonExpired = true;
@@ -132,7 +113,9 @@ public class Account extends BaseEntity {
         this.credentialNonExpired = true;
         this.enabled = true;
         this.emailVerified = false;
-        this.roles = new HashSet<>(roles);
+        if (roles != null && !roles.isEmpty()) {
+            this.roles = new HashSet<>(roles);
+        }
         this.attributes = new HashMap<>();
         this.ownProfile = Profile.builder()
                 .nickname(nickname)
@@ -141,8 +124,6 @@ public class Account extends BaseEntity {
                 .profileImage(profileImage)
                 .build();
         this.socialAccounts = new ArrayList<>();
-        this.categories = new ArrayList<>();
-        this.articles = new ArrayList<>();
         this.templates = new ArrayList<>();
     }
 
@@ -190,22 +171,6 @@ public class Account extends BaseEntity {
 
     public void removeSocialAccount(final SocialAccount socialAccount) {
         this.socialAccounts.remove(socialAccount);
-    }
-
-    public void deleteCategory(final Category category) {
-        if (this.categories.isEmpty()) {
-            throw new IllegalStateException("category is empty");
-        }
-        Category foundCategory = this.categories.stream()
-                .filter(c -> c.equals(category))
-                .findAny()
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(Category.class, category.getId())
-                );
-        if (!foundCategory.getArticles().isEmpty()) {
-            List<Article> articles = foundCategory.getArticles();
-            articles.forEach(article -> article.updateCategory(null));
-        }
     }
 
 }

@@ -7,7 +7,7 @@ import java.util.List;
 public record ListResponse<T>(
         @Nullable Long ownerId,
         @Nullable Integer totalSize,
-        List<T> content
+        List<T> contents
 ) {
 
     public static <T> ListResponse<T> of(@Nullable final Long ownerId, @Nullable final Integer totalSize, final List<T> content) {

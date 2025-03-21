@@ -2,9 +2,9 @@ package ododock.webserver.domain.account;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
-import ododock.webserver.web.exception.ResourceNotFoundException;
+import ododock.webserver.web.ResourceNotFoundException;
 import ododock.webserver.web.v1alpha1.dto.account.AccountSocialConnectDetails;
-import ododock.webserver.web.v1alpha1.dto.response.account.AccountDetailsResponse;
+import ododock.webserver.web.v1alpha1.dto.response.AccountDetailsResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,14 +23,14 @@ public class AccountQueryService {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    public AccountDetailsResponse getAccountDetails(final Long accountId) {
+    public Account getAccountDetails(final Long accountId) {
         Account foundAccount = Optional.ofNullable(queryFactory.selectFrom(account)
                         .leftJoin(socialAccount).on(socialAccount.daoAccount.eq(account))
                         .where(account.id.eq(accountId))
                         .fetchOne())
-                .orElseThrow(() -> new ResourceNotFoundException("resource not found: ", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
 
-        return AccountDetailsResponse.of(foundAccount);
+        return foundAccount;
     }
 
     public AccountSocialConnectDetails getAccountSocialConnectDetails(final Long accountId) {
@@ -38,7 +38,7 @@ public class AccountQueryService {
                         .leftJoin(socialAccount).fetchJoin()
                         .where(account.id.eq(accountId))
                         .fetchOne())
-                .orElseThrow(() -> new ResourceNotFoundException("resource not found: ", accountId));
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
         return AccountSocialConnectDetails.of(foundAccount);
     }
 
