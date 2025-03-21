@@ -13,23 +13,28 @@ spring:
     hibernate:
       ddl-auto: create-drop
       dialect: org.hibernate.dialect.H2Dialect
+  data:
+    mongodb:
+      database: oddk-local
+      port: 27017
+      ssl:
+        enabled: false
 
   h2:
     console:
       enabled: true
       path: /h2-console
 
-# Logging
-logging:
-  level:
-    p6spy: debug
-    org.apache.coyote: debug
-    org.springframework.security: debug
-    org.springframework.web.reactive: debug
-    reactor.netty.http.client: debug
-
 app:
   security:
     oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
     issuer: "http://localhost:8080"
+
+# Embedded mongodb
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.2
+        database-dir: "oddk"

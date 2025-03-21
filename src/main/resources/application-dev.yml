@@ -8,11 +8,25 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
+  data:
+    mongodb:
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DATABASE}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
+      ssl:
+        enabled: false
   jpa:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.MySQLDialect
+
+app:
+  security:
+    oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
+  jwt:
+    issuer: "${HOST_DOMAIN_URI}"
 
 # Logging
 logging:
@@ -22,10 +36,3 @@ logging:
     org.springframework.security: debug
     org.springframework.web.reactive: debug
     reactor.netty.http.client: debug
-
-
-app:
-  security:
-    oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
-  jwt:
-    issuer: "${HOST_DOMAIN_URI}"
