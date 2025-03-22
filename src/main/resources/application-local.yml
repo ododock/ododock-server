@@ -12,14 +12,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-      dialect: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.H2Dialect
+
   data:
     mongodb:
-      database: oddk-local
-      port: 27017
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DATABASE}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
       ssl:
         enabled: false
-
   h2:
     console:
       enabled: true
@@ -30,11 +33,3 @@ app:
     oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
     issuer: "http://localhost:8080"
-
-# Embedded mongodb
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 4.0.2
-        database-dir: "oddk"

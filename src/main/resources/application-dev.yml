@@ -8,6 +8,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   data:
     mongodb:
       host: ${MONGO_HOST}
@@ -17,6 +18,7 @@ spring:
       password: ${MONGO_PASSWORD}
       ssl:
         enabled: false
+
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -27,12 +29,3 @@ app:
     oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
     issuer: "${HOST_DOMAIN_URI}"
-
-# Logging
-logging:
-  level:
-    p6spy: debug
-    org.apache.coyote: debug
-    org.springframework.security: debug
-    org.springframework.web.reactive: debug
-    reactor.netty.http.client: debug
