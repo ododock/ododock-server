@@ -18,10 +18,15 @@ spring:
             enable: true
   data:
     mongodb:
-      repositories:
-        type: reactive
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DATABASE}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
       ssl:
         enabled: false
+      uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
+
   jpa:
     properties:
       hibernate:

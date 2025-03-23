@@ -1,2 +1,2 @@
+// mongo-init.js
 db = db.getSiblingDB('oddk');
-db.createCollection('initCollection');
