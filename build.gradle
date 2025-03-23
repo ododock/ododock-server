@@ -90,7 +90,7 @@ test {
 }
 
 task copyOasToDocs {
-    delete("src/main/resources/static/docs/openapi3.json")
+    //delete("src/main/resources/static/docs/openapi3.json")
     copy {
         from("$buildDir/api-spec/openapi3.json")
         into("src/main/resources/static/docs/.")
