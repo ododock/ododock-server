@@ -10,8 +10,6 @@ services:
       TZ: Asia/Seoul
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_data_file_path=ibdata1:10M:autoextend
-    volumes:
-      - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   oddk-mongo:
     image: mongo:latest
@@ -21,6 +19,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: Password1!
+    volumes:
+      - ./src/main/resources/mongo-init.js:./docker-entrypoint-initdb.d/init.js
 
   mongo-express:
     image: mongo-express:latest

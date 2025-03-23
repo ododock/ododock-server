@@ -9,9 +9,4 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 @EnableReactiveMongoRepositories(basePackages = "ododock.webserver.repository.reactive")
 public class MongoConfig {
 
-//    @Bean
-//    public ReactiveMongoTransactionManager reactiveMongoTransactionManager(ReactiveMongoDatabaseFactory factory) {
-//        return new ReactiveMongoTransactionManager(factory);
-//    }
-
 }
