@@ -1,11 +1,11 @@
 package ododock.webserver.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ododock.webserver.security.handler.MainAuthenticationFailureHandler;
-import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
+import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.web.ResourcePath;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,19 +23,23 @@ public class DaoAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         this.authenticationManager = authenticationManager;
         this.setFilterProcessesUrl(ResourcePath.AUTH_PROCESSING_URL);
         this.setAuthenticationSuccessHandler(successHandler);
-        this.setAuthenticationFailureHandler(new MainAuthenticationFailureHandler());
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        LoginRequest loginRequest = null;
         try {
-            LoginRequest loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
-            UsernamePasswordAuthenticationToken authRequest =
-                    UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.email(), loginRequest.password());
-            return authenticationManager.authenticate(authRequest);
+            loginRequest = new ObjectMapper().readValue(request.getInputStream(), LoginRequest.class);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to parse login request", e);
+            throw new RuntimeException(e);
         }
+        UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.email(), loginRequest.password());
+        return this.authenticationManager.authenticate(authRequest);
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        throw failed;
     }
 
 }
