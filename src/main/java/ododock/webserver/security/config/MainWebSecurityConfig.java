@@ -2,20 +2,16 @@ package ododock.webserver.security.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.security.RequestPathMatcher;
+import ododock.webserver.security.*;
 import ododock.webserver.security.filter.DaoAuthenticationFilter;
+import ododock.webserver.security.filter.HandlerExceptionResolverFilter;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
-import ododock.webserver.security.handler.MainAuthenticationFailureHandler;
 import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
-import ododock.webserver.security.AuthService;
-import ododock.webserver.security.JwtService;
 import ododock.webserver.web.ResourcePath;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,15 +21,18 @@ import org.springframework.security.config.annotation.web.configurers.HttpBasicC
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -45,6 +44,7 @@ public class MainWebSecurityConfig {
     private final JwtService jwtService;
     private final JwtDecoder jwtDecoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -60,27 +60,14 @@ public class MainWebSecurityConfig {
     }
 
     @Bean
-    public WebMvcConfigurer webConfig() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOriginPatterns("*", "http://localhost:3000", "http://localhost:5173")
-                        .allowedMethods("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true)
-                        .maxAge(3600);
-            }
-        };
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         final HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
         requestCache.setMatchingRequestParameterName(null);
+
         http
+                .addFilterBefore(new HandlerExceptionResolverFilter(handlerExceptionResolver), SecurityContextHolderFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(HttpBasicConfigurer::disable)
                 .logout(c -> c
@@ -96,8 +83,8 @@ public class MainWebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(c -> c
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                        .accessDeniedHandler(new AccessDeniedHandlerImpl())
+                        .authenticationEntryPoint(new RethrowAuthenticationEntryPoint())
+                        .accessDeniedHandler(new RethrowAuthorizationEntryPoint())
                 )
                 .addFilterAt(
                         new DaoAuthenticationFilter(
@@ -108,13 +95,12 @@ public class MainWebSecurityConfig {
                 )
                 .addFilterBefore(
                         new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
-                        UsernamePasswordAuthenticationFilter.class
+                        DaoAuthenticationFilter.class
                 )
                 .oauth2Login(login ->
                         login.userInfoEndpoint(
                                 info -> info.userService(authService)
                         ).successHandler(oAuth2LoginSuccessHandler(jwtService))
-                                .failureHandler(new MainAuthenticationFailureHandler())
                 )
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(
                         jwt -> jwt.decoder(jwtDecoder)
@@ -134,6 +120,18 @@ public class MainWebSecurityConfig {
     @Bean
     public OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler(final JwtService jwtService) {
         return new OAuth2LoginSuccessHandler(jwtService);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
