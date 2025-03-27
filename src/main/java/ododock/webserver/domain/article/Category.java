@@ -50,7 +50,6 @@ public class Category extends BaseEntity {
         this.name = name;
         this.visibility = visibility == null || visibility;
         this.position = position;
-//        this.articles = new ArrayList<>();
     }
 
     @Override

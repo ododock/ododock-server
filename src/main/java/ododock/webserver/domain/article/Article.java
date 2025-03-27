@@ -49,7 +49,6 @@ public class Article extends BaseEntity {
     private Long ownerAccountId;
 
     @Nullable
-    @DBRef
     @Field(name = "categoryId")
     private String categoryId;
 
