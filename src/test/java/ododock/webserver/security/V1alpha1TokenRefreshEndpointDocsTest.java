@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({RestDocsConfig.class})
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-public class TokenRefreshEndpointDocsTest {
+public class V1alpha1TokenRefreshEndpointDocsTest {
 
     @Autowired
     private WebApplicationContext context;

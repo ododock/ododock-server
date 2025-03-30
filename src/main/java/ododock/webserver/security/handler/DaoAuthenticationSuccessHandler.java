@@ -6,11 +6,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.security.JwtService;
 import ododock.webserver.security.TokenRecord;
 import ododock.webserver.security.response.DaoUserDetails;
-import ododock.webserver.security.response.Token;
+import ododock.webserver.security.response.V1alpha1Token;
 import ododock.webserver.security.response.UserPrincipal;
-import ododock.webserver.security.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -54,7 +54,7 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
         response.addCookie(rtCookie);
 
         return objectMapper.writeValueAsString(
-                Token.builder()
+                V1alpha1Token.builder()
                         .sub(String.valueOf(tokenRecord.getAccountId()))
                         .accessToken(tokenRecord.getAccessTokenValue())
                         .refreshToken(tokenRecord.getRefreshTokenValue())

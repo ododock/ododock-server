@@ -10,7 +10,6 @@ import java.util.Map;
 public record UserPrincipal(String id, String provider) {
 
     public static UserPrincipal from(OAuth2AuthenticationToken token) {
-
         if (token.getAuthorizedClientRegistrationId().equals("naver")) {
             java.util.Map<String, Object> attributes = (Map<String, Object>) token.getPrincipal().getAttributes().get("response");
             String accountId = attributes.get("accountId").toString();
