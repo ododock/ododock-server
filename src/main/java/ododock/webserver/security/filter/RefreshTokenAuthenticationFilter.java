@@ -1,6 +1,7 @@
 package ododock.webserver.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -8,15 +9,19 @@ import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.security.JwtService;
 import ododock.webserver.security.handler.TokenReissueSuccessHandler;
 import ododock.webserver.web.ResourcePath;
+import org.apache.coyote.BadRequestException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.jwt.BadJwtException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 @Slf4j
 public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -34,30 +39,30 @@ public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProc
     }
 
     @Override
-    public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) throws AuthenticationException {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(REFRESH_TOKEN)) {
-                    String token = cookie.getValue();
-                    return getAuthenticationManager().authenticate(new BearerTokenAuthenticationToken(token));
-                }
-            }
-        } else {
-            if (request.getHeader(REFRESH_TOKEN) != null) {
-                if (request.getHeader(REFRESH_TOKEN).isEmpty()) {
-                    throw new BadJwtException("Token not found from http request headers");
-                }
-                log.info("try to authenticate from RefreshToken");
-                return getAuthenticationManager().authenticate(new BearerTokenAuthenticationToken(request.getHeader(REFRESH_TOKEN)));
-            }
-        }
-        return null;
+    public Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) throws AuthenticationException, BadRequestException {
+        String refreshTokenValue = extractRefreshToken(request);
+        return getAuthenticationManager().authenticate(new BearerTokenAuthenticationToken(refreshTokenValue));
     }
 
     @Override
     public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
         super.setAuthenticationSuccessHandler(successHandler);
+    }
+
+    private String extractRefreshToken(HttpServletRequest request) throws BadRequestException {
+        if (request.getCookies() == null) {
+            throw new BadCredentialsException("token not found");
+        }
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN))
+                .findAny()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new BadCredentialsException("token not found"));
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        throw exception;
     }
 
 }

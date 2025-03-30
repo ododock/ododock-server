@@ -1,7 +1,6 @@
 package ododock.webserver.web.exceptionhandler.response;
 
 import ododock.webserver.util.OrderedComparator;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,16 +31,6 @@ public class CompositeExceptionResponseResolver implements ExceptionResponseReso
         // 등록된 Resolver가 없으면 INTERNAL SERVER ERROR로 응답
         return this.defaultExceptionResponseResolver.resolve(exception);
     }
-
-//    @Override
-//    public ExceptionResponse resolve(ServerWebExchange exchange, Exception exception) {
-//        List<ExceptionResponseResolver> result = this.resolverCache.get(exception.getClass());
-//        if (result != null && !result.isEmpty()) {
-//            return result.get(0).resolve(exchange, exception); // WebFlux 지원 추가
-//        }
-//        return this.defaultExceptionResponseResolver.resolve(exception);
-//    }
-//
 
     @Override
     public boolean supports(Class<? extends Exception> exceptionClass) {

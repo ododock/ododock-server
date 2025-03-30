@@ -7,6 +7,7 @@ import ododock.webserver.web.exceptionhandler.builder.ExceptionResolverFactory;
 import ododock.webserver.web.exceptionhandler.log.LogLevel;
 import ododock.webserver.web.exceptionhandler.response.ExceptionResponse;
 import ododock.webserver.web.exceptionhandler.response.Status;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -43,6 +44,7 @@ public class SpringMvcExceptionResolverFactory extends ExceptionResolverFactory 
 
     static {
         STATUS_TYPE_ENUM_MAP = new HashMap<>();
+        STATUS_TYPE_ENUM_MAP.put(BadRequestException.class, StatusTypeEnum.BAD_REQUEST);
         STATUS_TYPE_ENUM_MAP.put(HttpRequestMethodNotSupportedException.class, StatusTypeEnum.METHOD_NOT_ALLOWED);
         STATUS_TYPE_ENUM_MAP.put(HttpMediaTypeNotSupportedException.class, StatusTypeEnum.UNSUPPORTED_MEDIA_TYPE);
         STATUS_TYPE_ENUM_MAP.put(HttpMediaTypeNotAcceptableException.class, StatusTypeEnum.NOT_ACCEPTABLE);

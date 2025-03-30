@@ -94,7 +94,7 @@ public class MainWebSecurityConfig {
                         ),
                         OAuth2AuthorizationRequestRedirectFilter.class
                 )
-                .addFilterBefore(
+                .addFilterAfter(
                         new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
                         BearerTokenAuthenticationFilter.class
                 )
@@ -105,7 +105,9 @@ public class MainWebSecurityConfig {
                 )
                 .oauth2ResourceServer(resourceServer -> resourceServer.jwt(
                         jwt -> jwt.decoder(jwtDecoder)
-                ));
+                ).authenticationEntryPoint(new RethrowAuthenticationEntryPoint())
+                                .accessDeniedHandler(new RethrowAuthorizationEntryPoint())
+                );
 
         return http.build();
     }
