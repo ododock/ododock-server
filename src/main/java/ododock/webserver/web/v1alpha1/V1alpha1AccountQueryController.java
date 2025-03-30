@@ -5,7 +5,6 @@ import ododock.webserver.domain.account.AccountQueryService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.dto.account.AccountSocialConnectDetails;
 import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
-import ododock.webserver.web.v1alpha1.dto.response.AccountDetailsResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

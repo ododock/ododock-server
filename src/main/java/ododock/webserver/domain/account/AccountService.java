@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.web.ResourceConflictException;
 import ododock.webserver.web.ResourceNotFoundException;
-import ododock.webserver.web.v1alpha1.dto.account.AccountPasswordUpdate;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.Set;
 
@@ -32,6 +33,9 @@ public class AccountService {
 
     @Transactional
     public void createDaoAccount(final Account account) throws Exception {
+        Assert.notNull(account.getEmail(), "email must not be null");
+        Assert.notNull(account.getPassword(), "password must not be null");
+        Assert.notNull(account.getOwnProfile().getNickname(), "nickname must not be null");
         if (!isAvailableEmail(account.getEmail())) {
             throw new ResourceConflictException(Account.class, account.getEmail());
         }
@@ -58,10 +62,11 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateAccountPassword(final Long accountId, final AccountPasswordUpdate request) {
+    public void updateAccountPassword(final Long accountId, final V1alpha1Account request) {
+        Assert.notNull(request.getPassword(), "password must not be null");
         final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        account.updatePassword(passwordEncoder.encode(request.password()));
+        account.updatePassword(passwordEncoder.encode(request.getPassword()));
     }
 
     @Transactional

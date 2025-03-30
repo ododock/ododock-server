@@ -5,8 +5,6 @@ import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountQueryService;
 import ododock.webserver.domain.account.Role;
 import ododock.webserver.repository.jpa.AccountRepository;
-import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
-import ododock.webserver.web.v1alpha1.dto.response.AccountDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

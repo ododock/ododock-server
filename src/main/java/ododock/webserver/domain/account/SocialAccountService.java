@@ -1,14 +1,15 @@
 package ododock.webserver.domain.account;
 
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.web.ResourceNotFoundException;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.security.response.OAuth2UserInfo;
-import ododock.webserver.web.v1alpha1.dto.account.CompleteSocialAccountRegister;
-import ododock.webserver.web.v1alpha1.dto.account.OAuthAccountMerge;
+import ododock.webserver.web.ResourceNotFoundException;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1SocialAccount;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.Set;
 import java.util.UUID;
@@ -40,24 +41,26 @@ public class SocialAccountService {
     }
 
     /**
-     * merge Social Account specified by {@link OAuthAccountMerge} request into given Account
+     * merge Social Account specified by request into given Account
      *
      * @param accountId
      * @param request   which contains OAuth2 Provider and Account ID will be merged
      * @return
      */
     @Transactional
-    public Account mergeSocialAccount(final Long accountId, final OAuthAccountMerge request) {
+    public Account mergeSocialAccount(final Long accountId, final V1alpha1SocialAccount request) {
+        Assert.notNull(request.getAccountId(), "accountId must not be null");
+        Assert.notNull(request.getProvider(), "provider must not be null");
         final Account originAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        final String targetProvider = request.oauthProvider();
+        final String targetProvider = request.getProvider();
         originAccount.getSocialAccounts().stream()
                 .filter(a -> a.getProvider().equals(targetProvider))
                 .findAny()
                 .ifPresent(ex -> {
                     throw new IllegalArgumentException("already registered social provider");
                 });
-        final Account targetDaoAccount = accountRepository.findById(request.targetAccountId())
+        final Account targetDaoAccount = accountRepository.findById(request.getAccountId())
                 .orElseThrow(() -> new IllegalArgumentException("target account not exists"));
         final SocialAccount targetSocialAccount = targetDaoAccount.getSocialAccounts().stream()
                 .filter(a -> a.getProvider().equals(targetProvider))
@@ -73,15 +76,18 @@ public class SocialAccountService {
     }
 
     @Transactional
-    public void completeSocialAccountRegister(Long accountId, CompleteSocialAccountRegister request) {
-        if (accountRepository.existsByOwnProfile_Nickname(request.nickname())) {
+    public void completeSocialAccountRegister(Long accountId, V1alpha1Account request) {
+        Assert.notNull(request.getNickname(), "nickname must not be null");
+        Assert.notNull(request.getFullname(), "fullname must not be null");
+        Assert.notNull(request.getPassword(), "password must not be null");
+        if (accountRepository.existsByOwnProfile_Nickname(request.getNickname())) {
             throw new IllegalArgumentException("nickname already exists");
         }
         final Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("account not found"));
-        account.getOwnProfile().updateNickname(request.nickname());
-        account.getOwnProfile().updateFullname(request.fullname());
-        account.updatePassword(passwordEncoder.encode(request.password()));
+        account.getOwnProfile().updateNickname(request.getNickname());
+        account.getOwnProfile().updateFullname(request.getFullname());
+        account.updatePassword(passwordEncoder.encode(request.getPassword()));
         account.activate();
     }
 

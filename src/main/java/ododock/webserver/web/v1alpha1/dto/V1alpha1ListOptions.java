@@ -16,9 +16,11 @@ import javax.annotation.Nullable;
 public class V1alpha1ListOptions {
 
     @Positive
-    private Integer pageOffset;
+    @Builder.Default
+    private Integer pageOffset = 0;
     @Positive
-    private Integer pageSize;
+    @Builder.Default
+    private Integer pageSize = 100;
     @Nullable
     private String sortBy;
     @Nullable

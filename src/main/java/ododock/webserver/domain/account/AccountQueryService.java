@@ -4,7 +4,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import ododock.webserver.web.ResourceNotFoundException;
 import ododock.webserver.web.v1alpha1.dto.account.AccountSocialConnectDetails;
-import ododock.webserver.web.v1alpha1.dto.response.AccountDetailsResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

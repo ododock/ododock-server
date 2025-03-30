@@ -1,5 +1,7 @@
 package ododock.webserver.web.v1alpha1.dto.category;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.article.Category;
@@ -12,6 +14,8 @@ import java.util.List;
 @Getter
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
 @NoArgsConstructor
 public class V1alpha1Category extends V1alpha1Base {
@@ -43,6 +47,7 @@ public class V1alpha1Category extends V1alpha1Base {
         return V1alpha1Category.builder()
                 .id(domainDto.getId())
                 .name(domainDto.getName())
+                .ownerAccountId(domainDto.getOwnerAccountId())
                 .position(domainDto.getPosition())
                 .visibility(domainDto.isVisibility())
                 .createdAt(domainDto.getCreatedDate())

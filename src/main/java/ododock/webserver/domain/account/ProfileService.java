@@ -1,11 +1,9 @@
 package ododock.webserver.domain.account;
 
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.web.ResourceConflictException;
 import ododock.webserver.web.ResourceNotFoundException;
-import ododock.webserver.repository.jpa.AccountRepository;
-import ododock.webserver.web.v1alpha1.dto.request.ProfileUpdate;
-import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,22 +19,26 @@ public class ProfileService {
     }
 
     @Transactional(readOnly = true)
-    public ProfileDetailsResponse getProfile(final Long accountId) {
+    public Account getProfile(final Long accountId) {
         Account foundAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        return ProfileDetailsResponse.of(foundAccount.getId(), foundAccount.getOwnProfile());
+        return foundAccount;
     }
 
     @Transactional
-    public void updateProfile(final Long accountId, final ProfileUpdate request) {
-        if (!isAvailableNickname(request.nickname())) {
-            throw new ResourceConflictException(Profile.class, request.nickname());
+    public void updateProfile(final Long accountId, final Profile request) {
+        if (!isAvailableNickname(request.getNickname())) {
+            throw new ResourceConflictException(Profile.class, request.getNickname());
         }
         Account ownerAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        ownerAccount.getOwnProfile().updateNickname(request.nickname());
-        if (request.profileImageSource() != null && request.profileImageFileType() != null) {
-            ownerAccount.getOwnProfile().updateProfileImage(request.profileImageSource(), request.profileImageFileType());
+        ownerAccount.getOwnProfile().updateNickname(request.getNickname());
+        if (request.getProfileImage().getImageSource() != null && request.getProfileImage().getFileType() != null) {
+            ownerAccount.getOwnProfile()
+                    .updateProfileImage(
+                            request.getProfileImage().getImageSource(),
+                            request.getProfileImage().getFileType())
+            ;
         }
     }
 

@@ -4,11 +4,7 @@ import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.*;
 import ododock.webserver.repository.jpa.AccountRepository;
-import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -37,7 +33,7 @@ public class ProfileServiceTest {
     @Autowired
     private AccountRepository accountRepository;
 
-//    @Test
+    //    @Test
     @Transactional
     void validate_nickname() {
         // given
@@ -59,7 +55,7 @@ public class ProfileServiceTest {
         assertThat(result).isFalse();
     }
 
-//    @Test
+    //    @Test
     @Transactional
     void get_profile() {
         // given
@@ -78,12 +74,12 @@ public class ProfileServiceTest {
         em.flush();
 
         // when
-        ProfileDetailsResponse result = profileService.getProfile(createdAccount.getId());
+        Account result = profileService.getProfile(createdAccount.getId());
 
         // then
-        assertThat(result.nickname()).isEqualTo("test-user");
-        assertThat(result.profileImage().getImageSource()).isEqualTo("http://test.com/temp.png");
-        assertThat(result.profileImage().getFileType()).isEqualTo("png");
+        assertThat(result.getOwnProfile().getNickname()).isEqualTo("test-user");
+        assertThat(result.getOwnProfile().getProfileImage().getImageSource()).isEqualTo("http://test.com/temp.png");
+        assertThat(result.getOwnProfile().getProfileImage().getFileType()).isEqualTo("png");
 
     }
 
