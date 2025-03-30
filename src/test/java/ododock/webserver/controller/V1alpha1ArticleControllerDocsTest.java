@@ -9,6 +9,7 @@ import ododock.webserver.domain.article.Article;
 import ododock.webserver.domain.article.ArticleService;
 import ododock.webserver.domain.article.CategoryService;
 import ododock.webserver.domain.article.dto.V1alpha1BaseBlock;
+import ododock.webserver.domain.article.dto.V1alpha1DefaultProps;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.web.ResourceNotFoundException;
 import ododock.webserver.web.ResourcePath;
@@ -90,17 +91,22 @@ public class V1alpha1ArticleControllerDocsTest {
         block.setId("block-id-generated-from-blocknotejs");
         block.setChildren(List.of());
         block.setType("paragraph");
+        block.setProps(new V1alpha1DefaultProps());
         block.setContent(List.of());
 
-        Article article = Article.builder()
-                .title("title")
-                .ownerAccountId(1L)
-                .body(List.of(block))
-                .tags(Set.of("tag1", "tag2"))
-                .build();
+        Article mockArticle = mock(Article.class);
+        when(mockArticle.getId()).thenReturn("f8c3a911-ad74-48b6-9f8e-2aedbf11f424");
+        when(mockArticle.getTitle()).thenReturn("article-title");
+        when(mockArticle.getOwnerAccountId()).thenReturn(1L);
+        when(mockArticle.isVisibility()).thenReturn(true);
+        when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
+        when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
+        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
 
         given(this.articleService.getArticle("article-id-1"))
-                .willReturn(Mono.just(article));
+                .willReturn(Mono.just(mockArticle));
 
         webClient.get().uri(BASE_URL + ResourcePath.ARTICLES + "/{" + ResourcePath.PATH_VAR_ID + "}", "article-id-1")
                 .accept(MediaType.APPLICATION_JSON)
@@ -114,20 +120,23 @@ public class V1alpha1ArticleControllerDocsTest {
                                         parameterWithName("id").description("조회할 아티클의 ID")
                                 ),
                                 responseFields(
-                                        fieldWithPath("id").description("조회된 아티클 ID").optional(),
-                                        fieldWithPath("title").description("조회된 아티클 제목").optional(),
-                                        fieldWithPath("ownerAccountId").description("아티클 작성자의 Account ID").optional(),
+                                        fieldWithPath("id").description("조회된 아티클 ID"),
+                                        fieldWithPath("title").description("조회된 아티클 제목"),
+                                        fieldWithPath("ownerAccountId").description("아티클 작성자의 Account ID"),
                                         fieldWithPath("categoryId").description("아티클의 카테고리 ID").optional(),
                                         fieldWithPath("tags[]").description("태그").optional(),
                                         fieldWithPath("body").description("조회된 아티클 본문").optional(),
-                                        fieldWithPath("body[].id").description("아티클 블록 ID").optional(),
-                                        fieldWithPath("body[].type").description("아티클 블록 타입").optional(),
-                                        fieldWithPath("body[].props").description("아티클 블록 속성").optional(),
+                                        fieldWithPath("body[].id").description("아티클 블록 ID"),
+                                        fieldWithPath("body[].type").description("아티클 블록 타입"),
+                                        fieldWithPath("body[].props").description("아티클 블록 속성"),
+                                        fieldWithPath("body[].props.backgroundColor").description("아티클 블록의 스타일 - 백그라운드 컬러"),
+                                        fieldWithPath("body[].props.textColor").description("아티클 블록의 스타일 - 텍스트 색상"),
+                                        fieldWithPath("body[].props.textAlignment").description("아티클 블록의 스타일 - 텍스트 정렬"),
                                         fieldWithPath("body[].content").description("아티클 블록의 컨텐츠").optional(),
                                         fieldWithPath("body[].children").description("아티클 블록의 하위 블록 리스트").optional(),
-                                        fieldWithPath("visibility").description("카테고리 공개설정").optional(),
-                                        fieldWithPath("createdAt").description("카테고리 생성일").optional(),
-                                        fieldWithPath("updatedAt").description("카테고리 수정일").optional()
+                                        fieldWithPath("visibility").description("카테고리 공개설정"),
+                                        fieldWithPath("createdAt").description("카테고리 생성일"),
+                                        fieldWithPath("updatedAt").description("카테고리 수정일")
                                 )
                         )
                 );
@@ -140,17 +149,22 @@ public class V1alpha1ArticleControllerDocsTest {
         block.setId("block-id-generated-from-blocknotejs");
         block.setChildren(List.of());
         block.setType("paragraph");
+        block.setProps(new V1alpha1DefaultProps());
         block.setContent(List.of());
 
-        Article article = Article.builder()
-                .title("title")
-                .ownerAccountId(1L)
-                .body(List.of(block))
-                .tags(Set.of("tag1", "tag2"))
-                .build();
+        Article mockArticle = mock(Article.class);
+        when(mockArticle.getId()).thenReturn("f8c3a911-ad74-48b6-9f8e-2aedbf11f424");
+        when(mockArticle.getTitle()).thenReturn("article-title");
+        when(mockArticle.getOwnerAccountId()).thenReturn(1L);
+        when(mockArticle.isVisibility()).thenReturn(true);
+        when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
+        when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
+        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
 
         given(this.articleService.listArticles(1L, V1alpha1ArticleListOptions.builder().build().toDomainDto()))
-                .willReturn(Flux.just(article));
+                .willReturn(Flux.just(mockArticle));
 
         webClient.get().uri(BASE_URL + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ARTICLES, 1L)
                 .accept(MediaType.APPLICATION_JSON)
@@ -164,20 +178,23 @@ public class V1alpha1ArticleControllerDocsTest {
                                         parameterWithName("id").description("조회할 아티클 작성자 계정의 ID")
                                 ),
                                 responseFields(
-                                        fieldWithPath("[].id").description("조회된 아티클 ID").optional(),
-                                        fieldWithPath("[].title").description("조회된 아티클 제목").optional(),
-                                        fieldWithPath("[].ownerAccountId").description("아티클 작성자의 Account ID").optional(),
+                                        fieldWithPath("[].id").description("조회된 아티클 ID"),
+                                        fieldWithPath("[].title").description("조회된 아티클 제목"),
+                                        fieldWithPath("[].ownerAccountId").description("아티클 작성자의 Account ID"),
                                         fieldWithPath("[].categoryId").description("아티클의 카테고리 ID").optional(),
                                         fieldWithPath("[].tags[]").description("태그").optional(),
                                         fieldWithPath("[].body").description("조회된 아티클 본문").optional(),
-                                        fieldWithPath("[].body[].id").description("아티클 블록 ID").optional(),
-                                        fieldWithPath("[].body[].type").description("아티클 블록 타입").optional(),
-                                        fieldWithPath("[].body[].props").description("아티클 블록 속성").optional(),
+                                        fieldWithPath("[].body[].id").description("아티클 블록 ID"),
+                                        fieldWithPath("[].body[].type").description("아티클 블록 타입"),
+                                        fieldWithPath("[].body[].props").description("아티클 블록 속성"),
+                                        fieldWithPath("[].body[].props.backgroundColor").description("아티클 블록의 스타일 - 백그라운드 컬러"),
+                                        fieldWithPath("[].body[].props.textColor").description("아티클 블록의 스타일 - 텍스트 색상"),
+                                        fieldWithPath("[].body[].props.textAlignment").description("아티클 블록의 스타일 - 텍스트 정렬"),
                                         fieldWithPath("[].body[].content").description("아티클 블록의 컨텐츠").optional(),
                                         fieldWithPath("[].body[].children").description("아티클 블록의 하위 블록 리스트").optional(),
-                                        fieldWithPath("[].visibility").description("카테고리 공개설정").optional(),
-                                        fieldWithPath("[].createdAt").description("카테고리 생성일").optional(),
-                                        fieldWithPath("[].updatedAt").description("카테고리 수정일").optional()
+                                        fieldWithPath("[].visibility").description("카테고리 공개설정"),
+                                        fieldWithPath("[].createdAt").description("카테고리 생성일"),
+                                        fieldWithPath("[].updatedAt").description("카테고리 수정일")
                                 )
                         )
                 );
@@ -189,29 +206,32 @@ public class V1alpha1ArticleControllerDocsTest {
         V1alpha1BaseBlock block = new V1alpha1BaseBlock();
         block.setId("block-id-generated-from-blocknotejs");
         block.setChildren(List.of());
+        block.setProps(new V1alpha1DefaultProps());
         block.setType("paragraph");
         block.setContent(List.of());
 
-        Article article = mock(Article.class);
-        when(article.getId()).thenReturn("100"); // ID 값을 명시적으로 설정
-        when(article.getTitle()).thenReturn("title");
-        when(article.getOwnerAccountId()).thenReturn(1L);
-        when(article.isVisibility()).thenReturn(true);
-        when(article.getBody()).thenReturn(List.of(block));
-        when(article.getTags()).thenReturn(Set.of("tag1"));
-        when(article.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(article.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        Article mockArticle = mock(Article.class);
+        when(mockArticle.getId()).thenReturn("f8c3a911-ad74-48b6-9f8e-2aedbf11f424");
+        when(mockArticle.getTitle()).thenReturn("article-title");
+        when(mockArticle.getOwnerAccountId()).thenReturn(1L);
+        when(mockArticle.isVisibility()).thenReturn(true);
+        when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
+        when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
+        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
 
         V1alpha1Article controllerDto = V1alpha1Article.builder()
                 .title("title")
                 .ownerAccountId(1L)
+                .categoryId("403202a5-1d33-4970-9fbc-e80394319098")
                 .visibility(true)
                 .body(List.of(block))
                 .tags(Set.of("tag1"))
                 .build();
 
         given(this.articleService.createArticle(any(Article.class)))
-                .willReturn(Mono.just(article));
+                .willReturn(Mono.just(mockArticle));
 
         webClient.post().uri(BASE_URL + ResourcePath.ARTICLES)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -224,20 +244,20 @@ public class V1alpha1ArticleControllerDocsTest {
                                 resourceDetails()
                                         .tag("Article").description("아티클 엔드포인트"),
                                 requestFields(
-                                        fieldWithPath("id").ignored(),
                                         fieldWithPath("title").description("작성한 아티클 제목"),
                                         fieldWithPath("ownerAccountId").description("아티클 작성자의 Account ID"),
                                         fieldWithPath("categoryId").description("아티클의 카테고리 ID").optional(),
                                         fieldWithPath("tags[]").description("태그").optional(),
                                         fieldWithPath("body").description("작성된 아티클 본문").optional(),
-                                        fieldWithPath("body[].id").description("아티클 블록 ID").optional(),
-                                        fieldWithPath("body[].type").description("아티클 블록 타입").optional(),
-                                        fieldWithPath("body[].props").description("아티클 블록 속성").optional(),
+                                        fieldWithPath("body[].id").description("아티클 블록 ID"),
+                                        fieldWithPath("body[].type").description("아티클 블록 타입"),
+                                        fieldWithPath("body[].props").description("아티클 블록 속성"),
+                                        fieldWithPath("body[].props.backgroundColor").description("아티클 블록의 스타일 - 백그라운드 컬러"),
+                                        fieldWithPath("body[].props.textColor").description("아티클 블록의 스타일 - 텍스트 색상"),
+                                        fieldWithPath("body[].props.textAlignment").description("아티클 블록의 스타일 - 텍스트 정렬"),
                                         fieldWithPath("body[].content").description("아티클 블록의 컨텐츠").optional(),
                                         fieldWithPath("body[].children").description("아티클 블록의 하위 블록 리스트").optional(),
-                                        fieldWithPath("visibility").description("작성된 아티클 공개설정").optional(),
-                                        fieldWithPath("createdAt").description("작성된 아티클 생성일").ignored(),
-                                        fieldWithPath("updatedAt").description("작성된 아티클 수정일").ignored()
+                                        fieldWithPath("visibility").description("작성된 아티클 공개설정")
                                 ),
                                 responseFields(
                                         fieldWithPath("id").description("조회된 아티클 ID").optional(),
@@ -249,6 +269,9 @@ public class V1alpha1ArticleControllerDocsTest {
                                         fieldWithPath("body[].id").description("아티클 블록 ID").optional(),
                                         fieldWithPath("body[].type").description("아티클 블록 타입").optional(),
                                         fieldWithPath("body[].props").description("아티클 블록 속성").optional(),
+                                        fieldWithPath("body[].props.backgroundColor").description("아티클 블록의 스타일 - 백그라운드 컬러"),
+                                        fieldWithPath("body[].props.textColor").description("아티클 블록의 스타일 - 텍스트 색상"),
+                                        fieldWithPath("body[].props.textAlignment").description("아티클 블록의 스타일 - 텍스트 정렬"),
                                         fieldWithPath("body[].content").description("아티클 블록의 컨텐츠").optional(),
                                         fieldWithPath("body[].children").description("아티클 블록의 하위 블록 리스트").optional(),
                                         fieldWithPath("visibility").description("작성된 아티클 공개설정"),
@@ -265,25 +288,32 @@ public class V1alpha1ArticleControllerDocsTest {
         V1alpha1BaseBlock block = new V1alpha1BaseBlock();
         block.setId("block-id-generated-from-blocknotejs");
         block.setChildren(List.of());
+        block.setProps(new V1alpha1DefaultProps());
         block.setType("paragraph");
         block.setContent(List.of());
 
-        Article article = Article.builder()
-                .title("title")
-                .ownerAccountId(1L)
-                .body(List.of(block))
-                .tags(Set.of("tag1"))
-                .build();
+        Article mockArticle = mock(Article.class);
+        when(mockArticle.getId()).thenReturn("f8c3a911-ad74-48b6-9f8e-2aedbf11f424");
+        when(mockArticle.getTitle()).thenReturn("article-title");
+        when(mockArticle.getOwnerAccountId()).thenReturn(1L);
+        when(mockArticle.isVisibility()).thenReturn(true);
+        when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
+        when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
+        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
 
         V1alpha1Article controllerDto = V1alpha1Article.builder()
                 .title("title")
                 .ownerAccountId(1L)
+                .categoryId("403202a5-1d33-4970-9fbc-e80394319098")
                 .visibility(true)
                 .body(List.of(block))
                 .tags(Set.of("tag1"))
                 .build();
 
-        given(this.articleService.updateArticle(any(Article.class))).willReturn(Mono.just(article));
+
+        given(this.articleService.updateArticle(any(Article.class))).willReturn(Mono.just(mockArticle));
 
         webClient.patch().uri(BASE_URL + ResourcePath.ARTICLES + "/{" + ResourcePath.PATH_VAR_ID + "}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -308,6 +338,9 @@ public class V1alpha1ArticleControllerDocsTest {
                                         fieldWithPath("body[].id").description("아티클 블록 ID").optional(),
                                         fieldWithPath("body[].type").description("아티클 블록 타입").optional(),
                                         fieldWithPath("body[].props").description("아티클 블록 속성").optional(),
+                                        fieldWithPath("body[].props.backgroundColor").description("아티클 블록의 스타일 - 백그라운드 컬러"),
+                                        fieldWithPath("body[].props.textColor").description("아티클 블록의 스타일 - 텍스트 색상"),
+                                        fieldWithPath("body[].props.textAlignment").description("아티클 블록의 스타일 - 텍스트 정렬"),
                                         fieldWithPath("body[].content").description("아티클 블록의 컨텐츠").optional(),
                                         fieldWithPath("body[].children").description("아티클 블록의 하위 블록 리스트").optional(),
                                         fieldWithPath("visibility").description("수정된 아티클 공개설정"),
