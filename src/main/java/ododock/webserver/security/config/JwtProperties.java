@@ -1,14 +1,11 @@
 package ododock.webserver.security.config;
 
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.SecretJWK;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.time.Duration;
+import javax.annotation.Nullable;
+import java.time.temporal.ChronoUnit;
 
 @Component
 @ConfigurationProperties(prefix = "app.jwt")
@@ -16,7 +13,10 @@ import java.time.Duration;
 public class JwtProperties {
 
     private String issuer;
+    private String tokenExpiryTimeUnit = ChronoUnit.MINUTES.name();
     private Long accessTokenExpiry;
     private Long refreshTokenExpiry;
+    @Nullable
+    private Long refreshTokenEarlyRenewalPeriod;
 
 }

@@ -4,9 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ododock.webserver.security.TokenRecord;
-import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.security.JwtService;
+import ododock.webserver.security.response.UserPrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -30,13 +29,15 @@ public class OAuth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             final Authentication authentication
     ) throws IOException {
         final OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from(oauthToken));
+        UserPrincipal userPrincipal = UserPrincipal.from(oauthToken);
+        String accessToken = jwtService.generateAccessToken(userPrincipal);
+        String refreshToken = jwtService.generateRefreshToken(userPrincipal);
         final String redirectUri = String.format(
                 OAUTH_CALLBACK_URI,
-                tokenRecord.getAccountId(),
-                oauthToken.getAuthorizedClientRegistrationId(),
-                tokenRecord.getAccessTokenValue(),
-                tokenRecord.getRefreshTokenValue());
+                userPrincipal.id(),
+                userPrincipal.provider(),
+                accessToken,
+                refreshToken);
         getRedirectStrategy().sendRedirect(request, response, redirectUri);
     }
 

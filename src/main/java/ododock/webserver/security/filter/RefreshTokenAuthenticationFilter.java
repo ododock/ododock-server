@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import ododock.webserver.security.handler.TokenReissueSuccessHandler;
+import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.security.JwtService;
+import ododock.webserver.security.handler.TokenReissueSuccessHandler;
 import ododock.webserver.web.ResourcePath;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
@@ -17,10 +18,12 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+@Slf4j
 public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String REFRESH_TOKEN = "refresh_token";
-    public static final String PROCESSING_URI = ResourcePath.AUTH_REFRESH_URL;
+    private static final String PROCESSING_URI = ResourcePath.AUTH_REFRESH_URL;
+
     private final ObjectMapper objectMapper;
 
     public RefreshTokenAuthenticationFilter(final JwtDecoder jwtDecoder, final JwtService jwtService, final ObjectMapper objectMapper) {
@@ -45,6 +48,7 @@ public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProc
                 if (request.getHeader(REFRESH_TOKEN).isEmpty()) {
                     throw new BadJwtException("Token not found from http request headers");
                 }
+                log.info("try to authenticate from RefreshToken");
                 return getAuthenticationManager().authenticate(new BearerTokenAuthenticationToken(request.getHeader(REFRESH_TOKEN)));
             }
         }

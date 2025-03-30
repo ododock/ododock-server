@@ -17,7 +17,7 @@ import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.repository.jpa.VerificationInfoRepository;
 import ododock.webserver.security.request.LoginRequest;
-import ododock.webserver.security.response.Token;
+import ododock.webserver.security.response.V1alpha1Token;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.dto.account.CompleteDaoAccountVerification;
 import org.junit.jupiter.api.BeforeEach;
@@ -154,11 +154,11 @@ public class LoginEndpointDocsTest {
                 .extract()
                 .response();
 
-        Token token = objectMapper.readValue(response.getBody().asString(), Token.class);
+        V1alpha1Token v1alpha1Token = objectMapper.readValue(response.getBody().asString(), V1alpha1Token.class);
 
-        assertThat(Long.valueOf(token.sub()).equals(account.getId())).isTrue();
-        assertThat(token.accessToken()).isNotBlank();
-        assertThat(token.refreshToken()).isNotBlank();
+        assertThat(Long.valueOf(v1alpha1Token.sub()).equals(account.getId())).isTrue();
+        assertThat(v1alpha1Token.accessToken()).isNotBlank();
+        assertThat(v1alpha1Token.refreshToken()).isNotBlank();
     }
 
 }
