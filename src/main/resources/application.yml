@@ -88,8 +88,10 @@ app:
   security:
     oauth-callback-uri: "http://localhost:3000/oauth2/callback?sub=%s&access_token=%s&refresh_token=%s"
   jwt:
+    token-expiry-time-unit: "minutes"
     access-token-expiry: 60
     refresh-token-expiry: 1440
+    refresh-token-early-renewal-period: 720
   clients:
     library-curation:
       base-url: ${CURATION_BASE_URI}

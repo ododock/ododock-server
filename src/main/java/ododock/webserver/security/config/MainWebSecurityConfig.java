@@ -19,9 +19,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
@@ -86,16 +87,16 @@ public class MainWebSecurityConfig {
                         .authenticationEntryPoint(new RethrowAuthenticationEntryPoint())
                         .accessDeniedHandler(new RethrowAuthorizationEntryPoint())
                 )
-                .addFilterAt(
+                .addFilterBefore(
                         new DaoAuthenticationFilter(
                                 authenticationManagerBuilder.getOrBuild(),
                                 daoAuthenticationSuccessHandler(jwtService, objectMapper)
                         ),
-                        UsernamePasswordAuthenticationFilter.class
+                        OAuth2AuthorizationRequestRedirectFilter.class
                 )
                 .addFilterBefore(
                         new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
-                        DaoAuthenticationFilter.class
+                        BearerTokenAuthenticationFilter.class
                 )
                 .oauth2Login(login ->
                         login.userInfoEndpoint(

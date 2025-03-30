@@ -7,10 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.security.JwtService;
-import ododock.webserver.security.TokenRecord;
 import ododock.webserver.security.response.DaoUserDetails;
-import ododock.webserver.security.response.V1alpha1Token;
 import ododock.webserver.security.response.UserPrincipal;
+import ododock.webserver.security.response.V1alpha1Token;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -40,12 +39,15 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     }
 
     private String convertToken(final HttpServletResponse response, final Authentication authentication) throws JsonProcessingException {
-        final TokenRecord tokenRecord = jwtService.generateToken(UserPrincipal.from((DaoUserDetails) authentication.getPrincipal()));
-        final Cookie atCookie = new Cookie("access_token", tokenRecord.getAccessTokenValue());
+        DaoUserDetails userDetails = (DaoUserDetails) authentication.getPrincipal();
+        String accessToken = jwtService.generateAccessToken(UserPrincipal.from(userDetails));
+        String refreshToken = jwtService.generateRefreshToken(UserPrincipal.from(userDetails));
+
+        final Cookie atCookie = new Cookie("access_token", accessToken);
         atCookie.setPath("/");
         atCookie.setSecure(true);
         atCookie.setAttribute("SameSite", "None");
-        final Cookie rtCookie = new Cookie("refresh_token", tokenRecord.getRefreshTokenValue());
+        final Cookie rtCookie = new Cookie("refresh_token", refreshToken);
         rtCookie.setPath("/");
         rtCookie.setSecure(true);
         rtCookie.setAttribute("SameSite", "None");
@@ -55,9 +57,9 @@ public class DaoAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
 
         return objectMapper.writeValueAsString(
                 V1alpha1Token.builder()
-                        .sub(String.valueOf(tokenRecord.getAccountId()))
-                        .accessToken(tokenRecord.getAccessTokenValue())
-                        .refreshToken(tokenRecord.getRefreshTokenValue())
+                        .sub(String.valueOf(userDetails.getAccountId()))
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
                         .build()
         );
     }
