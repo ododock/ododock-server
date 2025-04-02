@@ -2,6 +2,7 @@ package ododock.webserver.web.v1alpha1.dto.account;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -22,17 +23,18 @@ import java.util.stream.Collectors;
 @SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
 public class V1alpha1Account extends V1alpha1Base {
 
     @Nullable
     Long id;
-    @NotBlank
+    @Nullable
     String email;
-    @NotBlank
+    @Nullable
     String password;
-    @NotBlank
+    @Nullable
     String nickname;
     @Nullable
     String fullname;
@@ -47,7 +49,10 @@ public class V1alpha1Account extends V1alpha1Base {
     String profileImageFileType;
     @Nullable
     Set<String> providers;
+    @Nullable
     Boolean emailVerified;
+    @Nullable
+    String verificationCode;
 
     public Account toDomainDto() {
         return Account.builder()

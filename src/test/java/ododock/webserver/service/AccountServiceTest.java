@@ -10,11 +10,8 @@ import ododock.webserver.domain.verification.VerificationInfo;
 import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.repository.jpa.VerificationInfoRepository;
-import ododock.webserver.web.v1alpha1.dto.account.AccountPasswordReset;
-import ododock.webserver.web.v1alpha1.dto.account.AccountPasswordUpdate;
-import org.junit.jupiter.api.Test;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +51,7 @@ public class AccountServiceTest {
     @Autowired
     private AccountManageService accountManageService;
 
-//    @Test
+    //    @Test
     @Transactional
     void isAvailableEmail() {
         // given
@@ -76,7 +73,7 @@ public class AccountServiceTest {
         assertThat(result).isTrue();
     }
 
-//    @Test
+    //    @Test
     @Transactional
     void createAccount() throws Exception {
         // given
@@ -100,7 +97,7 @@ public class AccountServiceTest {
         assertThat(account.get().getOwnProfile().getFullname()).isEqualTo("John Doe");
     }
 
-//    @Test
+    //    @Test
     @Transactional
     void updateAccountPassword() {
         // given
@@ -113,7 +110,7 @@ public class AccountServiceTest {
                 .roles(Set.of(Role.USER))
                 .build();
         Long id = accountRepository.save(account).getId();
-        AccountPasswordUpdate request = AccountPasswordUpdate.builder()
+        V1alpha1Account request = V1alpha1Account.builder()
                 .password("123456")
                 .build();
 
@@ -127,7 +124,7 @@ public class AccountServiceTest {
     }
 
 
-//    @Test
+    //    @Test
     @Transactional
     void resetAccountPassword() throws Exception {
         // given
@@ -146,8 +143,8 @@ public class AccountServiceTest {
         VerificationInfo verificationInfo = verificationInfoRepository.findByTargetEmail(account.getEmail())
                 .orElseThrow(IllegalStateException::new);
 
-        AccountPasswordReset resetRequest = AccountPasswordReset.builder()
-                .newPassword("newPassword")
+        V1alpha1Account resetRequest = V1alpha1Account.builder()
+                .password("newPassword")
                 .verificationCode(verificationInfo.getCode())
                 .build();
 
@@ -160,7 +157,7 @@ public class AccountServiceTest {
         assertThat(passwordEncoder.matches("newPassword", found.get().getPassword())).isTrue();
     }
 
-//    @Test
+    //    @Test
     @Transactional
     void deleteAccount() {
         // given

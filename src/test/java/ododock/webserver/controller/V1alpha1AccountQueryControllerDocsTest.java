@@ -5,11 +5,10 @@ import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.config.web.WebConfiguration;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountQueryService;
+import ododock.webserver.domain.account.Profile;
 import ododock.webserver.domain.account.ProfileImage;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.V1alpha1AccountQueryController;
-import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
-import ododock.webserver.web.v1alpha1.dto.response.AccountDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -22,10 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -52,19 +53,27 @@ public class V1alpha1AccountQueryControllerDocsTest {
     @WithMockUser
     void getAccount_Docs() throws Exception {
         // given
-        final Account response = Account.builder()
-                .id(1L)
-                .email("tester@oddk.xyz")
+        final Account account = mock(Account.class);
+        when(account.getId()).thenReturn(1L);
+        when(account.getEmail()).thenReturn("tester@oddk.xyz");
+        when(account.getOwnProfile()).thenReturn(Profile.builder()
                 .nickname("tester")
-                .birthDate(LocalDate.of(1999, 12, 31))
                 .fullname("John doe")
+                .birthDate(LocalDate.of(1990, 1, 1))
                 .profileImage(ProfileImage.builder()
                         .imageSource("http://oddk.xyz/foo.png")
                         .fileType("png")
                         .build())
-                .build();
+                .build());
+//        when(account.getOwnProfile().getNickname()).thenReturn("tester");
+//        when(account.getOwnProfile().getBirthDate()).thenReturn(LocalDate.of(1999, 12, 31));
+//        when(account.getOwnProfile().getFullname()).thenReturn("John doe");
+        when(account.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(account.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(account.getEmailVerified()).thenReturn(true);
+        when(account.getAttributes()).thenReturn(Map.of("key", List.of("value")));
 
-        when(accountQueryService.getAccountDetails(1L)).thenReturn(response);
+        when(accountQueryService.getAccountDetails(1L)).thenReturn(account);
 
         mockMvc.perform(
                         get(BASE_PATH + "/{" + ResourcePath.PATH_VAR_ID + "}", 1L)
@@ -85,10 +94,10 @@ public class V1alpha1AccountQueryControllerDocsTest {
                                         fieldWithPath("fullname").description("조회한 Account 이름"),
                                         fieldWithPath("birthDate").description("조회한 Account 생년월일"),
                                         fieldWithPath("nickname").description("조회한 Account의 Profile 닉네임"),
-                                        fieldWithPath("attributes").description("조회한 Account attributes"),
                                         fieldWithPath("providers").description("조회한 Account의 연동된 Social Accounts"),
-                                        fieldWithPath("profileImageSource").description("조회한 Account의 프로필 이미지"),
-                                        fieldWithPath("profileImageFileType").description("조회한 Account의 프로필 이미지"),
+//                                        fieldWithPath("attributes").description("조회한 Account attributes"),
+//                                        fieldWithPath("profileImageSource").description("조회한 Account의 프로필 이미지"),
+//                                        fieldWithPath("profileImageFileType").description("조회한 Account의 프로필 이미지"),
                                         fieldWithPath("emailVerified").description("조회한 Account의 이메일 인증 여부"),
                                         fieldWithPath("createdAt").description("조회한 Account 최초 생성일"),
                                         fieldWithPath("updatedAt").description("조회한 Account 최근 수정일")

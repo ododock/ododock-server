@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.config.web.WebConfiguration;
+import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.ProfileImage;
 import ododock.webserver.domain.account.ProfileService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.V1alpha1ProfileController;
-import ododock.webserver.web.v1alpha1.dto.request.ProfileUpdate;
-import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Profile;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -21,6 +22,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
@@ -53,10 +55,11 @@ public class V1alpha1ProfileControllerDocsTest {
     @WithMockUser
     void getProfile_Docs() throws Exception {
         // given
-        final ProfileDetailsResponse response = ProfileDetailsResponse.builder()
-                .accountId(1L)
+        final Account response = Account.builder()
+                .id(1L)
                 .nickname("user1")
                 .fullname("John Doe")
+                .birthDate(LocalDate.of(1990, 1, 1))
                 .profileImage(ProfileImage.builder()
                         .imageSource("http://oddx.xyz/img.jpg")
                         .fileType("jpeg")
@@ -79,12 +82,12 @@ public class V1alpha1ProfileControllerDocsTest {
                                         parameterWithName("id").description("조회할 프로필 ID")
                                 ),
                                 responseFields(
-                                        fieldWithPath("accountId").description("조회한 프로필의 소유자 Account ID"),
+                                        fieldWithPath("id").description("조회한 프로필의 소유자 Account ID"),
                                         fieldWithPath("nickname").description("조회한 프로필의 닉네임"),
                                         fieldWithPath("fullname").description("조회한 프로필의 닉네임"),
                                         fieldWithPath("birthDate").description("조회한 프로필의 생년월일"),
-                                        fieldWithPath("profileImage.imageSource").description("조회한 프로필의 프로필 사진 리소스 주소"),
-                                        fieldWithPath("profileImage.fileType").description("조회한 프로필의 프로필 사진 리소스 타입")
+                                        fieldWithPath("profileImageSource").description("조회한 프로필의 프로필 사진 리소스 주소"),
+                                        fieldWithPath("profileImageFileType").description("조회한 프로필의 프로필 사진 리소스 타입")
                                 )
                         )
                 );
@@ -94,20 +97,18 @@ public class V1alpha1ProfileControllerDocsTest {
     @WithMockUser
     void updateProfile_Docs() throws Exception {
         // given
-        final ProfileUpdate request = ProfileUpdate.builder()
+        final V1alpha1Profile request = V1alpha1Profile.builder()
                 .nickname("newNickname")
                 .profileImageSource("http://oddk.xyz/newPhoto.png")
                 .profileImageFileType("png")
                 .build();
 
-        final ProfileDetailsResponse response = ProfileDetailsResponse.builder()
-                .accountId(1L)
+        final V1alpha1Account response = V1alpha1Account.builder()
+                .id(1L)
                 .nickname("user1")
                 .fullname("John Doe")
-                .profileImage(ProfileImage.builder()
-                        .imageSource("http://oddx.xyz/img.jpg")
-                        .fileType("jpeg")
-                        .build())
+                .profileImageSource("http://oddx.xyz/img.jpg")
+                .profileImageFileType("jpeg")
                 .build();
 
         // expected

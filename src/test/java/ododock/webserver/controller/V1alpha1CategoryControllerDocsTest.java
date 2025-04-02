@@ -21,9 +21,13 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 import static com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.resourceDetails;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -55,8 +59,17 @@ public class V1alpha1CategoryControllerDocsTest {
                 .position(0)
                 .build();
 
+        Category category = mock(Category.class);
+        when(category.getId()).thenReturn("category-id");
+        when(category.getOwnerAccountId()).thenReturn(1L);
+        when(category.getName()).thenReturn("Journal");
+        when(category.getPosition()).thenReturn(0);
+        when(category.isVisibility()).thenReturn(true);
+        when(category.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(category.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+
         given(this.categoryService.listCategoriesByOwnerAccountId(1L))
-                .willReturn(Flux.just(category1));
+                .willReturn(Flux.just(category));
 
         webClient.get().uri(BASE_URL, 1L)
                 .accept(MediaType.APPLICATION_JSON)
@@ -139,19 +152,28 @@ public class V1alpha1CategoryControllerDocsTest {
     @Test
     @WithMockUser
     void update_category_Docs() throws Exception {
-        Category category = Category.builder()
+        V1alpha1Category request = V1alpha1Category.builder()
                 .name("Journal")
                 .ownerAccountId(1L)
                 .visibility(true)
                 .position(0)
                 .build();
 
-        given(this.categoryService.updateCategory(category))
-                .willReturn(Mono.just(category));
+        Category response = mock(Category.class);
+        when(response.getId()).thenReturn("category-id");
+        when(response.getOwnerAccountId()).thenReturn(1L);
+        when(response.getName()).thenReturn("Journal");
+        when(response.getPosition()).thenReturn(0);
+        when(response.isVisibility()).thenReturn(true);
+        when(response.getCreatedDate()).thenReturn(LocalDateTime.now());
+        when(response.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+
+        given(this.categoryService.updateCategory(request.toDomainDto()))
+                .willReturn(Mono.just(response));
 
         webClient.patch().uri(BASE_URL + "/{" + ResourcePath.PATH_VAR_SUB_ID + "}", 1L, "update-category-id")
                 .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(V1alpha1Category.toControllerDto(category))
+                .bodyValue(request)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()

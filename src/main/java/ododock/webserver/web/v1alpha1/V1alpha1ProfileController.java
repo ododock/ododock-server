@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.account.ProfileService;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1alpha1.dto.request.ProfileUpdate;
-import ododock.webserver.web.v1alpha1.dto.response.ProfileDetailsResponse;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,10 +19,10 @@ public class V1alpha1ProfileController {
     @GetMapping(
             value = "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PROFILE
     )
-    public ProfileDetailsResponse getProfile(
+    public V1alpha1Profile getProfile(
             final @PathVariable Long id
     ) {
-        return profileService.getProfile(id);
+        return V1alpha1Profile.toControllerDto(profileService.getProfile(id));
     }
 
     @PatchMapping(
@@ -30,9 +30,9 @@ public class V1alpha1ProfileController {
     )
     public ResponseEntity<Void> updateProfile(
             final @PathVariable Long id,
-            final @Valid @RequestBody ProfileUpdate request
+            final @Valid @RequestBody V1alpha1Profile profile
     ) {
-        profileService.updateProfile(id, request);
+        profileService.updateProfile(id, profile.toDomainDto());
         return ResponseEntity.ok().build();
     }
 

@@ -11,8 +11,9 @@ import ododock.webserver.domain.account.SocialAccountService;
 import ododock.webserver.domain.notification.MailService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.V1alpha1AccountController;
-import ododock.webserver.web.v1alpha1.dto.account.*;
-import ododock.webserver.web.v1alpha1.dto.response.ValidateResponse;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1SocialAccount;
+import ododock.webserver.web.v1alpha1.dto.ValidateResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -25,8 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.resourceDetails;
@@ -133,7 +132,6 @@ public class V1alpha1AccountControllerDocsTest {
                 .nickname("john.doe")
                 .fullname("John doe")
                 .birthDate(LocalDate.of(1999, 5, 23))
-                .attributes(Map.of())
                 .build();
 
         // expected
@@ -148,20 +146,14 @@ public class V1alpha1AccountControllerDocsTest {
                                 resourceDetails()
                                         .tag("Account").description("DB 계정 생성 엔드포인트"),
                                 requestFields(
-                                        // todo fill-out rest fields
-                                        fieldWithPath("id").description("생성할 계정 ID").ignored(),
                                         fieldWithPath("email").description("생성할 계정 이메일"),
                                         fieldWithPath("password").description("생성할 계정 비밀번호"),
                                         fieldWithPath("nickname").description("생성할 계정의 프로필 닉네임").optional(),
                                         fieldWithPath("fullname").description("생성할 계정의 유저 이름").optional(),
-                                        fieldWithPath("birthDate").description("생성할 계정 유저 생년월일").optional(),
-                                        fieldWithPath("attributes").description("생성할 계정 추가 속성필드").optional(),
-                                        fieldWithPath("profileImageSource").description("생성할 계정의 프로필 이미지 소스").optional(),
-                                        fieldWithPath("profileImageFileType").description("생성할 계정의 프로필 이미지 파일 타입").optional(),
-                                        fieldWithPath("createdAt").description("생성일").ignored(),
-                                        fieldWithPath("updatedAt").description("수정일").ignored(),
-                                        fieldWithPath("providers").description("OAuth provider").ignored(),
-                                        fieldWithPath("emailVerified").description("이메일 인증 여부").ignored()
+                                        fieldWithPath("birthDate").description("생성할 계정 유저 생년월일").optional()
+//                                        fieldWithPath("profileImageSource").description("생성할 계정의 프로필 이미지 소스").optional(),
+//                                        fieldWithPath("profileImageFileType").description("생성할 계정의 프로필 이미지 파일 타입").optional(),
+//                                        fieldWithPath("attributes").description("생성할 계정 추가 속성필드").ignored()
                                 )
                         )
                 );
@@ -171,9 +163,9 @@ public class V1alpha1AccountControllerDocsTest {
     @WithMockUser
     void mergeSocialAccount_Docs() throws Exception {
         // given
-        final OAuthAccountMerge requset = OAuthAccountMerge.builder()
-                .targetAccountId(2L)
-                .oauthProvider("naver")
+        final V1alpha1SocialAccount requset = V1alpha1SocialAccount.builder()
+                .accountId(2L)
+                .provider("naver")
                 .build();
 
         // expected
@@ -192,8 +184,8 @@ public class V1alpha1AccountControllerDocsTest {
                                         parameterWithName("id").description("연동을 요청한 DB 계정 ID")
                                 ),
                                 requestFields(
-                                        fieldWithPath("oauthProvider").description("연동할 소셜 계정 제공사"),
-                                        fieldWithPath("targetAccountId").description("연동할 소셜 계정의 ID")
+                                        fieldWithPath("accountId").description("연동할 소셜 계정 제공사"),
+                                        fieldWithPath("provider").description("연동할 소셜 계정의 ID")
                                 )
                         )
                 );
@@ -203,7 +195,7 @@ public class V1alpha1AccountControllerDocsTest {
     @WithMockUser
     void verifyDaoAccountEmail_Docs() throws Exception {
         // given
-        final CompleteDaoAccountVerification request = CompleteDaoAccountVerification.builder()
+        final V1alpha1Account request = V1alpha1Account.builder()
                 .email("testuser@oddk.xyz")
                 .verificationCode("5252")
                 .build();
@@ -231,7 +223,7 @@ public class V1alpha1AccountControllerDocsTest {
     @WithMockUser
     void completeSocialAccountRegister_Docs() throws Exception {
         // given
-        final CompleteSocialAccountRegister request = CompleteSocialAccountRegister.builder()
+        final V1alpha1Account request = V1alpha1Account.builder()
                 .fullname("테스트유저")
                 .nickname("testuser")
                 .password("password")
@@ -264,7 +256,7 @@ public class V1alpha1AccountControllerDocsTest {
     @WithMockUser
     void updateAccountPassword_Docs() throws Exception {
         // given
-        final AccountPasswordUpdate requset = AccountPasswordUpdate.builder()
+        final V1alpha1Account requset = V1alpha1Account.builder()
                 .password("qwer1234")
                 .build();
 
@@ -296,9 +288,9 @@ public class V1alpha1AccountControllerDocsTest {
     void resetAccountPassword_Docs() throws Exception {
         // given
         String email = "test-user@oddk.xyz";
-        final AccountPasswordReset request = AccountPasswordReset.builder()
-                .verificationCode(UUID.randomUUID().toString())
-                .newPassword("123456")
+        final V1alpha1Account request = V1alpha1Account.builder()
+                .verificationCode("7777")
+                .password("123456")
                 .build();
 
         // expected
@@ -317,7 +309,7 @@ public class V1alpha1AccountControllerDocsTest {
                                 ),
                                 requestFields(
                                         fieldWithPath("verificationCode").description("비밀번호를 재설정할 계정에 발급된 인증 코드"),
-                                        fieldWithPath("newPassword").description("비밀번호를 재설정할 계정의 새 비밀번호")
+                                        fieldWithPath("password").description("비밀번호를 재설정할 계정의 새 비밀번호")
                                 )
                         )
                 );

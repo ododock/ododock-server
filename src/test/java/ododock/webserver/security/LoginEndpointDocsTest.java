@@ -19,7 +19,7 @@ import ododock.webserver.repository.jpa.VerificationInfoRepository;
 import ododock.webserver.security.request.LoginRequest;
 import ododock.webserver.security.response.V1alpha1Token;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1alpha1.dto.account.CompleteDaoAccountVerification;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -113,7 +113,7 @@ public class LoginEndpointDocsTest {
                 .orElseThrow(IllegalStateException::new);
 
         accountManageService.verifyDaoAccountEmail(
-                CompleteDaoAccountVerification.builder()
+                V1alpha1Account.builder()
                         .verificationCode(verificationInfo.getCode())
                         .email(request.getEmail())
                         .build());

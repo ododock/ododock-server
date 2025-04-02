@@ -7,8 +7,9 @@ import ododock.webserver.domain.account.AccountService;
 import ododock.webserver.domain.account.SocialAccountService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.VerificationCodeException;
-import ododock.webserver.web.v1alpha1.dto.account.*;
-import ododock.webserver.web.v1alpha1.dto.response.ValidateResponse;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
+import ododock.webserver.web.v1alpha1.dto.account.V1alpha1SocialAccount;
+import ododock.webserver.web.v1alpha1.dto.ValidateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,7 +48,7 @@ public class V1alpha1AccountController {
             value = ResourcePath.VERIFICATION
     )
     public ResponseEntity<Void> verifyDaoAccountEmail(
-            final @RequestBody CompleteDaoAccountVerification request) throws VerificationCodeException {
+            final @RequestBody V1alpha1Account request) throws VerificationCodeException {
         accountManageService.verifyDaoAccountEmail(request);
         return ResponseEntity.ok().build();
     }
@@ -56,7 +57,7 @@ public class V1alpha1AccountController {
             value = "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_SOCIAL_ACCOUNTS)
     public ResponseEntity<Void> mergeSocialAccount(
             final @PathVariable Long id,
-            final @RequestBody OAuthAccountMerge request) {
+            final @RequestBody V1alpha1SocialAccount request) {
         socialAccountService.mergeSocialAccount(id, request);
         return ResponseEntity.ok().build();
     }
@@ -65,7 +66,7 @@ public class V1alpha1AccountController {
             value = "/{" + ResourcePath.PATH_VAR_ID + "}")
     public ResponseEntity<Void> socialAccountRegisterComplete(
             final @PathVariable Long id,
-            final @Valid @RequestBody CompleteSocialAccountRegister request) {
+            final @Valid @RequestBody V1alpha1Account request) {
         socialAccountService.completeSocialAccountRegister(id, request);
         return ResponseEntity.ok().build();
     }
@@ -74,7 +75,7 @@ public class V1alpha1AccountController {
             value = "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PASSWORD)
     public ResponseEntity<Void> updateAccountPassword(
             final @PathVariable Long id,
-            final AccountPasswordUpdate request) {
+            final V1alpha1Account request) {
         accountService.updateAccountPassword(id, request);
         return ResponseEntity.ok().build();
     }
@@ -83,7 +84,7 @@ public class V1alpha1AccountController {
             value = "/{" + ResourcePath.PATH_VAR_NAME + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PASSWORD)
     public ResponseEntity<Void> resetPassword(
             final @PathVariable String name,
-            final @Valid @RequestBody AccountPasswordReset request) throws VerificationCodeException {
+            final @Valid @RequestBody V1alpha1Account request) throws VerificationCodeException {
         accountManageService.resetAccountPassword(name, request);
         return ResponseEntity.ok().build();
     }
