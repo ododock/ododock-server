@@ -1,4 +1,4 @@
-package ododock.webserver.domain.account;
+package ododock.webserver.domain.profile;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

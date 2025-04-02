@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import ododock.webserver.domain.AttributesMapConverter;
 import ododock.webserver.domain.BaseEntity;
 import ododock.webserver.domain.article.Template;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;

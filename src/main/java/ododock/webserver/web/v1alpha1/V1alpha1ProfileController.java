@@ -2,9 +2,8 @@ package ododock.webserver.web.v1alpha1;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.domain.account.ProfileService;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.web.ResourcePath;
-import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
 import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

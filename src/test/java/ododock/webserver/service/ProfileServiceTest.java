@@ -3,6 +3,8 @@ package ododock.webserver.service;
 import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.*;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

@@ -5,7 +5,7 @@ import jakarta.servlet.http.Cookie;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountService;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.domain.notification.MailService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;

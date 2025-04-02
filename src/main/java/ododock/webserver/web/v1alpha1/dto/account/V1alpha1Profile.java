@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.Profile;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.web.v1alpha1.dto.V1alpha1Base;
 import org.springframework.lang.Nullable;
 

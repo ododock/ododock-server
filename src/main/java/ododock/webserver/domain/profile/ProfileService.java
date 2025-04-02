@@ -1,6 +1,7 @@
-package ododock.webserver.domain.account;
+package ododock.webserver.domain.profile;
 
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.domain.account.Account;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.web.ResourceConflictException;
 import ododock.webserver.web.ResourceNotFoundException;
