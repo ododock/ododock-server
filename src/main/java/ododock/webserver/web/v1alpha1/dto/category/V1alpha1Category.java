@@ -7,6 +7,7 @@ import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.article.Category;
 import ododock.webserver.domain.article.CategoryListOptions;
 import ododock.webserver.web.v1alpha1.dto.V1alpha1Base;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 public class V1alpha1Category extends V1alpha1Base {
 
+    @Nullable
     private String id;
     private Long ownerAccountId;
     private String name;

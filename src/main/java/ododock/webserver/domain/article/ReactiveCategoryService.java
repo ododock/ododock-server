@@ -51,13 +51,13 @@ public class ReactiveCategoryService implements CategoryService {
     }
 
     @Override
-    public Mono<Category> updateCategory(Category category) {
-        return categoryRepository.findById(category.getId())
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException(Category.class, category.getId()))) // 존재하지 않으면 예외 발생
+    public Mono<Category> updateCategory(String id, Category request) {
+        return categoryRepository.findById(id)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException(Category.class, id))) // 존재하지 않으면 예외 발생
                 .flatMap(existingCategory -> {
-                    existingCategory.updateName(category.getName());
-                    existingCategory.updatePosition(category.getPosition());
-                    existingCategory.updateVisibility(category.isVisibility());
+                    existingCategory.updateName(request.getName());
+                    existingCategory.updatePosition(request.getPosition());
+                    existingCategory.updateVisibility(request.isVisibility());
                     return categoryRepository.save(existingCategory); // 저장 후 반환
                 });
     }

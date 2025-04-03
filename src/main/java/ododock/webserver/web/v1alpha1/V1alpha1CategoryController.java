@@ -58,7 +58,7 @@ public class V1alpha1CategoryController {
     ) {
         // id is accountId
         // subId is categoryId
-        return Mono.from(categoryService.updateCategory(category.toDomainDto()))
+        return Mono.from(categoryService.updateCategory(subId, category.toDomainDto()))
                 .map(V1alpha1Category::toControllerDto);
     }
 

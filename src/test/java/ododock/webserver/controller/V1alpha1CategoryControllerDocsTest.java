@@ -168,10 +168,10 @@ public class V1alpha1CategoryControllerDocsTest {
         when(response.getCreatedDate()).thenReturn(LocalDateTime.now());
         when(response.getLastModifiedAt()).thenReturn(LocalDateTime.now());
 
-        given(this.categoryService.updateCategory(request.toDomainDto()))
+        given(this.categoryService.updateCategory("category-id", request.toDomainDto()))
                 .willReturn(Mono.just(response));
 
-        webClient.patch().uri(BASE_URL + "/{" + ResourcePath.PATH_VAR_SUB_ID + "}", 1L, "update-category-id")
+        webClient.patch().uri(BASE_URL + "/{" + ResourcePath.PATH_VAR_SUB_ID + "}", 1L, "category-id")
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
