@@ -5,8 +5,8 @@ import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.config.web.WebConfiguration;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.profile.ProfileImage;
-import ododock.webserver.domain.profile.ProfileService;
+import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.account.S3ProfileService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.V1alpha1ProfileController;
 import ododock.webserver.web.v1alpha1.dto.account.V1alpha1Account;
@@ -49,7 +49,7 @@ public class V1alpha1ProfileControllerDocsTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ProfileService profileService;
+    private S3ProfileService s3ProfileService;
 
     @Test
     @WithMockUser
@@ -65,7 +65,7 @@ public class V1alpha1ProfileControllerDocsTest {
                         .fileType("jpeg")
                         .build())
                 .build();
-        given(profileService.getProfile(1L)).willReturn(response);
+        given(s3ProfileService.getProfile(1L)).willReturn(response);
 
         // expected
         mockMvc.perform(

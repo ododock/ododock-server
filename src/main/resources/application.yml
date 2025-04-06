@@ -99,3 +99,7 @@ app:
     book-content:
       base-url: ${CONTENT_BASE_URI}
       api-key: ${CONTENT_API_KEY}
+    object-storage:
+        s3-endpoint: ${OBJECT_STORAGE_BASE_URI}
+        s3-access-key: ${OBJECT_STORAGE_API_KEY}
+        s3-secret-key: ${OBJECT_STORAGE_API_SECRET}
