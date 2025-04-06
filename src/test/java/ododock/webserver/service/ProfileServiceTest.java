@@ -25,7 +25,7 @@ public class ProfileServiceTest {
     private CleanUp cleanup;
 
     @Autowired
-    private ProfileService profileService;
+    private S3ProfileService s3ProfileService;
 
     @Autowired
     private AccountService accountService;
@@ -49,7 +49,7 @@ public class ProfileServiceTest {
 
         // when
         Optional<Account> accountOpt = accountRepository.findByOwnProfile_Nickname("test-user");
-        boolean result = profileService.isAvailableNickname("test-user");
+        boolean result = s3ProfileService.isAvailableNickname("test-user");
 
         // then
         assertThat(result).isFalse();
@@ -74,7 +74,7 @@ public class ProfileServiceTest {
         em.flush();
 
         // when
-        Account result = profileService.getProfile(createdAccount.getId());
+        Account result = s3ProfileService.getProfile(createdAccount.getId());
 
         // then
         assertThat(result.getOwnProfile().getNickname()).isEqualTo("test-user");

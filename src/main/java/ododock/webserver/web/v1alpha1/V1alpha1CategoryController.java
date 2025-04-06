@@ -3,7 +3,7 @@ package ododock.webserver.web.v1alpha1;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ododock.webserver.domain.article.Category;
-import ododock.webserver.domain.article.CategoryService;
+import ododock.webserver.domain.article.ReactiveCategoryService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.dto.category.V1alpha1Category;
 import org.reactivestreams.Publisher;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class V1alpha1CategoryController {
 
-    private final CategoryService categoryService;
+    private final ReactiveCategoryService categoryService;
 
     @GetMapping(
             value = "")
