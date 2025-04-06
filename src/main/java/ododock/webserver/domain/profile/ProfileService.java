@@ -1,46 +1,22 @@
 package ododock.webserver.domain.profile;
 
-import lombok.RequiredArgsConstructor;
-import ododock.webserver.domain.account.Account;
-import ododock.webserver.repository.jpa.AccountRepository;
-import ododock.webserver.web.ResourceConflictException;
-import ododock.webserver.web.ResourceNotFoundException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import ododock.webserver.web.v1alpha1.dto.account.ImageFile;
 
-@Service
-@RequiredArgsConstructor
-public class ProfileService {
+import java.io.IOException;
+import java.util.Optional;
 
-    private final AccountRepository accountRepository;
+public interface ProfileService {
 
-    @Transactional(readOnly = true)
-    public boolean isAvailableNickname(final String nickname) {
-        return !accountRepository.existsByOwnProfile_Nickname(nickname);
-    }
+    Profile getProfile(Long accountId);
 
-    @Transactional(readOnly = true)
-    public Account getProfile(final Long accountId) {
-        Account foundAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        return foundAccount;
-    }
+    Profile updateProfile(Long accountId, Profile profile);
 
-    @Transactional
-    public void updateProfile(final Long accountId, final Profile request) {
-        if (!isAvailableNickname(request.getNickname())) {
-            throw new ResourceConflictException(Profile.class, request.getNickname());
-        }
-        Account ownerAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        ownerAccount.getOwnProfile().updateNickname(request.getNickname());
-        if (request.getProfileImage().getImageSource() != null && request.getProfileImage().getFileType() != null) {
-            ownerAccount.getOwnProfile()
-                    .updateProfileImage(
-                            request.getProfileImage().getImageSource(),
-                            request.getProfileImage().getFileType())
-            ;
-        }
-    }
+    Optional<ProfileImage> getProfileImage(Long accountId);
+
+    ProfileImage saveProfileImage(Long accountId, ImageFile file) throws IOException;
+
+    ProfileImage updateProfileImage(Long accountId, ImageFile file);
+
+    void deleteProfileImage(Long accountId);
 
 }

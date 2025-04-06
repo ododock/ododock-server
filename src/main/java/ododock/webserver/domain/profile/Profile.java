@@ -23,7 +23,6 @@ public class Profile {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Nullable
     @Embedded
     private ProfileImage profileImage;
 
@@ -39,9 +38,9 @@ public class Profile {
         this.fullname = fullname;
     }
 
-    public void updateProfileImage(final String imageSource, final String filetype) {
+    public void updateProfileImage(final String sourcePath, final String filetype) {
         this.profileImage = ProfileImage.builder()
-                .imageSource(imageSource)
+                .sourcePath(sourcePath)
                 .fileType(filetype)
                 .build();
     }

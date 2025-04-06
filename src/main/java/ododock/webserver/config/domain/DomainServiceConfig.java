@@ -1,6 +1,10 @@
 package ododock.webserver.config.domain;
 
+import ododock.webserver.domain.StorageService;
 import ododock.webserver.domain.curation.LibraryBookListOptionsUtil;
+import ododock.webserver.domain.profile.ProfileService;
+import ododock.webserver.domain.profile.SimpleProfileService;
+import ododock.webserver.repository.jpa.AccountRepository;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +22,11 @@ public class DomainServiceConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ProfileService profileService(StorageService storageService, AccountRepository accountRepository) {
+        return new SimpleProfileService(storageService, accountRepository);
     }
 
     @Bean

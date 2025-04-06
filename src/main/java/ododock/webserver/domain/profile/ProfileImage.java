@@ -13,21 +13,21 @@ import org.springframework.lang.Nullable;
 public class ProfileImage {
 
     @Nullable
-    @Column(name = "image_source")
-    private String imageSource;
+    @Column(name = "source_path")
+    private String sourcePath;
 
     @Nullable
     @Column(name = "file_type")
     private String fileType;
 
     @Builder
-    public ProfileImage(final String imageSource, final String fileType) {
-        this.imageSource = imageSource;
+    public ProfileImage(final String sourcePath, final String fileType) {
+        this.sourcePath = sourcePath;
         this.fileType = fileType;
     }
 
-    public void updateImageSource(final String imageSource) {
-        this.imageSource = imageSource;
+    public void updateSourcePath(final String sourcePath) {
+        this.sourcePath = sourcePath;
     }
 
     public void updateFileType(final String fileType) {

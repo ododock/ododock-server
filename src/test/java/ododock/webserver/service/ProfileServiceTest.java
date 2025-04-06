@@ -2,7 +2,8 @@ package ododock.webserver.service;
 
 import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
-import ododock.webserver.domain.account.*;
+import ododock.webserver.domain.account.Account;
+import ododock.webserver.domain.account.Role;
 import ododock.webserver.domain.profile.Profile;
 import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.repository.jpa.AccountRepository;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,32 +30,7 @@ public class ProfileServiceTest {
     private ProfileService profileService;
 
     @Autowired
-    private AccountService accountService;
-
-    @Autowired
     private AccountRepository accountRepository;
-
-    //    @Test
-    @Transactional
-    void validate_nickname() {
-        // given
-        final Account account = Account.builder()
-                .nickname("test-user")
-                .email("test-user@oddk.xyz")
-                .password("password")
-                .fullname("John Doe")
-                .birthDate(LocalDate.of(1991, 5, 22))
-                .roles(Set.of(Role.USER))
-                .build();
-        accountRepository.save(account);
-
-        // when
-        Optional<Account> accountOpt = accountRepository.findByOwnProfile_Nickname("test-user");
-        boolean result = profileService.isAvailableNickname("test-user");
-
-        // then
-        assertThat(result).isFalse();
-    }
 
     //    @Test
     @Transactional
@@ -76,12 +51,12 @@ public class ProfileServiceTest {
         em.flush();
 
         // when
-        Account result = profileService.getProfile(createdAccount.getId());
+        Profile result = profileService.getProfile(createdAccount.getId());
 
         // then
-        assertThat(result.getOwnProfile().getNickname()).isEqualTo("test-user");
-        assertThat(result.getOwnProfile().getProfileImage().getImageSource()).isEqualTo("http://test.com/temp.png");
-        assertThat(result.getOwnProfile().getProfileImage().getFileType()).isEqualTo("png");
+        assertThat(result.getNickname()).isEqualTo("test-user");
+        assertThat(result.getProfileImage().getSourcePath()).isEqualTo("http://test.com/temp.png");
+        assertThat(result.getProfileImage().getFileType()).isEqualTo("png");
 
     }
 
