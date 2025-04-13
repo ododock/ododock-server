@@ -54,7 +54,7 @@ public class AccountService {
                 .profileImage(account.getOwnProfile() == null
                         ? ProfileImage.builder().build()
                         : ProfileImage.builder()
-                        .imageSource(account.getOwnProfile().getProfileImage().getImageSource())
+                        .sourcePath(account.getOwnProfile().getProfileImage().getSourcePath())
                         .fileType(account.getOwnProfile().getProfileImage().getFileType())
                         .build()
                 )

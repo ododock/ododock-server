@@ -61,7 +61,7 @@ public class V1alpha1AccountQueryControllerDocsTest {
                 .fullname("John doe")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .profileImage(ProfileImage.builder()
-                        .imageSource("http://oddk.xyz/foo.png")
+                        .sourcePath("http://oddk.xyz/foo.png")
                         .fileType("png")
                         .build())
                 .build());

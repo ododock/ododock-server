@@ -3,7 +3,6 @@ package ododock.webserver.service;
 import jakarta.persistence.EntityManager;
 import ododock.webserver.common.CleanUp;
 import ododock.webserver.domain.account.AccountService;
-import ododock.webserver.domain.account.S3ProfileService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,9 +17,6 @@ public class CategoryServiceTest {
 
     @Autowired
     private CleanUp cleanup;
-
-    @Autowired
-    private S3ProfileService s3ProfileService;
 
     @Autowired
     private AccountService accountService;
