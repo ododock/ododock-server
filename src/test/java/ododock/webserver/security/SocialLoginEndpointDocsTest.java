@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.domain.StorageService;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.web.ResourcePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -50,6 +53,12 @@ public class SocialLoginEndpointDocsTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private ProfileService profileService;
+
+    @MockBean
+    private StorageService storageService;
 
     @BeforeEach
     public void setup(RestDocumentationContextProvider restDocumentation) {

@@ -1,13 +1,16 @@
 package ododock.webserver.service;
 
 import ododock.webserver.common.CleanUp;
+import ododock.webserver.domain.StorageService;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountQueryService;
 import ododock.webserver.domain.account.Role;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +28,12 @@ public class AccountQueryServiceTest {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @MockBean
+    private ProfileService profileService;
+
+    @MockBean
+    private StorageService storageService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

@@ -7,6 +7,8 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.domain.StorageService;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
 import ododock.webserver.web.ResourcePath;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -69,6 +72,12 @@ public class SocialLoginSuccessResultResponseDocs {
 
     @Autowired
     private JwtService jwtService;
+
+    @MockBean
+    private ProfileService profileService;
+
+    @MockBean
+    private StorageService storageService;
 
     private OAuth2LoginSuccessHandler successHandler;
 
