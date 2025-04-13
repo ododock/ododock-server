@@ -13,6 +13,10 @@ public class StaticResourceConfig implements WebMvcConfigurer {
         registry
                 .addResourceHandler(ResourcePath.DOCS + "/**")
                 .addResourceLocations("classpath:" + ResourcePath.DOCS);
+
+        registry
+                .addResourceHandler("/images/**") // URL 패턴
+                .addResourceLocations("file:images/"); // 로컬 디렉토리 (루트 기준)
     }
 
 }
