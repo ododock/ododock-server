@@ -12,8 +12,13 @@ public record ImageFile(
     public static ImageFile from(MultipartFile file) throws IOException {
         return new ImageFile(
                 file.getOriginalFilename(),
-                file.getContentType(), // todo checkout actual value
+                file.getContentType(),
                 file.getBytes()
         );
     }
+
+    public String getFileExtension() {
+        return extension.split("/")[1];
+    }
+
 }

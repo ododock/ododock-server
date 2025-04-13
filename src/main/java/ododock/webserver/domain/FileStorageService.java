@@ -33,7 +33,7 @@ public class FileStorageService implements StorageService {
             Files.createFile(targetPath);
         }
         Files.write(targetPath, file, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        return targetPath.toString();
+        return String.format("/%s/%s", fileStoragePath.getFileName(), filename);
     }
 
     @Override
