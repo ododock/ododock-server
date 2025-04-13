@@ -15,6 +15,7 @@ import ododock.webserver.web.exceptionhandler.factories.*;
 import ododock.webserver.web.exceptionhandler.log.CompositeLogLevelResolver;
 import ododock.webserver.web.exceptionhandler.response.CompositeExceptionResponseResolver;
 import ododock.webserver.web.v1alpha1.StatusConverter;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.ResponseEntity;
@@ -118,6 +119,11 @@ public class WebConfiguration {
         return new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    @Bean
+    public InMemoryHttpExchangeRepository httpExchangeRepository() {
+        return new InMemoryHttpExchangeRepository();
     }
 
 }

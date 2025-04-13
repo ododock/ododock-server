@@ -99,6 +99,18 @@ app:
     book-content:
       base-url: ${CONTENT_BASE_URI}
       api-key: ${CONTENT_API_KEY}
+
+management:
+  server:
+    port: 8080
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+
     object-storage:
         s3-endpoint: ${OBJECT_STORAGE_BASE_URI}
         s3-access-key: ${OBJECT_STORAGE_API_KEY}
