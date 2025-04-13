@@ -27,7 +27,6 @@ public class V1alpha1Profile extends V1alpha1Base {
     private String fullname;
     @Nullable
     private LocalDate birthDate;
-    @Nullable
     private V1alpha1ProfileImage profileImage;
 
     public Profile toDomainDto() {
@@ -35,7 +34,7 @@ public class V1alpha1Profile extends V1alpha1Base {
                 .nickname(this.nickname)
                 .fullname(this.fullname)
                 .birthDate(this.birthDate)
-                .profileImage(profileImage == null ? new ProfileImage() : profileImage.toDomainDto())
+                .profileImage(profileImage == null ? ProfileImage.builder().build() : profileImage.toDomainDto())
                 .build();
     }
 
@@ -44,10 +43,7 @@ public class V1alpha1Profile extends V1alpha1Base {
                 .nickname(domainDto.getNickname())
                 .fullname(domainDto.getFullname())
                 .birthDate(domainDto.getBirthDate())
-                .profileImage(V1alpha1ProfileImage.builder()
-                        .sourcePath(domainDto.getProfileImage().getSourcePath())
-                        .fileType(domainDto.getProfileImage().getFileType())
-                        .build())
+                .profileImage(V1alpha1ProfileImage.toControllerDto(domainDto.getProfileImage()))
                 .build();
     }
 

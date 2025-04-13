@@ -51,13 +51,6 @@ public class AccountService {
                 .fullname(account.getOwnProfile().getFullname())
                 .roles(Set.of(Role.USER))
                 .attributes(account.getAttributes())
-                .profileImage(account.getOwnProfile() == null
-                        ? ProfileImage.builder().build()
-                        : ProfileImage.builder()
-                        .sourcePath(account.getOwnProfile().getProfileImage().getSourcePath())
-                        .fileType(account.getOwnProfile().getProfileImage().getFileType())
-                        .build()
-                )
                 .build();
         accountRepository.save(newAccount);
     }

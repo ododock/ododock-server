@@ -9,7 +9,8 @@ import java.time.LocalDate;
 @Embeddable
 @Getter
 @Builder
-@AllArgsConstructor
+@Access(AccessType.FIELD)
+@NoArgsConstructor
 public class Profile {
 
     @Column(name = "nickname", nullable = false)
@@ -26,8 +27,12 @@ public class Profile {
     @Embedded
     private ProfileImage profileImage;
 
-    public Profile() {
-        this.profileImage = ProfileImage.builder().build();
+    @Builder
+    public Profile(String nickname, String fullname, LocalDate birthDate, ProfileImage profileImage) {
+        this.nickname = nickname;
+        this.fullname = fullname;
+        this.birthDate = birthDate;
+        this.profileImage = profileImage != null ? profileImage : ProfileImage.builder().build();
     }
 
     public void updateNickname(final String nickname) {

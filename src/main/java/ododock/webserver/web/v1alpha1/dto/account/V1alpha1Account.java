@@ -63,8 +63,8 @@ public class V1alpha1Account extends V1alpha1Base {
                 .birthDate(this.birthDate)
                 .attributes(this.attributes)
                 .profileImage(ProfileImage.builder()
-                        .sourcePath("imgsource")
-                        .fileType("filetype")
+                        .sourcePath(profileImageSource)
+                        .fileType(profileImageFileType)
                         .build())
                 .build();
     }

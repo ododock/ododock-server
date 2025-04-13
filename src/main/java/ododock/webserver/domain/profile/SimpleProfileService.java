@@ -58,10 +58,7 @@ public class SimpleProfileService implements ProfileService {
     public ProfileImage saveProfileImage(Long accountId, ImageFile imageFile) throws IOException {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
-        String fileName = account.getOwnProfile().getProfileImage().getSourcePath();
-        if (fileName == null || fileName.isBlank()) {
-            fileName = buildFileName(account);
-        }
+        String fileName = buildFileName(account, imageFile);
         String filePath = storageService.saveData(fileName, imageFile.data());
         account.getOwnProfile().updateProfileImage(filePath, imageFile.extension());
         return account.getOwnProfile().getProfileImage();
@@ -77,8 +74,17 @@ public class SimpleProfileService implements ProfileService {
 
     }
 
-    private String buildFileName(Account account) {
-        return String.format("%s-%s", account.getId(), account.getCreatedDate().toInstant(ZoneOffset.UTC));
+    private String buildFileName(Account account, ImageFile imageFile) {
+        if (account.getOwnProfile().getProfileImage() == null) {
+            return String.format("%s-%s.%s", account.getId(), account.getCreatedDate().toEpochSecond(ZoneOffset.UTC), imageFile.getFileExtension());
+        }
+        if (account.getOwnProfile().getProfileImage().getSourcePath() == null
+                || account.getOwnProfile().getProfileImage().getFileType() == null
+                || account.getOwnProfile().getProfileImage().getSourcePath().isBlank()
+                || account.getOwnProfile().getProfileImage().getFileType().isBlank()) {
+            throw new IllegalStateException();
+        }
+        return account.getOwnProfile().getProfileImage().getSourcePath();
     }
 
 }

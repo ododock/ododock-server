@@ -123,7 +123,7 @@ public class Account extends BaseEntity {
                 .nickname(nickname)
                 .fullname(fullname)
                 .birthDate(birthDate)
-                .profileImage(profileImage)
+                .profileImage(profileImage != null ? profileImage : ProfileImage.builder().build())
                 .build();
         this.socialAccounts = new ArrayList<>();
         this.templates = new ArrayList<>();

@@ -1,5 +1,7 @@
 package ododock.webserver.domain.profile;
 
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Builder;
@@ -8,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 @Getter
+@Access(AccessType.FIELD)
 @Embeddable
 @NoArgsConstructor
 public class ProfileImage {

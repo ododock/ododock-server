@@ -24,6 +24,9 @@ public class V1alpha1ProfileImage extends V1alpha1Base {
     private String fileType;
 
     public static V1alpha1ProfileImage toControllerDto(ProfileImage domainDto) {
+        if (domainDto == null) {
+            return V1alpha1ProfileImage.builder().build();
+        }
         return V1alpha1ProfileImage.builder()
                 .sourcePath(domainDto.getSourcePath())
                 .fileType(domainDto.getFileType())
