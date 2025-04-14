@@ -1,4 +1,4 @@
-package ododock.webserver.domain.account;
+package ododock.webserver.domain.profile;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +9,8 @@ import java.time.LocalDate;
 @Embeddable
 @Getter
 @Builder
-@AllArgsConstructor
+@Access(AccessType.FIELD)
+@NoArgsConstructor
 public class Profile {
 
     @Column(name = "nickname", nullable = false)
@@ -23,12 +24,15 @@ public class Profile {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Nullable
     @Embedded
     private ProfileImage profileImage;
 
-    public Profile() {
-        this.profileImage = ProfileImage.builder().build();
+    @Builder
+    public Profile(String nickname, String fullname, LocalDate birthDate, ProfileImage profileImage) {
+        this.nickname = nickname;
+        this.fullname = fullname;
+        this.birthDate = birthDate;
+        this.profileImage = profileImage != null ? profileImage : ProfileImage.builder().build();
     }
 
     public void updateNickname(final String nickname) {
@@ -39,9 +43,9 @@ public class Profile {
         this.fullname = fullname;
     }
 
-    public void updateProfileImage(final String imageSource, final String filetype) {
+    public void updateProfileImage(final String sourcePath, final String filetype) {
         this.profileImage = ProfileImage.builder()
-                .imageSource(imageSource)
+                .sourcePath(sourcePath)
                 .fileType(filetype)
                 .build();
     }

@@ -43,3 +43,6 @@ src/main/resources/static/docs/openapi3.json
 
 ### embedded ###
 oddk/
+
+### Files ###
+/images/

@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.Profile;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.web.v1alpha1.dto.V1alpha1Base;
 import org.springframework.lang.Nullable;
 
@@ -23,38 +22,28 @@ import java.time.LocalDate;
 public class V1alpha1Profile extends V1alpha1Base {
 
     @Nullable
-    private Long id;
-    @Nullable
     private String nickname;
     @Nullable
     private String fullname;
     @Nullable
     private LocalDate birthDate;
-    @Nullable
-    private String profileImageSource;
-    @Nullable
-    private String profileImageFileType;
+    private V1alpha1ProfileImage profileImage;
 
     public Profile toDomainDto() {
         return Profile.builder()
                 .nickname(this.nickname)
                 .fullname(this.fullname)
                 .birthDate(this.birthDate)
-                .profileImage(ProfileImage.builder()
-                        .imageSource(this.profileImageSource)
-                        .fileType(this.profileImageFileType)
-                        .build())
+                .profileImage(profileImage == null ? ProfileImage.builder().build() : profileImage.toDomainDto())
                 .build();
     }
 
-    public static V1alpha1Profile toControllerDto(Account domainDto) {
+    public static V1alpha1Profile toControllerDto(Profile domainDto) {
         return V1alpha1Profile.builder()
-                .id(domainDto.getId())
-                .nickname(domainDto.getOwnProfile().getNickname())
-                .fullname(domainDto.getOwnProfile().getFullname())
-                .birthDate(domainDto.getOwnProfile().getBirthDate())
-                .profileImageSource(domainDto.getOwnProfile().getProfileImage().getImageSource())
-                .profileImageFileType(domainDto.getOwnProfile().getProfileImage().getFileType())
+                .nickname(domainDto.getNickname())
+                .fullname(domainDto.getFullname())
+                .birthDate(domainDto.getBirthDate())
+                .profileImage(V1alpha1ProfileImage.toControllerDto(domainDto.getProfileImage()))
                 .build();
     }
 

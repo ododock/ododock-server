@@ -5,8 +5,8 @@ import ododock.webserver.common.TestMvcSecurityConfig;
 import ododock.webserver.config.web.WebConfiguration;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountQueryService;
-import ododock.webserver.domain.account.Profile;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.V1alpha1AccountQueryController;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ public class V1alpha1AccountQueryControllerDocsTest {
                 .fullname("John doe")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .profileImage(ProfileImage.builder()
-                        .imageSource("http://oddk.xyz/foo.png")
+                        .sourcePath("http://oddk.xyz/foo.png")
                         .fileType("png")
                         .build())
                 .build());

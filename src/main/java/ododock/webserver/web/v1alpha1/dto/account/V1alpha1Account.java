@@ -3,11 +3,10 @@ package ododock.webserver.web.v1alpha1.dto.account;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.domain.account.SocialAccount;
 import ododock.webserver.web.v1alpha1.dto.V1alpha1Base;
 import org.springframework.lang.Nullable;
@@ -64,8 +63,8 @@ public class V1alpha1Account extends V1alpha1Base {
                 .birthDate(this.birthDate)
                 .attributes(this.attributes)
                 .profileImage(ProfileImage.builder()
-                        .imageSource("imgsource")
-                        .fileType("filetype")
+                        .sourcePath(profileImageSource)
+                        .fileType(profileImageFileType)
                         .build())
                 .build();
     }

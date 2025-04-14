@@ -7,11 +7,13 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.domain.StorageService;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountManageService;
 import ododock.webserver.domain.account.AccountService;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.domain.notification.MailService;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.domain.verification.VerificationInfo;
 import ododock.webserver.domain.verification.VerificationService;
 import ododock.webserver.repository.jpa.AccountRepository;
@@ -75,6 +77,12 @@ public class LoginEndpointDocsTest {
     private PasswordEncoder passwordEncoder;
 
     @MockBean
+    private ProfileService profileService;
+
+    @MockBean
+    private StorageService storageService;
+
+    @MockBean
     private MailService mailService;
 
     private RequestSpecification spec;
@@ -98,7 +106,7 @@ public class LoginEndpointDocsTest {
                 .birthDate(LocalDate.of(1997, 1, 23))
                 .nickname(("johnDoe123"))
                 .profileImage(ProfileImage.builder()
-                        .imageSource("image1")
+                        .sourcePath("image1")
                         .fileType(".png")
                         .build())
                 .build();

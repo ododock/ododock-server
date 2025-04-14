@@ -4,12 +4,15 @@ import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.domain.StorageService;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.web.ResourcePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,12 @@ public class LogoutEndpointDocsTest {
 
     private static final String BASE_URL = ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.AUTH;
     private RequestSpecification spec;
+
+    @MockBean
+    private ProfileService profileService;
+
+    @MockBean
+    private StorageService storageService;
 
     @BeforeEach
     public void setUp(ServletWebServerApplicationContext context, RestDocumentationContextProvider provider) {

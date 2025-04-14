@@ -2,6 +2,7 @@ package ododock.webserver.domain.account;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.web.ResourceConflictException;
 import ododock.webserver.web.ResourceNotFoundException;
@@ -50,13 +51,6 @@ public class AccountService {
                 .fullname(account.getOwnProfile().getFullname())
                 .roles(Set.of(Role.USER))
                 .attributes(account.getAttributes())
-                .profileImage(account.getOwnProfile() == null
-                        ? ProfileImage.builder().build()
-                        : ProfileImage.builder()
-                        .imageSource(account.getOwnProfile().getProfileImage().getImageSource())
-                        .fileType(account.getOwnProfile().getProfileImage().getFileType())
-                        .build()
-                )
                 .build();
         accountRepository.save(newAccount);
     }

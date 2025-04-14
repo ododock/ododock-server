@@ -92,6 +92,13 @@ app:
     access-token-expiry: 60
     refresh-token-expiry: 1440
     refresh-token-early-renewal-period: 720
+  storage:
+    file-service:
+      root-dir: ${FILE_STORAGE_ROOT_DIR}
+    s3-client:
+      endpoint: ${OBJECT_STORAGE_BASE_URI}
+      access-key: ${OBJECT_STORAGE_API_KEY}
+      secret-key: ${OBJECT_STORAGE_API_SECRET}
   clients:
     library-curation:
       base-url: ${CURATION_BASE_URI}

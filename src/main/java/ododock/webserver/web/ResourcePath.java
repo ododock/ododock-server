@@ -20,6 +20,7 @@ public final class ResourcePath {
     public static final String ACCOUNTS_SUBRESOURCE_SOCIAL_ACCOUNTS = "/social-accounts";
     public static final String ACCOUNTS_SUBRESOURCE_PASSWORD = "/password";
     public static final String ACCOUNTS_SUBRESOURCE_PROFILE = "/profile";
+    public static final String PROFILE_SUBRESOURCE_IMAGE = "/image";
     public static final String ACCOUNTS_SUBRESOURCE_CATEGORIES = "/categories";
     public static final String ACCOUNTS_SUBRESOURCE_CATEGORIES_POSITION = "/position";
     public static final String VERIFICATION = "/verification";

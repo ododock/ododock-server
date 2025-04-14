@@ -6,7 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ododock.webserver.domain.account.Account;
-import ododock.webserver.domain.account.Profile;
 
 @Entity
 @Getter

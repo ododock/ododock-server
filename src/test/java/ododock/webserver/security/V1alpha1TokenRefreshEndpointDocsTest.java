@@ -3,10 +3,12 @@ package ododock.webserver.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import ododock.webserver.common.RestDocsConfig;
+import ododock.webserver.domain.StorageService;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.account.AccountService;
-import ododock.webserver.domain.account.ProfileImage;
+import ododock.webserver.domain.profile.ProfileImage;
 import ododock.webserver.domain.notification.MailService;
+import ododock.webserver.domain.profile.ProfileService;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.security.filter.RefreshTokenAuthenticationFilter;
 import ododock.webserver.security.response.DaoUserDetails;
@@ -70,6 +72,12 @@ public class V1alpha1TokenRefreshEndpointDocsTest {
     @Autowired
     private JwtService jwtService;
 
+    @MockBean
+    private ProfileService profileService;
+
+    @MockBean
+    private StorageService storageService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -97,7 +105,7 @@ public class V1alpha1TokenRefreshEndpointDocsTest {
                 .birthDate(LocalDate.of(1993, 10, 23))
                 .attributes(Map.of())
                 .profileImage(ProfileImage.builder()
-                        .imageSource("image1")
+                        .sourcePath("image1")
                         .fileType("png")
                         .build())
                 .build();

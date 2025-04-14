@@ -22,6 +22,7 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -48,6 +49,7 @@ public class SpringMvcExceptionResolverFactory extends ExceptionResolverFactory 
         STATUS_TYPE_ENUM_MAP.put(HttpRequestMethodNotSupportedException.class, StatusTypeEnum.METHOD_NOT_ALLOWED);
         STATUS_TYPE_ENUM_MAP.put(HttpMediaTypeNotSupportedException.class, StatusTypeEnum.UNSUPPORTED_MEDIA_TYPE);
         STATUS_TYPE_ENUM_MAP.put(HttpMediaTypeNotAcceptableException.class, StatusTypeEnum.NOT_ACCEPTABLE);
+        STATUS_TYPE_ENUM_MAP.put(MultipartException.class, StatusTypeEnum.MISSING_REQUEST_PARAMETER);
         STATUS_TYPE_ENUM_MAP.put(MissingPathVariableException.class, StatusTypeEnum.MISSING_PATH_VARIABLE);
         STATUS_TYPE_ENUM_MAP.put(MissingServletRequestParameterException.class, StatusTypeEnum.MISSING_REQUEST_PARAMETER);
         STATUS_TYPE_ENUM_MAP.put(ServletRequestBindingException.class, StatusTypeEnum.REQUEST_BINDING_ERROR);

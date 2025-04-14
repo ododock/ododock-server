@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import ododock.webserver.domain.AttributesMapConverter;
 import ododock.webserver.domain.BaseEntity;
 import ododock.webserver.domain.article.Template;
+import ododock.webserver.domain.profile.Profile;
+import ododock.webserver.domain.profile.ProfileImage;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;
@@ -121,7 +123,7 @@ public class Account extends BaseEntity {
                 .nickname(nickname)
                 .fullname(fullname)
                 .birthDate(birthDate)
-                .profileImage(profileImage)
+                .profileImage(profileImage != null ? profileImage : ProfileImage.builder().build())
                 .build();
         this.socialAccounts = new ArrayList<>();
         this.templates = new ArrayList<>();
