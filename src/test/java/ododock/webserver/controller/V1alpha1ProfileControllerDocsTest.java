@@ -63,8 +63,8 @@ public class V1alpha1ProfileControllerDocsTest {
         given(profile.getFullname()).willReturn("John Doe");
         given(profile.getBirthDate()).willReturn(LocalDate.of(1990, 1, 1));
         given(profile.getProfileImage()).willReturn(ododock.webserver.domain.profile.ProfileImage.builder()
-                .sourcePath("/img.jpg")
-                .fileType("jpeg")
+                .sourcePath("/1-983247828.jpg")
+                .fileType("image/png")
                 .build());
 
         given(profileService.getProfile(1L)).willReturn(profile);
@@ -101,17 +101,9 @@ public class V1alpha1ProfileControllerDocsTest {
         final V1alpha1Profile request = V1alpha1Profile.builder()
                 .nickname("newNickname")
                 .profileImage(V1alpha1ProfileImage.builder()
-                        .sourcePath("newPhoto.png")
-                        .fileType("png")
+                        .sourcePath("/1-983247828.jpg")
+                        .fileType("image/png")
                         .build())
-                .build();
-
-        final V1alpha1Account response = V1alpha1Account.builder()
-                .id(1L)
-                .nickname("user1")
-                .fullname("John Doe")
-                .profileImageSource("http://oddx.xyz/img.jpg")
-                .profileImageFileType("jpeg")
                 .build();
 
         // expected
@@ -143,8 +135,8 @@ public class V1alpha1ProfileControllerDocsTest {
     void getProfileImage_Docs() throws Exception {
         // given
         ProfileImage profileImage = mock(ProfileImage.class);
-        given(profileImage.getSourcePath()).willReturn("/img.jpg");
-        given(profileImage.getFileType()).willReturn("jpeg");
+        given(profileImage.getSourcePath()).willReturn("/1-983247828.jpg");
+        given(profileImage.getFileType()).willReturn("image/jpeg");
 
         given(profileService.getProfileImage(1L)).willReturn(Optional.of(profileImage));
 
@@ -177,8 +169,8 @@ public class V1alpha1ProfileControllerDocsTest {
         final V1alpha1Profile request = V1alpha1Profile.builder()
                 .nickname("newNickname")
                 .profileImage(V1alpha1ProfileImage.builder()
-                        .sourcePath("newPhoto.png")
-                        .fileType("png")
+                        .sourcePath("/1-324234324435.png")
+                        .fileType("image/png")
                         .build())
                 .build();
 
@@ -186,23 +178,23 @@ public class V1alpha1ProfileControllerDocsTest {
                 .id(1L)
                 .nickname("user1")
                 .fullname("John Doe")
-                .profileImageSource("http://oddx.xyz/img.jpg")
-                .profileImageFileType("jpeg")
+                .profileImageSource("/1-2134385.jpg")
+                .profileImageFileType("image/jpeg")
                 .build();
 
-        MockMultipartFile multipartFile = new MockMultipartFile("file", "test.png",
+        MockMultipartFile multipartFile = new MockMultipartFile("image.png", "test.png",
                 "image/png", "Spring Framework".getBytes());
 
         ProfileImage profileImage = mock(ProfileImage.class);
         given(profileImage.getSourcePath()).willReturn("/img.jpg");
-        given(profileImage.getFileType()).willReturn("jpeg");
+        given(profileImage.getFileType()).willReturn("image/jpeg");
 
         given(profileService.saveProfileImage(1L, ImageFile.from(multipartFile))).willReturn(profileImage);
 
         // expected
         mockMvc.perform(
                         multipart(BASE_PATH + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PROFILE + ResourcePath.PROFILE_SUBRESOURCE_IMAGE, 1L)
-                                .file(multipartFile)
+                                .file("file", multipartFile.getBytes())
                                 .contentType(MediaType.MULTIPART_FORM_DATA)
                                 .characterEncoding(StandardCharsets.UTF_8)
                 )
