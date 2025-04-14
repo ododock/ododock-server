@@ -49,7 +49,7 @@ public class V1alpha1ProfileController {
             final @PathVariable Long id
     ) {
         Optional<ProfileImage> imageDataOpt = profileService.getProfileImage(id);
-        return imageDataOpt.map(V1alpha1ProfileImage::toControllerDto).orElse(null);
+        return imageDataOpt.map(V1alpha1ProfileImage::toControllerDto).orElseGet(() -> V1alpha1ProfileImage.builder().build());
     }
 
     @PostMapping(

@@ -5,18 +5,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.profile.ProfileImage;
-import ododock.webserver.web.v1alpha1.dto.V1alpha1Base;
 import org.springframework.lang.Nullable;
 
 @Setter
 @Getter
 @SuperBuilder(toBuilder = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.ALWAYS)
 @NoArgsConstructor
 @AllArgsConstructor
-public class V1alpha1ProfileImage extends V1alpha1Base {
+public class V1alpha1ProfileImage {
 
     @Nullable
     private String sourcePath;
