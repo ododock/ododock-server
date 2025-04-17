@@ -52,9 +52,9 @@ public class V1alpha1ArticleController {
     @PatchMapping(
             value = ResourcePath.ARTICLES + "/{" + ResourcePath.PATH_VAR_ID + "}")
     public Mono<V1alpha1Article> updateArticle(
-            final @PathVariable Long id,
+            final @PathVariable String id,
             final @Valid @RequestBody V1alpha1Article request) {
-        return Mono.from(articleService.updateArticle(request.toDomainDto()))
+        return Mono.from(articleService.updateArticle(id, request.toDomainDto()))
                 .map(V1alpha1Article::toControllerDto);
     }
 

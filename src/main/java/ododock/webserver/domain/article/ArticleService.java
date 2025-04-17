@@ -10,7 +10,7 @@ public interface ArticleService {
 
     Publisher<Article> createArticle(Article article);
 
-    Publisher<Article> updateArticle(Article article);
+    Publisher<Article> updateArticle(String articleId, Article article);
 
     Publisher<Void> deleteArticle(String articleId);
 

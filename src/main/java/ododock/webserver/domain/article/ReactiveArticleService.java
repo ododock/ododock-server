@@ -50,15 +50,15 @@ public class ReactiveArticleService implements ArticleService {
     }
 
     @Override
-    public Publisher<Article> updateArticle(Article article) {
+    public Publisher<Article> updateArticle(String articleId, Article article) {
         return Mono.fromCallable(() -> accountRepository.existsById(article.getOwnerAccountId()))
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(exists -> {
                     if (!exists) {
                         return Mono.error(new ResourceNotFoundException(Article.class, article.getOwnerAccountId()));
                     }
-                    return articleRepository.findById(article.getId())
-                            .switchIfEmpty(Mono.error(new ResourceNotFoundException(Article.class, article.getId())))
+                    return articleRepository.findById(articleId)
+                            .switchIfEmpty(Mono.error(new ResourceNotFoundException(Article.class, articleId)))
                             .flatMap(foundArticle -> {
                                 foundArticle.updateTitle(article.getTitle());
                                 foundArticle.updateVisibility(article.isVisibility());

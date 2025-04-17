@@ -313,7 +313,7 @@ public class V1alpha1ArticleControllerDocsTest {
                 .build();
 
 
-        given(this.articleService.updateArticle(any(Article.class))).willReturn(Mono.just(mockArticle));
+        given(this.articleService.updateArticle(any(String.class), any(Article.class))).willReturn(Mono.just(mockArticle));
 
         webClient.patch().uri(BASE_URL + ResourcePath.ARTICLES + "/{" + ResourcePath.PATH_VAR_ID + "}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
