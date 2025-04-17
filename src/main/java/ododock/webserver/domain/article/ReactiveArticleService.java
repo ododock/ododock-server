@@ -31,9 +31,9 @@ public class ReactiveArticleService implements ArticleService {
                     if (!exists) {
                         return Flux.error(new ResourceNotFoundException(Article.class, accountId));
                     }
-                    return articleRepository.findArticlesByOwnerAccountId(accountId)
+                    return articleRepository.findArticlesByOwnerAccountId(accountId);
                             // todo apply list options
-                            .filter(Article::isVisibility);
+//                            .filter(Article::isVisibility);
                 });
     }
 
