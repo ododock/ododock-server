@@ -34,6 +34,7 @@ public class TestMvcSecurityConfig {
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(RequestPathMatcher.PERMIT_ALL_MATCHER).permitAll()
                         .requestMatchers(RequestPathMatcher.AUTHENTICATED_MATCHER).authenticated()
+                        .requestMatchers(ResourcePath.ACTUATOR).denyAll()
                         .anyRequest().authenticated()
                 );
 

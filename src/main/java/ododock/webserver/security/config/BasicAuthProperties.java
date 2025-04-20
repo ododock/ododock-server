@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -12,7 +13,7 @@ import java.util.List;
 public class BasicAuthProperties {
 
     @Getter
-    private final List<BasicUser> users;
+    private final List<BasicUser> users = new ArrayList<>();
 
     @AllArgsConstructor
     public static class BasicUser {

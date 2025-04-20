@@ -42,5 +42,6 @@ public final class ResourcePath {
     public static final String AUTHORIZATION = "/authorization";
     public static final String CALLBACK = "/callback";
     public static final String OAUTH_CALLBACK = LOCALHOST + OAUTH2 + CALLBACK +"sub=%s&provider=%s&access_token=%s&refresh_token=%s";
+    public static final String ACTUATOR = "/actuator/**";
 
 }
