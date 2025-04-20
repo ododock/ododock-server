@@ -1,0 +1,20 @@
+spring:
+  config:
+    activate:
+      on-profile: "actuator"
+management:
+  health:
+    mail:
+      enabled: false
+  metrics:
+    enable:
+      jvm.threads: true
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus,metrics,threaddump"
