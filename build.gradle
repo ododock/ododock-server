@@ -96,24 +96,27 @@ test {
     useJUnitPlatform()
 }
 
-task copyOasToDocs {
-    //delete("src/main/resources/static/docs/openapi3.json")
-    copy {
-        from("$buildDir/api-spec/openapi3.json")
-        into("src/main/resources/static/docs/.")
-    }
+tasks.register('copyOasToDocs', Copy) {
+    dependsOn 'openapi3'
+    from("$buildDir/api-spec/openapi3.json")
+    into("src/main/resources/static/docs")
     doLast {
         println 'Copying OAS to Docs...'
     }
 }
 
+tasks.named('clean', Delete) {
+    delete 'src/main/resources/static/docs/openapi3.json'
+}
+
 tasks.named('build') {
-    finalizedBy 'openapi3', 'copyOasToDocs'
+    dependsOn 'openapi3', 'copyOasToDocs'
+}
+
+tasks.named('bootRun') {
+    dependsOn 'openapi3', 'copyOasToDocs'
 }
 
 tasks.named('bootBuildImage') {
-    dependsOn 'build'
-    dependsOn 'openapi3'
-    dependsOn 'copyOasToDocs'
-    mustRunAfter 'build'
+    dependsOn 'openapi3', 'copyOasToDocs'
 }
