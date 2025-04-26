@@ -7,7 +7,7 @@ services:
     environment:
       MYSQL_DATABASE: oddk
       TZ: Asia/Seoul
-      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_ROOT_PASSWORD: root123  # 👉 추가!!
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_data_file_path=ibdata1:10M:autoextend
 
   oddk-mongo:
