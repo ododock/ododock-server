@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "oddk-backend.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "oddk-backend.fullname" . }}
+    spec:
+      containers:
+        - name: oddk-backend
+          image: {{ .Values.backend.image }}
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: {{ include "oddk-backend.fullname" . }}-envs
+            - secretRef:
+                name: {{ include "oddk-backend.fullname" . }}-envs
+          volumeMounts:
+            - name: {{ include "oddk-backend.fullname" . }}-data
+              mountPath: /images
+          resources:
+            limits:
+              memory: 4Gi
+      volumes:
+        - name: {{ include "oddk-backend.fullname" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ include "oddk-backend.fullname" . }}-data
+---

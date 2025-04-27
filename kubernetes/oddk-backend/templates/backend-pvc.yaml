@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-data
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ include "oddk-backend.fullname" . }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

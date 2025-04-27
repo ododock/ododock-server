@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-mysql
+  namespace: {{ .Values.namespace }}
+data:
+  MYSQL_DATABASE: {{ .Values.backend.spring.datasource.database | quote }}
+---

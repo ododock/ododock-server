@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-envs
+  namespace: {{ .Values.namespace }}
+data:
+  SPRING_PROFILES_ACTIVE: "prod, actuator"
+  SPRING_MAIL_USERNAME: {{ .Values.backend.spring.mail.username | quote}}
+
+  SPRING_DATASOURCE_URL: jdbc:mysql://{{ include "oddk-backend.fullname" . }}-mysql.{{ .Values.namespace }}.svc.cluster.local:3306/{{ .Values.backend.spring.datasource.database }}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+  SPRING_DATASOURCE_USERNAME: {{ .Values.backend.spring.datasource.username | quote }}
+  SPRING_DATA_MONGODB_HOST: "{{ include "oddk-backend.fullname" . }}-mongo.{{ .Values.namespace }}.svc.cluster.local"
+  SPRING_DATA_MONGODB_PORT: "27017"
+  SPRING_DATA_MONGODB_DATABASE: {{ .Values.backend.spring.data.mongodb.database | quote }}
+  SPRING_DATA_MONGODB_SSL_ENABLED: {{ .Values.backend.spring.data.mongodb.ssl.enabled | quote }}
+  SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: {{ .Values.backend.spring.jpa.properties.hibernate.format_sql | quote }}
+  SPRING_JPA_PROPERTIES_HIBERNATE_USE_SQL_COMMENTS: {{ .Values.backend.spring.jpa.properties.hibernate.use_sql_comments | quote }}
+  SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_BATCH_FETCH_SIZE: {{ .Values.backend.spring.jpa.properties.hibernate.default_batch_fetch_size | quote }}
+  SPRING_JPA_SHOW_SQL: {{ .Values.backend.spring.jpa.properties.show_sql | quote }}
+  SPRING_JPA_GENERATE_DDL: {{ .Values.backend.spring.jpa.properties.generate_ddl | quote }}
+  SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.MySQLDialect"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.MySQLDialect"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "create-drop"
+
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: {{ .Values.backend.spring.security.oauth2.resourceserver.jwt.issuer_uri | quote }}
+  APP_SECURITY_OAUTH_CALLBACK_URI: {{.Values.backend.security.oauth_callback_uri | quote}}
+  APP_JWT_TOKEN_EXPIRY_TIME_UNIT: {{ .Values.backend.jwt.token_expiry_time_unit | quote }}
+  APP_JWT_ACCESS_TOKEN_EXPIRY: {{ .Values.backend.jwt.access_token_expiry | quote }}
+  APP_JWT_REFRESH_TOKEN_EXPIRY: {{ .Values.backend.jwt.refresh_token_expiry | quote }}
+  APP_JWT_REFRESH_TOKEN_EARLY_RENEWAL_PERIOD: {{ .Values.backend.jwt.refresh_token_early_renewal_period | quote }}
+
+  APP_STORAGE_FILE_SERVICE_ROOT_DIR: {{ .Values.backend.storage.file_service.root_dir | quote }}
+  APP_STORAGE_S3_CLIENT_ENDPOINT: {{ .Values.backend.storage.s3_client.endpoint | quote }}
+
+  APP_CLIENTS_LIBRARY_CURATION_BASE_URL: {{ .Values.backend.clients.library_curation.base_url | quote }}
+  APP_CLIENTS_BOOK_CONTENT_BASE_URL: {{ .Values.backend.clients.book_content.base_url | quote }}

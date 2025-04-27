@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-mongo
+  namespace: {{ .Values.namespace }}
+data:
+  MONGO_DATABASE: {{ .Values.backend.spring.data.mongodb.database | quote }}
+  MONGO_INITDB_ROOT_USERNAME: {{ .Values.backend.spring.data.mongodb.username | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-mongo-script
+data:
+  mongo-init.js: |
+    db = db.getSiblingDB({{ .Values.backend.spring.data.mongodb.database | quote }});
+---

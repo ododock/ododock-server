@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-mongo
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: {{ include "oddk-backend.fullname" . }}-mongo
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "oddk-backend.fullname" . }}-mongo
+  template:
+    metadata:
+      labels:
+        app: {{ include "oddk-backend.fullname" . }}-mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          envFrom:
+            - configMapRef:
+                name: {{ include "oddk-backend.fullname" . }}-mongo
+            - secretRef:
+                name: {{ include "oddk-backend.fullname" . }}-mongo
+          volumeMounts:
+            - name: {{ include "oddk-backend.fullname" . }}-mongo-init-script
+              mountPath: /docker-entrypoint-initdb.d/mongo-init.js
+              subPath: mongo-init.js
+            - name: {{ include "oddk-backend.fullname" . }}-mongo-pvc
+              mountPath: /data/db
+      volumes:
+        - name: {{ include "oddk-backend.fullname" . }}-mongo-init-script
+          configMap:
+            name: {{ include "oddk-backend.fullname" . }}-mongo-script
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "oddk-backend.fullname" . }}-mongo-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+---

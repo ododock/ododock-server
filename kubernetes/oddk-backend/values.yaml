@@ -1,0 +1,155 @@
+replicaCount: 1
+
+image:
+  repository: 93jpark/oddk-backend
+  pullPolicy: IfNotPresent
+  tag: "0.0.1-SNAPSHOT"
+
+namespace: oddk
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: dev.oddk.xyz
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources:
+  limits:
+    memory: 1Gi
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+backend:
+  image: 93jpark/oddk-backend:0.0.1-SNAPSHOT
+
+  security:
+    oauth_callback_uri: ### TO BE FILLED ###
+    basic_auth:
+      users:
+        username: ### TO BE FILLED ###
+        password: ### TO BE FILLED ###
+  jwt:
+    token_expiry_time_unit: minutes
+    access_token_expiry: 60
+    refresh_token_expiry: 1440
+    refresh_token_early_renewal_period: 720
+  storage:
+    file_service:
+      root_dir: ### TO BE FILLED ###
+    s3_client:
+      endpoint: ### TO BE FILLED ###
+      access_key: ### TO BE FILLED ###
+      secret_key: ### TO BE FILLED ###
+  clients:
+    library_curation:
+      base_url: ### TO BE FILLED ###
+      api_key: ### TO BE FILLED ###
+    book_content:
+      base_url: ### TO BE FILLED ###
+      api_key: ### TO BE FILLED ###
+
+  spring:
+    port: 8080
+    profiles:
+      active: prod, actuator
+    mail:
+      username: ### TO BE FILLED ###
+      password: ### TO BE FILLED ###
+    datasource:
+      driver_class_name: com.mysql.cj.jdbc.Driver
+      database: oddk
+      username: ### TO BE FILLED ###
+      password: ### TO BE FILLED ###
+    data:
+      mongodb:
+        host: ### TO BE FILLED ###
+        port: 27017
+        database: oddk
+        username: ### TO BE FILLED ###
+        password: ### TO BE FILLED ###
+        ssl:
+          enabled: false
+    jpa:
+      properties:
+        hibernate:
+          format_sql: true
+          use_sql_comments: true
+          default_batch_fetch_size: 500
+        show_sql: true
+        generate_ddl: true
+    security:
+      oauth2:
+        resourceserver:
+          jwt:
+            issuer_uri: ### TO BE FILLED ###
+        client:
+            registration:
+                google:
+                  client_id: ### TO BE FILLED ###
+                  client_secret: ### TO BE FILLED ###
+                  redirect_uri: ### TO BE FILLED ###
+                  authorization_grant-type: authorization_code
+                  scope:
+                      - https://www.googleapis.com/auth/userinfo.email
+                      - https://www.googleapis.com/auth/userinfo.profile
+                naver:
+                  client_id: ### TO BE FILLED ###
+                  client_secret: ### TO BE FILLED ###
+                  redirect_uri: ### TO BE FILLED ###
+                  authorization_grant_type: authorization_code
+            provider:
+              google:
+                authorization_uri: https://accounts.google.com/o/oauth2/auth
+                token_uri: https://oauth2.googleapis.com/token
+                user_info_uri: https://www.googleapis.com/oauth2/v3/userinfo
+                user_name_attribute: email
+              naver:
+                authorization_uri: https://nid.naver.com/oauth2.0/authorize
+                token_uri: https://nid.naver.com/oauth2.0/token
+                user_info_uri: https://openapi.naver.com/v1/nid/me
+                user_name_attribute: response

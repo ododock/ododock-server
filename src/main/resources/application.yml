@@ -2,6 +2,8 @@ server:
   forward-headers-strategy: native
 
 spring:
+  profiles:
+    active: "actuator"
   web:
     resources:
       add-mappings: true
