@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "oddk-backend.fullname" . }}-mysql
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: {{ include "oddk-backend.fullname" . }}-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "oddk-backend.fullname" . }}-mysql
+  template:
+    metadata:
+      labels:
+        app: {{ include "oddk-backend.fullname" . }}-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          ports:
+            - containerPort: 3306
+          env:
+            - name: TZ
+              value: "UTC"
+          envFrom:
+            - configMapRef:
+                name: {{ include "oddk-backend.fullname" . }}-mysql
+            - secretRef:
+                name: {{ include "oddk-backend.fullname" . }}-mysql
+          volumeMounts:
+            - name: {{ include "oddk-backend.fullname" . }}-mysql-pvc
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "oddk-backend.fullname" . }}-mysql-pvc
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+---
