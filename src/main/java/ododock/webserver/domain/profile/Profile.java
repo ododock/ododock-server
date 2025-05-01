@@ -1,7 +1,9 @@
 package ododock.webserver.domain.profile;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDate;

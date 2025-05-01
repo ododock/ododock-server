@@ -28,10 +28,11 @@ spring:
     password:
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.H2Dialect
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
+        ddl-auto: create
         format_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 500
@@ -113,6 +114,7 @@ app:
         - username: ${BASIC_AUTH_USERNAME}
           password: ${BASIC_AUTH_PASSWORD}
   jwt:
+    issuer: ${HOST_DOMAIN_URI}
     token-expiry-time-unit: "minutes"
     access-token-expiry: 10
     refresh-token-expiry: 30
