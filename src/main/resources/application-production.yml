@@ -1,26 +1,33 @@
 spring:
   config:
     activate:
-      on-profile: dev
-
+      on-profile: production
+  # mongo
+  data:
+    mongodb:
+      ssl:
+        enabled: true
+  # jpa
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
-  data:
-    mongodb:
-      ssl:
-        enabled: false
-
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
+    properties:
+      hibernate:
+        ddl-auto: validate
+        dialect: com.mysql
     database-platform: org.hibernate.dialect.MySQLDialect
 
 app:
   security:
     oauth-callback-uri: "${FRONT_CALLBACK_URI}/oauth2/callback?sub=%s&provider=%s&access_token=%s&refresh_token=%s"
   jwt:
-    issuer: "${HOST_DOMAIN_URI}"
+    issuer: ${HOST_DOMAIN_URI}
+
+logging:
+  level:
+    ododock.webserver: info

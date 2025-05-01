@@ -75,6 +75,11 @@ jobs:
 
       - name: Build Docker image with bootBuildImage
         run: |
+          echo "Prepare API Docs ..."
+          ./gradlew clean openapi3
+          echo "Copy API json ..."
+          ./gradlew copyOasToDocs
+          echo "build image ..."
           ./gradlew bootBuildImage --imageName=docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
 
       - name: Login to DockerHub
