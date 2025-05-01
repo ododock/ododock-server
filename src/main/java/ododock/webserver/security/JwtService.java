@@ -85,8 +85,8 @@ public class JwtService {
             Instant expireAt = refreshToken.getClaimAsInstant(JwtClaimNames.EXP);
             Long renewThreshold = getThreshold();
             ChronoUnit timeUnit = ChronoUnit.valueOf(jwtProperties.getTokenExpiryTimeUnit().toUpperCase());
-
-            return expireAt.minus(renewThreshold, timeUnit).isBefore(Instant.now());
+            Instant renewTime = expireAt.minus(renewThreshold, timeUnit);
+            return Instant.now().isAfter(renewTime) || Instant.now().equals(renewTime);
         }
 
         return false;

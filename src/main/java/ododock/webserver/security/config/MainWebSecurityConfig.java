@@ -95,7 +95,7 @@ public class MainWebSecurityConfig {
                         ),
                         OAuth2AuthorizationRequestRedirectFilter.class
                 )
-                .addFilterAfter(
+                .addFilterBefore(
                         new RefreshTokenAuthenticationFilter(jwtDecoder, jwtService, objectMapper),
                         BearerTokenAuthenticationFilter.class
                 )
