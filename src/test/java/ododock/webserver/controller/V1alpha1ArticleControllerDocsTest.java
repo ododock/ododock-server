@@ -28,7 +28,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -102,8 +102,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getBody()).thenReturn(List.of(block));
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
 
         given(this.articleService.getArticle("article-id-1"))
                 .willReturn(Mono.just(mockArticle));
@@ -160,8 +160,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getBody()).thenReturn(List.of(block));
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
 
         given(this.articleService.listArticles(1L, V1alpha1ArticleListOptions.builder().build().toDomainDto()))
                 .willReturn(Flux.just(mockArticle));
@@ -218,8 +218,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getBody()).thenReturn(List.of(block));
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
 
         V1alpha1Article controllerDto = V1alpha1Article.builder()
                 .title("title")
@@ -300,8 +300,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getBody()).thenReturn(List.of(block));
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
+        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
 
         V1alpha1Article controllerDto = V1alpha1Article.builder()
                 .title("title")

@@ -19,8 +19,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -68,8 +68,8 @@ public class V1alpha1AccountQueryControllerDocsTest {
 //        when(account.getOwnProfile().getNickname()).thenReturn("tester");
 //        when(account.getOwnProfile().getBirthDate()).thenReturn(LocalDate.of(1999, 12, 31));
 //        when(account.getOwnProfile().getFullname()).thenReturn("John doe");
-        when(account.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(account.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(account.getCreatedDate()).thenReturn(Instant.now());
+        when(account.getLastModifiedAt()).thenReturn(Instant.now());
         when(account.getEmailVerified()).thenReturn(true);
         when(account.getAttributes()).thenReturn(Map.of("key", List.of("value")));
 

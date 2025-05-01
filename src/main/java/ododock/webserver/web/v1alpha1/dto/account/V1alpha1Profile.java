@@ -1,5 +1,6 @@
 package ododock.webserver.web.v1alpha1.dto.account;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -26,6 +27,7 @@ public class V1alpha1Profile extends V1alpha1Base {
     @Nullable
     private String fullname;
     @Nullable
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
     private V1alpha1ProfileImage profileImage;
 
