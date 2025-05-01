@@ -9,7 +9,6 @@ import ododock.webserver.web.v1alpha1.dto.account.ImageFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.time.ZoneOffset;
 import java.util.Optional;
 
 public class SimpleProfileService implements ProfileService {
@@ -76,7 +75,7 @@ public class SimpleProfileService implements ProfileService {
 
     private String buildFileName(Account account, ImageFile imageFile) {
         if (account.getOwnProfile().getProfileImage() == null) {
-            return String.format("%s-%s.%s", account.getId(), account.getCreatedDate().toEpochSecond(ZoneOffset.UTC), imageFile.getFileExtension());
+            return String.format("%s-%s.%s", account.getId(), account.getCreatedDate().getEpochSecond(), imageFile.getFileExtension());
         }
         if (account.getOwnProfile().getProfileImage().getSourcePath() == null
                 || account.getOwnProfile().getProfileImage().getFileType() == null

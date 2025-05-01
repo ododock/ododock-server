@@ -21,7 +21,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import static com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.resourceDetails;
@@ -65,8 +65,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(category.getName()).thenReturn("Journal");
         when(category.getPosition()).thenReturn(0);
         when(category.isVisibility()).thenReturn(true);
-        when(category.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(category.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(category.getCreatedDate()).thenReturn(Instant.now());
+        when(category.getLastModifiedAt()).thenReturn(Instant.now());
 
         given(this.categoryService.listCategoriesByOwnerAccountId(1L))
                 .willReturn(Flux.just(category));
@@ -165,8 +165,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(response.getName()).thenReturn("Journal");
         when(response.getPosition()).thenReturn(0);
         when(response.isVisibility()).thenReturn(true);
-        when(response.getCreatedDate()).thenReturn(LocalDateTime.now());
-        when(response.getLastModifiedAt()).thenReturn(LocalDateTime.now());
+        when(response.getCreatedDate()).thenReturn(Instant.now());
+        when(response.getLastModifiedAt()).thenReturn(Instant.now());
 
         given(this.categoryService.updateCategory("category-id", request.toDomainDto()))
                 .willReturn(Mono.just(response));
