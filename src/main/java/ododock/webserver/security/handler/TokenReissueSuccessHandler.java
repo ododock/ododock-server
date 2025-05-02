@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.security.JwtService;
 import ododock.webserver.security.response.UserPrincipal;
 import ododock.webserver.security.response.V1alpha1Token;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
+
+import static org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames.REFRESH_TOKEN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -66,13 +69,18 @@ public class TokenReissueSuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.getWriter().write(tokenStr);
     }
 
-    private String extractRefreshToken(final HttpServletRequest request) {
+    private String extractRefreshToken(final HttpServletRequest request) throws BadRequestException {
+        if (request.getHeader("Authorization") != null) {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader.startsWith("Bearer ")) {
+                return authorizationHeader.substring(7);
+            }
+        }
         return Arrays.stream(request.getCookies())
-                .filter(c -> c.getName()
-                        .equals("refresh_token")
-                ).findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Refresh token not found"))
-                .getValue();
+                .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN))
+                .findAny()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new BadRequestException("token not found"));
     }
 
 }
