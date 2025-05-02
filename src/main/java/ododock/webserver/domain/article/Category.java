@@ -6,15 +6,10 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ododock.webserver.domain.account.Account;
 import ododock.webserver.domain.BaseEntity;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -45,7 +40,8 @@ public class Category extends BaseEntity {
     private boolean visibility;
 
     @Builder
-    public Category(final Long ownerAccountId, final String name, final Boolean visibility, final Integer position) {
+    public Category(final String id, final Long ownerAccountId, final String name, final Boolean visibility, final Integer position) {
+        this.id = id;
         this.ownerAccountId = ownerAccountId;
         this.name = name;
         this.visibility = visibility == null || visibility;

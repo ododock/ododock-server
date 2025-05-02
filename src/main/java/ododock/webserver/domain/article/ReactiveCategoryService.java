@@ -7,6 +7,7 @@ import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.repository.reactive.ArticleRepository;
 import ododock.webserver.repository.reactive.CategoryRepository;
 import ododock.webserver.web.ResourceNotFoundException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,7 +35,8 @@ public class ReactiveCategoryService implements CategoryService {
                     if (!exists) {
                         return Flux.error(new ResourceNotFoundException(Account.class, accountId));
                     }
-                    return categoryRepository.findCategoryByOwnerAccountId(accountId);
+                    Sort sort = Sort.by(Sort.Direction.ASC, "position");
+                    return categoryRepository.findCategoryByOwnerAccountId(accountId, sort);
                 });
     }
 
@@ -46,19 +48,48 @@ public class ReactiveCategoryService implements CategoryService {
                     if (!exists) {
                         return Mono.error(new ResourceNotFoundException(Account.class, category.getOwnerAccountId()));
                     }
-                    return categoryRepository.save(category);
+                    return categoryRepository.countCategoriesByOwnerAccountId(category.getOwnerAccountId())
+                            .flatMap(count -> {
+                                category.updatePosition(Math.toIntExact(count));
+                                return categoryRepository.save(category);
+                            });
                 });
     }
 
     @Override
-    public Mono<Category> updateCategory(String id, Category request) {
-        return categoryRepository.findById(id)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException(Category.class, id))) // 존재하지 않으면 예외 발생
+    public Mono<Category> updateCategory(Long ownerId, Category request) {
+        return categoryRepository.findById(request.getId())
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException(Category.class, request.getId())))
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(existingCategory -> {
                     existingCategory.updateName(request.getName());
-                    existingCategory.updatePosition(request.getPosition());
                     existingCategory.updateVisibility(request.isVisibility());
-                    return categoryRepository.save(existingCategory); // 저장 후 반환
+
+                    if (!existingCategory.getPosition().equals(request.getPosition())) {
+                        return categoryRepository.countCategoriesByOwnerAccountId(ownerId)
+                                .map(count -> {
+                                    if (request.getPosition() >= count) {
+                                        return count.intValue();
+                                    }
+                                    return request.getPosition();
+                                })
+                                .flatMap(adjustedPosition ->
+                                        categoryRepository.findCategoryByOwnerAccountIdAndPosition(ownerId, adjustedPosition)
+                                                .flatMap(target -> {
+                                                    target.updatePosition(existingCategory.getPosition());
+                                                    existingCategory.updatePosition(adjustedPosition);
+
+                                                    return categoryRepository.save(target)
+                                                            .then(categoryRepository.save(existingCategory));
+                                                })
+                                                .switchIfEmpty(Mono.defer(() -> {
+                                                    existingCategory.updatePosition(adjustedPosition);
+                                                    return categoryRepository.save(existingCategory);
+                                                }))
+                                );
+                    }
+
+                    return categoryRepository.save(existingCategory);
                 });
     }
 
