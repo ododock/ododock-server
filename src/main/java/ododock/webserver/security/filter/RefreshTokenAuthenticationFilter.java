@@ -50,14 +50,17 @@ public class RefreshTokenAuthenticationFilter extends AbstractAuthenticationProc
     }
 
     private String extractRefreshToken(HttpServletRequest request) throws BadRequestException {
-        if (request.getCookies() == null) {
-            throw new BadCredentialsException("token not found");
+        if (request.getHeader("Authorization") != null) {
+            String authorizationHeader = request.getHeader("Authorization");
+            if (authorizationHeader.startsWith("Bearer ")) {
+                return authorizationHeader.substring(7);
+            }
         }
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> cookie.getName().equals(REFRESH_TOKEN))
                 .findAny()
                 .map(Cookie::getValue)
-                .orElseThrow(() -> new BadCredentialsException("token not found"));
+                .orElseThrow(() -> new BadRequestException("token not found"));
     }
 
     @Override
