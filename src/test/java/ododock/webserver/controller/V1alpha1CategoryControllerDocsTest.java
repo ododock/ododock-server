@@ -122,28 +122,48 @@ public class V1alpha1CategoryControllerDocsTest {
     @Test
     @WithMockUser
     void create_category_Docs() throws Exception {
-        Category category = Category.builder()
+        V1alpha1Category request = V1alpha1Category.builder()
                 .name("Journal")
                 .ownerAccountId(1L)
                 .visibility(true)
-                .position(0)
                 .build();
-        given(this.categoryService.createCategory(category))
-                .willReturn(Mono.just(category));
 
-        webClient.get().uri(BASE_URL + "", 1L)
+        Category mock = mock(Category.class);
+        when(mock.getId()).thenReturn("68142fb23ce8964a97f9767f");
+        when(mock.getOwnerAccountId()).thenReturn(1L);
+        when(mock.getName()).thenReturn("Journal");
+        when(mock.getPosition()).thenReturn(0);
+        when(mock.isVisibility()).thenReturn(true);
+        when(mock.getCreatedDate()).thenReturn(Instant.now());
+        when(mock.getLastModifiedAt()).thenReturn(Instant.now());
+
+        given(this.categoryService.createCategory(request.toDomainDto()))
+                .willReturn(Mono.just(mock));
+
+        webClient.post().uri(BASE_URL, 1L)
                 .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
                 .consumeWith(document("category/create-category",
                                 resourceDetails()
-                                        .tag("Category").description("카테고리 생성 엔드포인트"),
+                                        .tag("Category").summary("카테고리 생성 엔드포인트")
+                                        .description("""
+                                                카테고리 생성 시 가장 마지막 위치에 기본적으로 추가됨. 
+                                                총 카테고리의 갯수가 5개인 상태에서 새로운 카테고리를 생성하면 해당 카테고리는 position이 6으로 됨.
+                                                """),
                                 pathParameters(
                                         parameterWithName("id").description("생성할 카테고리의 계정 ID")
                                 ),
                                 responseFields(
-                                        fieldWithPath("[]").description("빈 카테고리 목록").optional()
+                                        fieldWithPath("id").description("카테고리의 ID"),
+                                        fieldWithPath("name").description("카테고리의 이름"),
+                                        fieldWithPath("position").description("카테고리의 위치"),
+                                        fieldWithPath("visibility").description("카테고리의 공개여부"),
+                                        fieldWithPath("ownerAccountId").description("카테고리의 소유자 ID"),
+                                        fieldWithPath("createdAt").description("카테고리 생성일"),
+                                        fieldWithPath("updatedAt").description("카테고리 수정일")
                                 )
                         )
                 );
@@ -156,19 +176,17 @@ public class V1alpha1CategoryControllerDocsTest {
                 .name("Journal")
                 .ownerAccountId(1L)
                 .visibility(true)
-                .position(0)
                 .build();
 
         Category response = mock(Category.class);
         when(response.getId()).thenReturn("category-id");
         when(response.getOwnerAccountId()).thenReturn(1L);
         when(response.getName()).thenReturn("Journal");
-        when(response.getPosition()).thenReturn(0);
         when(response.isVisibility()).thenReturn(true);
         when(response.getCreatedDate()).thenReturn(Instant.now());
         when(response.getLastModifiedAt()).thenReturn(Instant.now());
 
-        given(this.categoryService.updateCategory("category-id", request.toDomainDto()))
+        given(this.categoryService.updateCategory(1L, request.toDomainDto()))
                 .willReturn(Mono.just(response));
 
         webClient.patch().uri(BASE_URL + "/{" + ResourcePath.PATH_VAR_SUB_ID + "}", 1L, "category-id")
@@ -179,7 +197,14 @@ public class V1alpha1CategoryControllerDocsTest {
                 .expectBody()
                 .consumeWith(document("category/update-category",
                                 resourceDetails()
-                                        .tag("Category").description("카테고리 수정 엔드포인트"),
+                                        .tag("Category")
+                                        .summary("카테고리 수정 엔드포인트")
+                                        .description("""
+                                                카테고리의 위치(position)이 변경되는 경우, 해당 위치에 이미 존재하는 category와 순서가 변경됨.
+                                                예를 들어, 0번 위치에 있는 카테고리를 1번 위치로 이동하면, 1번 위치에 있는 카테고리는 0번으로 이동함.
+                                                현재 존재하는 카테고리의 갯수보다 많은 갯수를 입력하는 경우, 현재 존재하는 가장 마지막 위치로 설정됨.
+                                                총 카테고리 갯수가 5개인 상황에서 카테고리(position 1)의 위치를 10으로 하게되면 해당 카테고리는 5로 설정되며, 기존에 5에 있던 카테고리는 position 1로 됨.
+                                                카테고리의 위치는 1-based index으로 표현됨."""),
                                 pathParameters(
                                         parameterWithName("id").description("수정할 카테고리의 계정 ID"),
                                         parameterWithName("subId").description("수정할 카테고리 ID")
