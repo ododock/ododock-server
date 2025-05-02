@@ -50,7 +50,7 @@ public class ReactiveCategoryService implements CategoryService {
                     }
                     return categoryRepository.countCategoriesByOwnerAccountId(category.getOwnerAccountId())
                             .flatMap(count -> {
-                                category.updatePosition(Math.toIntExact(count));
+                                category.updatePosition(Math.toIntExact(++count));
                                 return categoryRepository.save(category);
                             });
                 });
