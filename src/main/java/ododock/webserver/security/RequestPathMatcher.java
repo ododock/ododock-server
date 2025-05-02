@@ -28,6 +28,7 @@ public final class RequestPathMatcher {
                 new AntPathRequestMatcher(ResourcePath.OAUTH_CALLBACK),
                 new AntPathRequestMatcher(ResourcePath.AUTH_PROCESSING_URL, "POST"),
                 new AntPathRequestMatcher(ResourcePath.AUTH_LOGOUT_URL, "POST"),
+                new AntPathRequestMatcher(ResourcePath.AUTH_REFRESH_URL, "POST"),
 
                 new AntPathRequestMatcher(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.VERIFICATION + "/*", POST), // verification-code 발급
 
