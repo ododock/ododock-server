@@ -10,7 +10,7 @@ public interface CategoryService {
 
     Publisher<Category> createCategory(Category category);
 
-    Publisher<Category> updateCategory(String id, Category category);
+    Publisher<Category> updateCategory(Long ownerId, Category category);
 
     Publisher<Void> deleteCategory(String id);
 

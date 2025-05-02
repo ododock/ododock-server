@@ -2,6 +2,7 @@ package ododock.webserver.web.v1alpha1.dto.category;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.article.Category;
@@ -25,6 +26,7 @@ public class V1alpha1Category extends V1alpha1Base {
     private String id;
     private Long ownerAccountId;
     private String name;
+    @PositiveOrZero
     private Integer position;
     private boolean visibility;
 
@@ -38,6 +40,7 @@ public class V1alpha1Category extends V1alpha1Base {
 
     public Category toDomainDto() {
         return Category.builder()
+                .id(this.id)
                 .ownerAccountId(this.ownerAccountId)
                 .name(this.name)
                 .visibility(this.visibility)
