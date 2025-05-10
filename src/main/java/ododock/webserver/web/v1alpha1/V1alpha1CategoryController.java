@@ -2,20 +2,24 @@ package ododock.webserver.web.v1alpha1;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ododock.webserver.domain.article.Category;
 import ododock.webserver.domain.article.CategoryService;
+import ododock.webserver.repository.reactive.ArticleRepository;
 import ododock.webserver.web.ResourcePath;
+import ododock.webserver.web.v1alpha1.dto.article.V1alpha1ArticleSummary;
 import ododock.webserver.web.v1alpha1.dto.category.V1alpha1Category;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(ResourcePath.API + ResourcePath.API_VERSION + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_CATEGORIES)
 @RequiredArgsConstructor
 public class V1alpha1CategoryController {
 
+    private final ArticleRepository articleRepository;
     private final CategoryService categoryService;
 
     @GetMapping(
@@ -23,10 +27,21 @@ public class V1alpha1CategoryController {
     public Publisher<V1alpha1Category> listCategoriesByAccountId(
             final @PathVariable Long id) {
         // 'id' is accountId
-        return Flux.defer(() -> {
-            Publisher<Category> categories = categoryService.listCategoriesByOwnerAccountId(id);
-            return categories != null ? Flux.from(categories).map(V1alpha1Category::toControllerDto) : Flux.empty();
-        });
+        return Flux.defer(() -> Flux.from(categoryService.listCategoriesByOwnerAccountId(id))
+                .flatMap(category -> {
+                    V1alpha1Category dto = V1alpha1Category.toControllerDto(category);
+                    return articleRepository.findArticlesByCategoryId(category.getId())
+                            .collectList()
+                            .map(articles -> {
+                                // todo refactor merge into dto converting process
+                                List<V1alpha1ArticleSummary> summaries = articles.stream()
+                                        .map(V1alpha1ArticleSummary::toControllerDto)
+                                        .toList();
+                                dto.setArticleSummaries(summaries);
+                                return dto;
+                            });
+                })
+        );
     }
 
     @GetMapping(
