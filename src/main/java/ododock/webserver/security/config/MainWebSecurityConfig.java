@@ -10,6 +10,7 @@ import ododock.webserver.security.handler.DaoAuthenticationSuccessHandler;
 import ododock.webserver.security.handler.OAuth2LoginSuccessHandler;
 import ododock.webserver.web.ResourcePath;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,6 +39,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableConfigurationProperties(SecurityProperties.class)
 public class MainWebSecurityConfig {
 
     private final AuthService authService;
@@ -46,6 +48,7 @@ public class MainWebSecurityConfig {
     private final JwtDecoder jwtDecoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final SecurityProperties securityProperties;
 
     @Bean
     public WebSecurityCustomizer configure() {
@@ -129,7 +132,7 @@ public class MainWebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        configuration.setAllowedOrigins(this.securityProperties.allowedOrigins());
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

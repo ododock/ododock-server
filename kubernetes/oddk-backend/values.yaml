@@ -3,25 +3,25 @@ replicaCount: 1
 image:
   repository: 93jpark/oddk-backend
   pullPolicy: IfNotPresent
-  tag: "0.0.1-SNAPSHOT"
+  tag: "0.1.0-SNAPSHOT"
 
 namespace: oddk
 
-imagePullSecrets: []
+imagePullSecrets: [ ]
 nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
   create: true
   automount: true
-  annotations: {}
+  annotations: { }
   name: ""
 
-podAnnotations: {}
-podLabels: {}
+podAnnotations: { }
+podLabels: { }
 
-podSecurityContext: {}
-securityContext: {}
+podSecurityContext: { }
+securityContext: { }
 
 service:
   type: ClusterIP
@@ -30,13 +30,13 @@ service:
 ingress:
   enabled: false
   className: ""
-  annotations: {}
+  annotations: { }
   hosts:
     - host: dev.oddk.xyz
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: []
+  tls: [ ]
 
 resources:
   limits:
@@ -58,14 +58,14 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
 
-nodeSelector: {}
+nodeSelector: { }
 
-tolerations: []
+tolerations: [ ]
 
-affinity: {}
+affinity: { }
 
 backend:
-  image: 93jpark/oddk-backend:0.0.1-SNAPSHOT
+  image: 93jpark/oddk-backend:0.1.0-SNAPSHOT
 
   security:
     oauth_callback_uri: ### TO BE FILLED ###
@@ -73,6 +73,7 @@ backend:
       users:
         username: ### TO BE FILLED ###
         password: ### TO BE FILLED ###
+    allowed_origins: "http://localhost:3000,http://localhost:8080"
   jwt:
     token_expiry_time_unit: minutes
     access_token_expiry: 60
@@ -128,28 +129,28 @@ backend:
           jwt:
             issuer_uri: ### TO BE FILLED ###
         client:
-            registration:
-                google:
-                  client_id: ### TO BE FILLED ###
-                  client_secret: ### TO BE FILLED ###
-                  redirect_uri: ### TO BE FILLED ###
-                  authorization_grant-type: authorization_code
-                  scope:
-                      - https://www.googleapis.com/auth/userinfo.email
-                      - https://www.googleapis.com/auth/userinfo.profile
-                naver:
-                  client_id: ### TO BE FILLED ###
-                  client_secret: ### TO BE FILLED ###
-                  redirect_uri: ### TO BE FILLED ###
-                  authorization_grant_type: authorization_code
-            provider:
-              google:
-                authorization_uri: https://accounts.google.com/o/oauth2/auth
-                token_uri: https://oauth2.googleapis.com/token
-                user_info_uri: https://www.googleapis.com/oauth2/v3/userinfo
-                user_name_attribute: email
-              naver:
-                authorization_uri: https://nid.naver.com/oauth2.0/authorize
-                token_uri: https://nid.naver.com/oauth2.0/token
-                user_info_uri: https://openapi.naver.com/v1/nid/me
-                user_name_attribute: response
+          registration:
+            google:
+              client_id: ### TO BE FILLED ###
+              client_secret: ### TO BE FILLED ###
+              redirect_uri: ### TO BE FILLED ###
+              authorization_grant-type: authorization_code
+              scope:
+                - https://www.googleapis.com/auth/userinfo.email
+                - https://www.googleapis.com/auth/userinfo.profile
+            naver:
+              client_id: ### TO BE FILLED ###
+              client_secret: ### TO BE FILLED ###
+              redirect_uri: ### TO BE FILLED ###
+              authorization_grant_type: authorization_code
+          provider:
+            google:
+              authorization_uri: https://accounts.google.com/o/oauth2/auth
+              token_uri: https://oauth2.googleapis.com/token
+              user_info_uri: https://www.googleapis.com/oauth2/v3/userinfo
+              user_name_attribute: email
+            naver:
+              authorization_uri: https://nid.naver.com/oauth2.0/authorize
+              token_uri: https://nid.naver.com/oauth2.0/token
+              user_info_uri: https://openapi.naver.com/v1/nid/me
+              user_name_attribute: response

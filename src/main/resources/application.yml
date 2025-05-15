@@ -113,6 +113,9 @@ app:
       users:
         - username: ${BASIC_AUTH_USERNAME}
           password: ${BASIC_AUTH_PASSWORD}
+    allowed-origins:
+        - http://localhost:3000
+        - http://localhost:5173
   jwt:
     issuer: ${HOST_DOMAIN_URI}
     token-expiry-time-unit: "minutes"

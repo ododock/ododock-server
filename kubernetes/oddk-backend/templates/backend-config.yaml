@@ -24,6 +24,7 @@ data:
   SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: {{ .Values.backend.spring.security.oauth2.resourceserver.jwt.issuer_uri | quote }}
 
   APP_SECURITY_OAUTH_CALLBACK_URI: {{.Values.backend.security.oauth_callback_uri | quote}}
+  APP_SECURITY_ALLOWED_ORIGINS: {{ .Values.backend.security.allowed_origins | quote }}
   APP_JWT_TOKEN_EXPIRY_TIME_UNIT: {{ .Values.backend.jwt.token_expiry_time_unit | quote }}
   APP_JWT_ACCESS_TOKEN_EXPIRY: {{ .Values.backend.jwt.access_token_expiry | quote }}
   APP_JWT_REFRESH_TOKEN_EXPIRY: {{ .Values.backend.jwt.refresh_token_expiry | quote }}
