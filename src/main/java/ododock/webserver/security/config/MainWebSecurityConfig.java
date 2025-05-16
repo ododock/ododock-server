@@ -55,7 +55,8 @@ public class MainWebSecurityConfig {
         return (web) -> web
                 .ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations(),
-                        new AntPathRequestMatcher("/docs/**"));
+                        new AntPathRequestMatcher("/docs/**"),
+                        new AntPathRequestMatcher("/images/**"));
     }
 
     @Bean
