@@ -55,8 +55,7 @@ public class MainWebSecurityConfig {
         return (web) -> web
                 .ignoring()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations(),
-                        new AntPathRequestMatcher("/docs/**"),
-                        new AntPathRequestMatcher("/images/**"));
+                        new AntPathRequestMatcher("/docs/**"));
     }
 
     @Bean
@@ -84,6 +83,7 @@ public class MainWebSecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(c -> c
                         .requestMatchers(RequestPathMatcher.PERMIT_ALL_MATCHER).permitAll()
+                        .requestMatchers("/images/**").permitAll()
                         .requestMatchers(RequestPathMatcher.AUTHENTICATED_MATCHER).authenticated()
                         .requestMatchers(ResourcePath.ACTUATOR).denyAll()
                         .anyRequest().authenticated()
