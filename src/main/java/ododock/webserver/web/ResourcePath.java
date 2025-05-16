@@ -32,6 +32,7 @@ public final class ResourcePath {
 
     // static
     public static final String DOCS = "/static/docs";
+    public static final String IMAGES = "/images";
 
     // urls
     public static final String LOCALHOST = "http://localhost:3000";

@@ -23,6 +23,7 @@ public final class RequestPathMatcher {
     static {
         PERMIT_ALL_MATCHER = new OrRequestMatcher(
                 new AntPathRequestMatcher(ResourcePath.DOCS + "/**", GET),
+                new AntPathRequestMatcher(ResourcePath.IMAGES + "/**", GET),
 
                 new AntPathRequestMatcher(ResourcePath.OAUTH2 + "/authorization" + "/**"),
                 new AntPathRequestMatcher(ResourcePath.OAUTH_CALLBACK),
