@@ -4,7 +4,7 @@ metadata:
   name: {{ include "oddk-backend.fullname" . }}-envs
   namespace: {{ .Values.namespace }}
 data:
-  SPRING_PROFILES_ACTIVE: "prod, actuator"
+  SPRING_PROFILES_ACTIVE: "production, actuator"
   SPRING_MAIL_USERNAME: {{ .Values.backend.spring.mail.username | quote}}
 
   SPRING_DATASOURCE_URL: jdbc:mysql://{{ include "oddk-backend.fullname" . }}-mysql.{{ .Values.namespace }}.svc.cluster.local:3306/{{ .Values.backend.spring.datasource.database }}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC

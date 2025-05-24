@@ -97,7 +97,7 @@ backend:
   spring:
     port: 8080
     profiles:
-      active: prod, actuator
+      active: production, actuator
     mail:
       username: ### TO BE FILLED ###
       password: ### TO BE FILLED ###
