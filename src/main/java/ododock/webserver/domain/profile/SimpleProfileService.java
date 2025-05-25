@@ -74,16 +74,7 @@ public class SimpleProfileService implements ProfileService {
     }
 
     private String buildFileName(Account account, ImageFile imageFile) {
-        if (account.getOwnProfile().getProfileImage() == null) {
-            return String.format("%s-%s.%s", account.getId(), account.getCreatedDate().getEpochSecond(), imageFile.getFileExtension());
-        }
-        if (account.getOwnProfile().getProfileImage().getSourcePath() == null
-                || account.getOwnProfile().getProfileImage().getFileType() == null
-                || account.getOwnProfile().getProfileImage().getSourcePath().isBlank()
-                || account.getOwnProfile().getProfileImage().getFileType().isBlank()) {
-            throw new IllegalStateException();
-        }
-        return account.getOwnProfile().getProfileImage().getSourcePath();
+        return String.format("%s-%s.%s", account.getId(), account.getCreatedDate().getEpochSecond(), imageFile.getFileExtension());
     }
 
 }
