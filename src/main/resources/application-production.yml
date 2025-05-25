@@ -16,10 +16,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    properties:
-      hibernate:
-        ddl-auto: validate
-        dialect: com.mysql
     database-platform: org.hibernate.dialect.MySQLDialect
 
 app:

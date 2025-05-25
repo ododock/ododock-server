@@ -2,6 +2,7 @@ package ododock.webserver.security.config;
 
 import ododock.webserver.config.domain.StorageProperties;
 import ododock.webserver.web.ResourcePath;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,6 +11,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 @Configuration
+@EnableConfigurationProperties(StorageProperties.class)
 public class StaticResourceConfig implements WebMvcConfigurer {
 
     private final String storageRootDir;

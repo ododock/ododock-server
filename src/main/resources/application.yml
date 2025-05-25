@@ -16,9 +16,9 @@ spring:
       database: ${MONGO_DATABASE}
       username: ${MONGO_USERNAME}
       password: ${MONGO_PASSWORD}
+      authentication-database: admin
       ssl:
         enabled: false
-      uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOST}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
 
   # jpa
   datasource:

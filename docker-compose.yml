@@ -8,7 +8,11 @@ services:
       MYSQL_DATABASE: oddk
       TZ: Asia/Seoul
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_data_file_path=ibdata1:10M:autoextend
+      MYSQL_ROOT_PASSWORD: qlalfqjsgh
+    command: >
+      --character-set-server=utf8mb4 
+      --collation-server=utf8mb4_unicode_ci 
+      --innodb_data_file_path=ibdata1:10M:autoextend
 
   oddk-mongo:
     image: mongo:latest
@@ -17,7 +21,7 @@ services:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: Password1!
+      MONGO_INITDB_ROOT_PASSWORD: qlalfqjsgh
     volumes:
       - ./src/main/resources/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
