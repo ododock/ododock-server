@@ -100,10 +100,7 @@ public class V1alpha1ProfileControllerDocsTest {
         // given
         final V1alpha1Profile request = V1alpha1Profile.builder()
                 .nickname("newNickname")
-                .profileImage(V1alpha1ProfileImage.builder()
-                        .sourcePath("/1-983247828.jpg")
-                        .fileType("image/png")
-                        .build())
+                .fullname("newFullname")
                 .build();
 
         // expected
@@ -117,14 +114,13 @@ public class V1alpha1ProfileControllerDocsTest {
                 .andDo(
                         document("profile/update-profile",
                                 resourceDetails()
-                                        .tag("Profile").description("계정 프로필 수정 엔드포인트"),
+                                        .tag("Profile").description("계정 프로필 정보 수정 엔드포인트"),
                                 pathParameters(
                                         parameterWithName("id").description("업데이트할 프로필의 Account ID")
                                 ),
                                 requestFields(
                                         fieldWithPath("nickname").description("업데이트할 프로필의 닉네임"),
-                                        fieldWithPath("profileImage.sourcePath").description("업데이트할 프로필의 프로필 사진 리소스 주소"),
-                                        fieldWithPath("profileImage.fileType").description("업데이트할 프로필의 프로필 사진 파일 포맷")
+                                        fieldWithPath("fullname").description("업데이트할 프로필의 닉네임")
                                 )
                         )
                 );
@@ -164,7 +160,7 @@ public class V1alpha1ProfileControllerDocsTest {
 
     @Test
     @WithMockUser
-    void saveProfile_Docs() throws Exception {
+    void saveProfileImage_Docs() throws Exception {
         // given
         final V1alpha1Profile request = V1alpha1Profile.builder()
                 .nickname("newNickname")
@@ -209,6 +205,85 @@ public class V1alpha1ProfileControllerDocsTest {
                                 ),
                                 requestParts(
                                         partWithName("file").description("업로드 할 프로필 이미지 파일")
+                                )
+                        )
+                );
+    }
+
+
+    @Test
+    @WithMockUser
+    void updateProfileImage_Docs() throws Exception {
+        // given
+        final V1alpha1Profile request = V1alpha1Profile.builder()
+                .nickname("newNickname")
+                .profileImage(V1alpha1ProfileImage.builder()
+                        .sourcePath("/1-324234324435.png")
+                        .fileType("image/png")
+                        .build())
+                .build();
+
+        final V1alpha1Account response = V1alpha1Account.builder()
+                .id(1L)
+                .nickname("user1")
+                .fullname("John Doe")
+                .profileImageSource("/1-2134385.jpg")
+                .profileImageFileType("image/jpeg")
+                .build();
+
+        MockMultipartFile multipartFile = new MockMultipartFile("image.png", "test.png",
+                "image/png", "Spring Framework".getBytes());
+
+        ProfileImage profileImage = mock(ProfileImage.class);
+        given(profileImage.getSourcePath()).willReturn("/img.jpg");
+        given(profileImage.getFileType()).willReturn("image/jpeg");
+
+        given(profileService.saveProfileImage(1L, ImageFile.from(multipartFile))).willReturn(profileImage);
+
+        // expected
+        mockMvc.perform(
+                        multipart(BASE_PATH + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PROFILE + ResourcePath.PROFILE_SUBRESOURCE_IMAGE, 1L)
+                                .file("file", multipartFile.getBytes())
+                                .with(req -> {
+                                    req.setMethod("PUT");
+                                    return req;
+                                })
+                                .contentType(MediaType.MULTIPART_FORM_DATA)
+                                .characterEncoding(StandardCharsets.UTF_8)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("profile/update-profile-image",
+                                resourceDetails()
+                                        .tag("Profile").description("계정 프로필 이미지 수정 엔드포인트"),
+                                pathParameters(
+                                        parameterWithName("id").description("저장할 프로필 이미지의 Account ID")
+                                ),
+                                requestParts(
+                                        partWithName("file").description("업로드 할 프로필 이미지 파일")
+                                )
+                        )
+                );
+    }
+
+    @Test
+    @WithMockUser
+    void removeProfileImage_Docs() throws Exception {
+        // given
+
+        // expected
+        mockMvc.perform(
+                        delete(BASE_PATH + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ACCOUNTS_SUBRESOURCE_PROFILE + ResourcePath.PROFILE_SUBRESOURCE_IMAGE, 1L)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("profile/delete-profile-image",
+                                resourceDetails()
+                                        .tag("Profile").description("계정 프로필 이미지 수정 엔드포인트"),
+                                pathParameters(
+                                        parameterWithName("id").description("저장할 프로필 이미지의 Account ID")
                                 )
                         )
                 );

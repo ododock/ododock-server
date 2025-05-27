@@ -41,7 +41,8 @@ public class SimpleProfileService implements ProfileService {
             }
         }
 
-        account.setProfile(request);
+        account.getOwnProfile().updateNickname(request.getNickname());
+        account.getOwnProfile().updateFullname(request.getFullname());
         return account.getOwnProfile();
     }
 
@@ -69,7 +70,14 @@ public class SimpleProfileService implements ProfileService {
     }
 
     @Override
-    public void deleteProfileImage(Long accountId) {
+    public void removeProfileImage(Long accountId) throws IOException {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException(Account.class, accountId));
+        String imagePath = account.getOwnProfile().getProfileImage().getSourcePath();
+        if (imagePath != null && !imagePath.isBlank()) {
+            storageService.deleteData(account.getOwnProfile().getProfileImage().getSourcePath());
+        }
+        account.getOwnProfile().deleteProfileImage();
 
     }
 

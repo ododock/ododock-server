@@ -10,6 +10,6 @@ public interface StorageService {
 
     String updateData();
 
-    void deleteData(String basePath, String filename) throws IOException;
+    void deleteData(String filePath) throws IOException;
 
 }

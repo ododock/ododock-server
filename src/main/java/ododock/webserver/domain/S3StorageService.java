@@ -56,8 +56,8 @@ public class S3StorageService implements StorageService {
     }
 
     @Override
-    public void deleteData(String basePath, String filename) throws IOException {
-        String key = String.format(bucketName + "/%s/%s", basePath, filename);
+    public void deleteData(String filePath) {
+        String key = String.format(bucketName + "/%s", filePath);
         s3Client.deleteObject(b -> b.bucket(bucketName).key(key));
     }
 

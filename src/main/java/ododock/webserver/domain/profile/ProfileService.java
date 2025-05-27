@@ -17,6 +17,6 @@ public interface ProfileService {
 
     ProfileImage updateProfileImage(Long accountId, ImageFile file);
 
-    void deleteProfileImage(Long accountId);
+    void removeProfileImage(Long accountId) throws IOException;
 
 }
