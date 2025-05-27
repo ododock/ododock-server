@@ -63,4 +63,25 @@ public class V1alpha1ProfileController {
                 .toControllerDto(profileService.saveProfileImage(id, ImageFile.from(file)));
     }
 
+    @PutMapping(
+            value = ResourcePath.PROFILE_SUBRESOURCE_IMAGE
+    )
+    public V1alpha1ProfileImage updateProfileImage(
+            final @PathVariable Long id,
+            final @RequestParam MultipartFile file
+    ) throws IOException {
+        return V1alpha1ProfileImage
+                .toControllerDto(profileService.saveProfileImage(id, ImageFile.from(file)));
+    }
+
+    @DeleteMapping(
+            value = ResourcePath.PROFILE_SUBRESOURCE_IMAGE
+    )
+    public ResponseEntity<Void> deleteProfileImage(
+            final @PathVariable Long id
+    ) throws IOException {
+        profileService.deleteProfileImage(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

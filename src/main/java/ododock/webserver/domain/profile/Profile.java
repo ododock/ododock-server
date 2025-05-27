@@ -52,4 +52,9 @@ public class Profile {
                 .build();
     }
 
+    public void deleteProfileImage() {
+        this.profileImage.updateFileType(null);
+        this.profileImage.updateSourcePath(null);
+    }
+
 }

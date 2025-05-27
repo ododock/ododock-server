@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Optional;
 
 @Slf4j
 public class FileStorageService implements StorageService {
@@ -51,13 +52,20 @@ public class FileStorageService implements StorageService {
     }
 
     @Override
-    public void deleteData(String basePath, String filename) throws IOException {
-        Path targetDir = fileStoragePath.resolve(basePath);
-        if (!Files.exists(targetDir)) {
+    public void deleteData(String filePath) throws IOException {
+        Optional<String> filenameOpt = getFilename(filePath);
+        if (filenameOpt.isEmpty()) {
             return;
         }
-        Path filePath = targetDir.resolve(filename);
-        Files.deleteIfExists(filePath);
+        String filename = filenameOpt.get();
+        Path targetPath = fileStoragePath.resolve(filename);
+        Path parentDir = targetPath.getParent();
+        if (parentDir != null && !Files.exists(parentDir)) {
+            Files.createDirectories(parentDir);
+        }
+        if (Files.exists(targetPath)) {
+            Files.deleteIfExists(targetPath);
+        }
     }
 
     private void ensureDirectoryExists(Path targetPath) throws IOException {
@@ -68,6 +76,14 @@ public class FileStorageService implements StorageService {
         if (Files.exists(targetPath)) {
             Files.deleteIfExists(targetPath);
         }
+    }
+
+    private Optional<String> getFilename(String sourceFullPath) {
+        String[] parts = sourceFullPath.split("/");
+        if (parts.length > 0) {
+            return Optional.ofNullable(parts[parts.length - 1]);
+        }
+        return Optional.empty();
     }
 
 }
