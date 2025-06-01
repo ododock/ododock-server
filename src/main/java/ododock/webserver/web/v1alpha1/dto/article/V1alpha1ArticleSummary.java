@@ -23,7 +23,7 @@ public class V1alpha1ArticleSummary extends V1alpha1Base {
     @Nullable
     private String id;
     private String title;
-    private String body;
+    private String excerpt;
     private Boolean visibility;
     private Long ownerAccountId;
     @Nullable
@@ -34,8 +34,7 @@ public class V1alpha1ArticleSummary extends V1alpha1Base {
         V1alpha1ArticleSummary controllerDto = new V1alpha1ArticleSummary();
         controllerDto.setId(domainDto.getId());
         controllerDto.setTitle(domainDto.getTitle());
-        // todo fetch some of first body contents
-        //  controllerDto.setBody(domainDto.getBody());
+        controllerDto.setExcerpt(domainDto.getExcerpt());
         controllerDto.setOwnerAccountId(domainDto.getOwnerAccountId());
         controllerDto.setCategoryId(domainDto.getCategoryId());
         controllerDto.setVisibility(domainDto.isVisibility());

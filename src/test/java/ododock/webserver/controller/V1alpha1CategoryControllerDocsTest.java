@@ -82,6 +82,7 @@ public class V1alpha1CategoryControllerDocsTest {
         when(article1.getCategoryId()).thenReturn("category-id-1");
         when(article1.isVisibility()).thenReturn(true);
         when(article1.getBody()).thenReturn(List.of());
+        when(article1.getExcerpt()).thenReturn("this is an excerpt of article");
         when(article1.getTags()).thenReturn(Set.of("tag1"));
         when(article1.getCreatedDate()).thenReturn(Instant.now());
         when(article1.getLastModifiedAt()).thenReturn(Instant.now());
@@ -93,6 +94,7 @@ public class V1alpha1CategoryControllerDocsTest {
         when(article2.getCategoryId()).thenReturn("category-id-1");
         when(article2.isVisibility()).thenReturn(true);
         when(article2.getBody()).thenReturn(List.of());
+        when(article2.getExcerpt()).thenReturn("this is an excerpt of article");
         when(article2.getTags()).thenReturn(Set.of("tag2"));
         when(article2.getCreatedDate()).thenReturn(Instant.now());
         when(article2.getLastModifiedAt()).thenReturn(Instant.now());
@@ -125,7 +127,7 @@ public class V1alpha1CategoryControllerDocsTest {
                                         fieldWithPath("[].articleSummaries").description("해당 카테고리의 아티클 요약 리스트").optional(),
                                         fieldWithPath("[].articleSummaries[].id").description("해당 카테고리의 아티클의 ID").optional(),
                                         fieldWithPath("[].articleSummaries[].title").description("해당 카테고리의 아티클의 제목").optional(),
-//                                        fieldWithPath("[].articleSummaries[].body").description("해당 카테고리의 아티클의 본문").optional(),
+                                        fieldWithPath("[].articleSummaries[].excerpt").description("해당 카테고리의 아티클의 서문").optional(),
                                         fieldWithPath("[].articleSummaries[].visibility").description("해당 카테고리에 속한 아티클의 공개여부").optional(),
                                         fieldWithPath("[].articleSummaries[].ownerAccountId").description("해당 카테고리에 속한 아티클의 작성자 ID").optional(),
                                         fieldWithPath("[].articleSummaries[].categoryId").description("해당 카테고리에 속한 아티클의 카테고리 ID").optional(),

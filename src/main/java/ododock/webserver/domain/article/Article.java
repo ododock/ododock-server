@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ododock.webserver.domain.BaseEntity;
 import ododock.webserver.domain.article.dto.V1alpha1BaseBlock;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
@@ -42,6 +41,10 @@ public class Article extends BaseEntity {
     @Nullable
     private List<V1alpha1BaseBlock> body = new ArrayList<>();
 
+    @Field(name = "excerpt")
+    @Nullable
+    private String excerpt;
+
     @Field(name = "visibility")
     private boolean visibility;
 
@@ -70,6 +73,10 @@ public class Article extends BaseEntity {
         this.ownerAccountId = ownerAccountId;
         this.categoryId = categoryId;
         this.visibility = visibility;
+    }
+
+    public void applyExcerpt() {
+        this.excerpt = ArticleExcerptor.from(this.body);
     }
 
     public void updateTitle(final String title) {

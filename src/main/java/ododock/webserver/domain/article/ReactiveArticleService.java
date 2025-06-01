@@ -45,6 +45,7 @@ public class ReactiveArticleService implements ArticleService {
                     if (!exists) {
                         return Mono.error(new ResourceNotFoundException(Article.class, article.getOwnerAccountId()));
                     }
+                    article.applyExcerpt();
                     return articleRepository.save(article);
                 });
     }
@@ -65,6 +66,7 @@ public class ReactiveArticleService implements ArticleService {
                                 foundArticle.updateBody(article.getBody());
                                 foundArticle.updateTags(article.getTags());
                                 foundArticle.updateCategory(article.getCategoryId());
+                                foundArticle.applyExcerpt();
                                 return articleRepository.save(foundArticle);
                             });
                 });
