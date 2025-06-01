@@ -100,6 +100,7 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getOwnerAccountId()).thenReturn(1L);
         when(mockArticle.isVisibility()).thenReturn(true);
         when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
         when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
@@ -126,6 +127,7 @@ public class V1alpha1ArticleControllerDocsTest {
                                         fieldWithPath("categoryId").description("아티클의 카테고리 ID").optional(),
                                         fieldWithPath("tags[]").description("태그").optional(),
                                         fieldWithPath("body").description("조회된 아티클 본문").optional(),
+                                        fieldWithPath("excerpt").description("조회된 아티클의 서문").optional(),
                                         fieldWithPath("body[].id").description("아티클 블록 ID"),
                                         fieldWithPath("body[].type").description("아티클 블록 타입"),
                                         fieldWithPath("body[].props").description("아티클 블록 속성"),
@@ -158,6 +160,7 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getOwnerAccountId()).thenReturn(1L);
         when(mockArticle.isVisibility()).thenReturn(true);
         when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
         when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
@@ -184,6 +187,7 @@ public class V1alpha1ArticleControllerDocsTest {
                                         fieldWithPath("[].categoryId").description("아티클의 카테고리 ID").optional(),
                                         fieldWithPath("[].tags[]").description("태그").optional(),
                                         fieldWithPath("[].body").description("조회된 아티클 본문").optional(),
+                                        fieldWithPath("[].excerpt").description("조회된 아티클의 서문").optional(),
                                         fieldWithPath("[].body[].id").description("아티클 블록 ID"),
                                         fieldWithPath("[].body[].type").description("아티클 블록 타입"),
                                         fieldWithPath("[].body[].props").description("아티클 블록 속성"),
@@ -216,6 +220,7 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getOwnerAccountId()).thenReturn(1L);
         when(mockArticle.isVisibility()).thenReturn(true);
         when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
         when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
@@ -266,6 +271,7 @@ public class V1alpha1ArticleControllerDocsTest {
                                         fieldWithPath("categoryId").description("아티클의 카테고리 ID").optional(),
                                         fieldWithPath("tags[]").description("태그").optional(),
                                         fieldWithPath("body").description("작성된 아티클 본문").optional(),
+                                        fieldWithPath("excerpt").description("조회된 아티클의 서문").optional(),
                                         fieldWithPath("body[].id").description("아티클 블록 ID").optional(),
                                         fieldWithPath("body[].type").description("아티클 블록 타입").optional(),
                                         fieldWithPath("body[].props").description("아티클 블록 속성").optional(),
@@ -298,6 +304,7 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getOwnerAccountId()).thenReturn(1L);
         when(mockArticle.isVisibility()).thenReturn(true);
         when(mockArticle.getBody()).thenReturn(List.of(block));
+        when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
         when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
@@ -335,6 +342,7 @@ public class V1alpha1ArticleControllerDocsTest {
                                         fieldWithPath("categoryId").description("수정된 아티클의 카테고리 ID").optional(),
                                         fieldWithPath("tags[]").description("수정된 태그").optional(),
                                         fieldWithPath("body").description("수정된 아티클 본문").optional(),
+                                        fieldWithPath("excerpt").description("조회된 아티클의 서문").optional(),
                                         fieldWithPath("body[].id").description("아티클 블록 ID").optional(),
                                         fieldWithPath("body[].type").description("아티클 블록 타입").optional(),
                                         fieldWithPath("body[].props").description("아티클 블록 속성").optional(),

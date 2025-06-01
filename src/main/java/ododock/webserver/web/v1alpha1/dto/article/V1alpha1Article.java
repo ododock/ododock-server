@@ -26,6 +26,7 @@ public class V1alpha1Article extends V1alpha1Base {
     private String id;
     private String title;
     private List<V1alpha1BaseBlock> body;
+    private String excerpt;
     private Boolean visibility;
     private Long ownerAccountId;
     @Nullable
@@ -37,6 +38,7 @@ public class V1alpha1Article extends V1alpha1Base {
                 .id(domainDto.getId())
                 .title(domainDto.getTitle())
                 .body(domainDto.getBody())
+                .excerpt(domainDto.getExcerpt())
                 .visibility(domainDto.isVisibility())
                 .ownerAccountId(domainDto.getOwnerAccountId())
                 .categoryId(domainDto.getCategoryId())

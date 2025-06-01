@@ -8,6 +8,8 @@ import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.article.Category;
 import ododock.webserver.domain.article.CategoryListOptions;
 import ododock.webserver.web.v1alpha1.dto.V1alpha1Base;
+import ododock.webserver.web.v1alpha1.dto.article.V1alpha1Article;
+import ododock.webserver.web.v1alpha1.dto.article.V1alpha1ArticleSummary;
 import org.springframework.lang.Nullable;
 
 import java.util.List;
@@ -29,6 +31,11 @@ public class V1alpha1Category extends V1alpha1Base {
     @PositiveOrZero
     private Integer position;
     private boolean visibility;
+    @Nullable
+    private List<V1alpha1Article> articles;
+
+    @Nullable
+    private List<V1alpha1ArticleSummary> articleSummaries;
 
     public static CategoryListOptions toDomainDto(V1alpha1CategoryListOptions controllerDto) {
         CategoryListOptions domainDto = new CategoryListOptions();

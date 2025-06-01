@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestWebFluxSecurityConfig;
 import ododock.webserver.config.web.WebConfiguration;
+import ododock.webserver.domain.article.Article;
 import ododock.webserver.domain.article.Category;
 import ododock.webserver.domain.article.CategoryService;
+import ododock.webserver.repository.reactive.ArticleRepository;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.V1alpha1CategoryController;
 import ododock.webserver.web.v1alpha1.dto.category.V1alpha1Category;
@@ -22,6 +24,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 
 import static com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.document;
 import static com.epages.restdocs.apispec.WebTestClientRestDocumentationWrapper.resourceDetails;
@@ -49,6 +53,9 @@ public class V1alpha1CategoryControllerDocsTest {
     @MockBean
     private CategoryService categoryService;
 
+    @MockBean
+    private ArticleRepository articleRepository;
+
     @Test
     @WithMockUser
     void list_category_by_account_id_Docs() throws Exception {
@@ -60,7 +67,7 @@ public class V1alpha1CategoryControllerDocsTest {
                 .build();
 
         Category category = mock(Category.class);
-        when(category.getId()).thenReturn("category-id");
+        when(category.getId()).thenReturn("category-id-1");
         when(category.getOwnerAccountId()).thenReturn(1L);
         when(category.getName()).thenReturn("Journal");
         when(category.getPosition()).thenReturn(0);
@@ -68,8 +75,35 @@ public class V1alpha1CategoryControllerDocsTest {
         when(category.getCreatedDate()).thenReturn(Instant.now());
         when(category.getLastModifiedAt()).thenReturn(Instant.now());
 
+        Article article1 = mock(Article.class);
+        when(article1.getId()).thenReturn("article-id-1");
+        when(article1.getOwnerAccountId()).thenReturn(1L);
+        when(article1.getTitle()).thenReturn("title-1");
+        when(article1.getCategoryId()).thenReturn("category-id-1");
+        when(article1.isVisibility()).thenReturn(true);
+        when(article1.getBody()).thenReturn(List.of());
+        when(article1.getExcerpt()).thenReturn("this is an excerpt of article");
+        when(article1.getTags()).thenReturn(Set.of("tag1"));
+        when(article1.getCreatedDate()).thenReturn(Instant.now());
+        when(article1.getLastModifiedAt()).thenReturn(Instant.now());
+
+        Article article2 = mock(Article.class);
+        when(article2.getId()).thenReturn("article-id-2");
+        when(article2.getOwnerAccountId()).thenReturn(1L);
+        when(article2.getTitle()).thenReturn("title-2");
+        when(article2.getCategoryId()).thenReturn("category-id-1");
+        when(article2.isVisibility()).thenReturn(true);
+        when(article2.getBody()).thenReturn(List.of());
+        when(article2.getExcerpt()).thenReturn("this is an excerpt of article");
+        when(article2.getTags()).thenReturn(Set.of("tag2"));
+        when(article2.getCreatedDate()).thenReturn(Instant.now());
+        when(article2.getLastModifiedAt()).thenReturn(Instant.now());
+
         given(this.categoryService.listCategoriesByOwnerAccountId(1L))
                 .willReturn(Flux.just(category));
+
+        given(this.articleRepository.findArticlesByCategoryId("category-id-1"))
+                .willReturn(Flux.just(article1, article2));
 
         webClient.get().uri(BASE_URL, 1L)
                 .accept(MediaType.APPLICATION_JSON)
@@ -89,7 +123,18 @@ public class V1alpha1CategoryControllerDocsTest {
                                         fieldWithPath("[].position").description("조회된 카테고리 순서 index").optional(),
                                         fieldWithPath("[].visibility").description("카테고리 공개설정").optional(),
                                         fieldWithPath("[].createdAt").description("카테고리 생성일").optional(),
-                                        fieldWithPath("[].updatedAt").description("카테고리 수정일").optional()
+                                        fieldWithPath("[].updatedAt").description("카테고리 수정일").optional(),
+                                        fieldWithPath("[].articleSummaries").description("해당 카테고리의 아티클 요약 리스트").optional(),
+                                        fieldWithPath("[].articleSummaries[].id").description("해당 카테고리의 아티클의 ID").optional(),
+                                        fieldWithPath("[].articleSummaries[].title").description("해당 카테고리의 아티클의 제목").optional(),
+                                        fieldWithPath("[].articleSummaries[].excerpt").description("해당 카테고리의 아티클의 서문").optional(),
+                                        fieldWithPath("[].articleSummaries[].visibility").description("해당 카테고리에 속한 아티클의 공개여부").optional(),
+                                        fieldWithPath("[].articleSummaries[].ownerAccountId").description("해당 카테고리에 속한 아티클의 작성자 ID").optional(),
+                                        fieldWithPath("[].articleSummaries[].categoryId").description("해당 카테고리에 속한 아티클의 카테고리 ID").optional(),
+                                        fieldWithPath("[].articleSummaries[].tags[]").description("해당 카테고리에 속한 아티클의 태그 목록").optional(),
+                                        fieldWithPath("[].articleSummaries[].createdAt").description("해당 카테고리에 속한 아티클의 생성일").optional(),
+                                        fieldWithPath("[].articleSummaries[].updatedAt").description("해당 카테고리에 속한 아티클의 수정일").optional()
+
                                 )
                         )
                 );
