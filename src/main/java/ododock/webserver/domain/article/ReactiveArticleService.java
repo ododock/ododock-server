@@ -6,7 +6,6 @@ import ododock.webserver.repository.reactive.ArticleRepository;
 import ododock.webserver.web.ResourceNotFoundException;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -24,20 +23,6 @@ public class ReactiveArticleService implements ArticleService {
     }
 
     @Override
-    public Publisher<Article> listArticles(Long accountId, ArticleListOptions listOptions) {
-        return Mono.fromCallable(() -> accountRepository.existsById(accountId))
-                .subscribeOn(Schedulers.boundedElastic())
-                .flatMapMany(exists -> {
-                    if (!exists) {
-                        return Flux.error(new ResourceNotFoundException(Article.class, accountId));
-                    }
-                    return articleRepository.findArticlesByOwnerAccountId(accountId);
-                            // todo apply list options
-//                            .filter(Article::isVisibility);
-                });
-    }
-
-    @Override
     public Publisher<Article> createArticle(Article article) {
         return Mono.fromCallable(() -> accountRepository.existsById(article.getOwnerAccountId()))
                 .subscribeOn(Schedulers.boundedElastic())
@@ -45,7 +30,8 @@ public class ReactiveArticleService implements ArticleService {
                     if (!exists) {
                         return Mono.error(new ResourceNotFoundException(Article.class, article.getOwnerAccountId()));
                     }
-                    article.applyExcerpt();
+                    article.updateExcerpt();
+                    article.updatePlainText();
                     return articleRepository.save(article);
                 });
     }
@@ -66,7 +52,8 @@ public class ReactiveArticleService implements ArticleService {
                                 foundArticle.updateBody(article.getBody());
                                 foundArticle.updateTags(article.getTags());
                                 foundArticle.updateCategory(article.getCategoryId());
-                                foundArticle.applyExcerpt();
+                                foundArticle.updateExcerpt();
+                                foundArticle.updatePlainText();
                                 return articleRepository.save(foundArticle);
                             });
                 });

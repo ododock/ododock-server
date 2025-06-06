@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Article extends BaseEntity {
 
+    private static final int MAX_LENGTH = 200;
+
     @Id
     @Column(name = "article_id")
     @MongoId
@@ -44,6 +46,10 @@ public class Article extends BaseEntity {
     @Field(name = "excerpt")
     @Nullable
     private String excerpt;
+
+    @Field(name = "plainText")
+    @Nullable
+    private String plainText;
 
     @Field(name = "visibility")
     private boolean visibility;
@@ -67,6 +73,10 @@ public class Article extends BaseEntity {
                    final boolean visibility) {
         this.title = title;
         this.body = body;
+        if (body != null && !body.isEmpty()) {
+            plainText = ArticleExcerptor.from(body, null);
+            excerpt = ArticleExcerptor.from(body, MAX_LENGTH);
+        }
         this.tags = tags == null ? new HashSet<>() : tags.stream()
                 .filter(tag -> !tag.isBlank())
                 .map(Tag::new).collect(Collectors.toSet());
@@ -75,8 +85,12 @@ public class Article extends BaseEntity {
         this.visibility = visibility;
     }
 
-    public void applyExcerpt() {
-        this.excerpt = ArticleExcerptor.from(this.body);
+    public void updateExcerpt() {
+        this.excerpt = ArticleExcerptor.from(this.body, 200);
+    }
+
+    public void updatePlainText() {
+        this.excerpt = ArticleExcerptor.from(this.body, null);
     }
 
     public void updateTitle(final String title) {

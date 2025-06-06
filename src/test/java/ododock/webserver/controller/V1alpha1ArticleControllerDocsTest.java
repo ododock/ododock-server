@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ododock.webserver.common.RestDocsConfig;
 import ododock.webserver.common.TestWebFluxSecurityConfig;
 import ododock.webserver.config.web.WebConfiguration;
-import ododock.webserver.domain.article.Article;
-import ododock.webserver.domain.article.ArticleService;
-import ododock.webserver.domain.article.CategoryService;
+import ododock.webserver.domain.article.*;
 import ododock.webserver.domain.article.dto.V1alpha1BaseBlock;
 import ododock.webserver.domain.article.dto.V1alpha1DefaultProps;
 import ododock.webserver.repository.jpa.AccountRepository;
@@ -38,14 +36,14 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 
 @WebFluxTest(controllers = V1alpha1ArticleController.class)
 @Import({RestDocsConfig.class, TestWebFluxSecurityConfig.class, WebConfiguration.class})
 @AutoConfigureRestDocs
 public class V1alpha1ArticleControllerDocsTest {
 
+    private static final String SCHEME_PREFIX = "https://oddk.life:8080";
     private static final String BASE_URL = ResourcePath.API + ResourcePath.API_VERSION;
 
     @Autowired
@@ -62,6 +60,9 @@ public class V1alpha1ArticleControllerDocsTest {
 
     @MockBean
     private AccountRepository accountRepository;
+
+    @MockBean
+    private ArticleQueryService articleQueryService;
 
     @Test
     @WithMockUser
@@ -166,19 +167,51 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
         when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
 
-        given(this.articleService.listArticles(1L, V1alpha1ArticleListOptions.builder().build().toDomainDto()))
+        ArticleListOptions listOptions = V1alpha1ArticleListOptions.builder()
+                .authorName("John")
+                .title("article-title")
+                .categoryId("403202a5-1d33-4970-9fbc")
+                .visibility(true)
+                .tags(List.of("tag1", "tag2"))
+                .keyword("keyword-to-search")
+                .build().toDomainDto();
+
+        given(this.articleQueryService.listArticles(any(), any()))
                 .willReturn(Flux.just(mockArticle));
 
-        webClient.get().uri(BASE_URL + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ARTICLES, 1L)
+        webClient.get()
+                .uri(BASE_URL + ResourcePath.ACCOUNTS + "/{" + ResourcePath.PATH_VAR_ID + "}" + ResourcePath.ARTICLES + "?" +
+                                "authorName={authorName}" +
+                                "&title={title}" +
+                                "&categoryId={categoryId}" +
+                                "&visibility={visibility}" +
+                                "&keyword={keyword}" +
+                                "&tags={tags}",
+                        1L,
+                        listOptions.getAuthorName(),
+                        listOptions.getTitle(),
+                        listOptions.getCategoryId(),
+                        listOptions.getVisibility(),
+                        listOptions.getKeyword(),
+                        listOptions.getTags() != null && !listOptions.getTags().isEmpty() ? listOptions.getTags().get(0) : null // 단일 태그만 예시
+                )
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .consumeWith(WebTestClientRestDocumentationWrapper.document("article/list-articles",
+                .consumeWith(WebTestClientRestDocumentationWrapper.document("article/list-account-articles",
                                 resourceDetails()
-                                        .tag("Article").description("아티클 엔드포인트"),
+                                        .tag("Article").description("유저의 아티클 리스트 조회 엔드포인트"),
                                 pathParameters(
                                         parameterWithName("id").description("조회할 아티클 작성자 계정의 ID")
+                                ),
+                                queryParameters(
+                                        parameterWithName("authorName").description("검색할 작성자 명").ignored(),
+                                        parameterWithName("title").description("검색할 아티클 타이틀").optional(),
+                                        parameterWithName("categoryId").description("검색할 아티클의 카테고리 ID").optional(),
+                                        parameterWithName("visibility").description("공개여부에 따라 아티클 검색").optional(),
+                                        parameterWithName("tags").description("검색할 아티클에 설정된 태그 값").optional(),
+                                        parameterWithName("keyword").description("검색할 키워드(제목, 본문, 태그를 대상으로 함)").optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("[].id").description("조회된 아티클 ID"),
