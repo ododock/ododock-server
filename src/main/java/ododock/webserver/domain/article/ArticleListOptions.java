@@ -14,11 +14,9 @@ public class ArticleListOptions extends ListOptions {
 
     private String authorName;
     private Boolean visibility;
-
-    // below fractional search
     private String title;
-    private String body;
-    private String category;
+    private String keyword;
+    private String categoryId;
     private List<String> tags;
 
 }

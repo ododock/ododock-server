@@ -2,6 +2,7 @@ package ododock.webserver.web.v1alpha1;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import ododock.webserver.domain.article.ArticleQueryService;
 import ododock.webserver.domain.article.ArticleService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.dto.article.V1alpha1Article;
@@ -18,6 +19,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class V1alpha1ArticleController {
 
     private final ArticleService articleService;
+    private final ArticleQueryService queryService;
 
     @GetMapping(
             value = ResourcePath.ARTICLES + "/{" + ResourcePath.PATH_VAR_ID + "}",
@@ -33,10 +35,8 @@ public class V1alpha1ArticleController {
             produces = APPLICATION_JSON_VALUE)
     public Flux<V1alpha1Article> listArticles(
             final @PathVariable Long id,
-            final @RequestParam(required = false) V1alpha1ArticleListOptions listOptions) {
-        V1alpha1ArticleListOptions safeListOptions =
-                (listOptions != null) ? listOptions : V1alpha1ArticleListOptions.builder().build();
-        return Flux.from(articleService.listArticles(id, safeListOptions.toDomainDto()))
+            V1alpha1ArticleListOptions listOptions) {
+        return Flux.from(queryService.listArticles(id, listOptions.toDomainDto()))
                 .map(V1alpha1Article::toControllerDto);
     }
 

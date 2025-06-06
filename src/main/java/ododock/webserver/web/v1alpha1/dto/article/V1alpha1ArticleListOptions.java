@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.article.ArticleListOptions;
 import ododock.webserver.web.v1alpha1.dto.V1alpha1ListOptions;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 
@@ -17,13 +18,17 @@ import java.util.List;
 @AllArgsConstructor
 public class V1alpha1ArticleListOptions extends V1alpha1ListOptions {
 
+    @Nullable
     private String authorName;
+    @Nullable
     private Boolean visibility;
-
-    // below fractional search
+    @Nullable
     private String title;
-    private String body;
-    private String category;
+    @Nullable
+    private String keyword;
+    @Nullable
+    private String categoryId;
+    @Nullable
     private List<String> tags;
 
     public ArticleListOptions toDomainDto() {
@@ -31,8 +36,8 @@ public class V1alpha1ArticleListOptions extends V1alpha1ListOptions {
                 .authorName(authorName)
                 .visibility(visibility)
                 .title(title)
-                .body(body)
-                .category(category)
+                .keyword(keyword)
+                .categoryId(categoryId)
                 .tags(tags == null ? List.of() : tags)
                 .build();
     }

@@ -1,6 +1,5 @@
 package ododock.webserver.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.gson.Gson;
 import com.nimbusds.jose.shaded.gson.reflect.TypeToken;
 import ododock.webserver.domain.article.ArticleExcerptor;
@@ -165,9 +164,10 @@ public class BlockNodeExcerptTest {
                     ]
                 """;
 
-        Type listType = new TypeToken<List<V1alpha1BaseBlock>>() {}.getType();
+        Type listType = new TypeToken<List<V1alpha1BaseBlock>>() {
+        }.getType();
         List<V1alpha1BaseBlock> blocks = new Gson().fromJson(jsonString, listType);
-        String excerpt = ArticleExcerptor.from(blocks);
+        String excerpt = ArticleExcerptor.from(blocks, 200);
 
         assertThat(excerpt).isNotBlank();
         assertThat(excerpt).startsWith("This is sample article heading Table of contents");
