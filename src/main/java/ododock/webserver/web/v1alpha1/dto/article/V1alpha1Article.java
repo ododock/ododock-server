@@ -43,8 +43,8 @@ public class V1alpha1Article extends V1alpha1Base {
                 .ownerAccountId(domainDto.getOwnerAccountId())
                 .categoryId(domainDto.getCategoryId())
                 .tags(domainDto.getTags() == null ? Set.of() : domainDto.getTags())
-                .createdAt(domainDto.getCreatedDate())
-                .updatedAt(domainDto.getLastModifiedAt())
+                .createdAt(domainDto.getCreatedAt())
+                .updatedAt(domainDto.getUpdatedAt())
                 .build();
     }
 

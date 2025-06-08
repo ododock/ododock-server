@@ -82,7 +82,7 @@ public class SimpleProfileService implements ProfileService {
     }
 
     private String buildFileName(Account account, ImageFile imageFile) {
-        return String.format("%s-%s.%s", account.getId(), account.getCreatedDate().getEpochSecond(), imageFile.getFileExtension());
+        return String.format("%s-%s.%s", account.getId(), account.getCreatedAt().getEpochSecond(), imageFile.getFileExtension());
     }
 
 }

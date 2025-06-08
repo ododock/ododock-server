@@ -12,7 +12,7 @@ create table account
     account_non_locked      boolean      not null,
     credentials_non_expired boolean      not null,
     created_at              datetime(6)  not null,
-    last_modified_at        datetime(6)  not null,
+    updated_at        datetime(6)  not null,
     primary key (account_id)
 ) engine = InnoDB;
 
@@ -20,8 +20,8 @@ create table account
 alter table account
     add constraint uk_account__email unique (email);
 
-create index idx_account__last_modified_at
-    on account (last_modified_at desc);
+create index idx_account__updated_at
+    on account (updated_at desc);
 
 
 
@@ -41,7 +41,7 @@ create table profile
     file_type          varchar(255) null,
     image_source       varchar(255) null,
     created_at         datetime(6)  not null,
-    last_modified_at   datetime(6)  not null,
+    updated_at         datetime(6)  not null,
     account_id         bigint       null,
     primary key (profile_id)
 ) engine = InnoDB;
@@ -51,8 +51,8 @@ create table profile
 # alter table account
 #     add constraint uk_account__profile unique (profile_id);
 
-create index idx_profile__last_modified_at
-    on profile (last_modified_at desc);
+create index idx_profile__updated_at
+    on profile (updated_at desc);
 
 
 create table social_account
@@ -75,7 +75,7 @@ create table category
     name               varchar(255) not null,
     visibility         boolean      not null,
     created_at         datetime(6)  not null,
-    last_modified_at   datetime(6)  not null,
+    updated_at         datetime(6)  not null,
     profile_id         bigint       not null,
     account_id         bigint       not null,
     primary key (category_id)
@@ -83,8 +83,8 @@ create table category
 
 
 
-create index idx_category__profile_id_last_modified_at
-    on category (profile_id, last_modified_at desc);
+create index idx_category__profile_id_updated_at
+    on category (profile_id, updated_at desc);
 
 
 create table article
@@ -95,7 +95,7 @@ create table article
     body               text         not null,
     visibility         boolean      not null,
     created_at         datetime(6)  not null,
-    last_modified_at   datetime(6)  not null,
+    update_at   datetime(6)  not null,
     profile_id         bigint       not null,
     category_id        bigint       not null,
     primary key (article_id)
@@ -103,8 +103,8 @@ create table article
 
 
 
-create index idx_article__profile_id_last_modified_at
-    on article (profile_id, last_modified_at desc);
+create index idx_article__profile_id_updated_at
+    on article (profile_id, update_at desc);
 
 
 create table article_tags

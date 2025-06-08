@@ -68,8 +68,8 @@ public class V1alpha1AccountQueryControllerDocsTest {
 //        when(account.getOwnProfile().getNickname()).thenReturn("tester");
 //        when(account.getOwnProfile().getBirthDate()).thenReturn(LocalDate.of(1999, 12, 31));
 //        when(account.getOwnProfile().getFullname()).thenReturn("John doe");
-        when(account.getCreatedDate()).thenReturn(Instant.now());
-        when(account.getLastModifiedAt()).thenReturn(Instant.now());
+        when(account.getCreatedAt()).thenReturn(Instant.now());
+        when(account.getUpdatedAt()).thenReturn(Instant.now());
         when(account.getEmailVerified()).thenReturn(true);
         when(account.getAttributes()).thenReturn(Map.of("key", List.of("value")));
 

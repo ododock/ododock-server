@@ -26,7 +26,7 @@ import java.util.*;
                 @UniqueConstraint(name = "uk_account__email", columnNames = "email")
         },
         indexes = {
-                @Index(name = "idx_account__last_modified_at", columnList = "last_modified_at desc")
+                @Index(name = "idx_account__updated_at", columnList = "updated_at desc")
         }
 )
 public class Account extends BaseEntity {

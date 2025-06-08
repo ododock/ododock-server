@@ -72,8 +72,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(category.getName()).thenReturn("Journal");
         when(category.getPosition()).thenReturn(0);
         when(category.isVisibility()).thenReturn(true);
-        when(category.getCreatedDate()).thenReturn(Instant.now());
-        when(category.getLastModifiedAt()).thenReturn(Instant.now());
+        when(category.getCreatedAt()).thenReturn(Instant.now());
+        when(category.getUpdatedAt()).thenReturn(Instant.now());
 
         Article article1 = mock(Article.class);
         when(article1.getId()).thenReturn("article-id-1");
@@ -84,8 +84,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(article1.getBody()).thenReturn(List.of());
         when(article1.getExcerpt()).thenReturn("this is an excerpt of article");
         when(article1.getTags()).thenReturn(Set.of("tag1"));
-        when(article1.getCreatedDate()).thenReturn(Instant.now());
-        when(article1.getLastModifiedAt()).thenReturn(Instant.now());
+        when(article1.getCreatedAt()).thenReturn(Instant.now());
+        when(article1.getUpdatedAt()).thenReturn(Instant.now());
 
         Article article2 = mock(Article.class);
         when(article2.getId()).thenReturn("article-id-2");
@@ -96,8 +96,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(article2.getBody()).thenReturn(List.of());
         when(article2.getExcerpt()).thenReturn("this is an excerpt of article");
         when(article2.getTags()).thenReturn(Set.of("tag2"));
-        when(article2.getCreatedDate()).thenReturn(Instant.now());
-        when(article2.getLastModifiedAt()).thenReturn(Instant.now());
+        when(article2.getCreatedAt()).thenReturn(Instant.now());
+        when(article2.getUpdatedAt()).thenReturn(Instant.now());
 
         given(this.categoryService.listCategoriesByOwnerAccountId(1L))
                 .willReturn(Flux.just(category));
@@ -179,8 +179,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(mock.getName()).thenReturn("Journal");
         when(mock.getPosition()).thenReturn(0);
         when(mock.isVisibility()).thenReturn(true);
-        when(mock.getCreatedDate()).thenReturn(Instant.now());
-        when(mock.getLastModifiedAt()).thenReturn(Instant.now());
+        when(mock.getCreatedAt()).thenReturn(Instant.now());
+        when(mock.getUpdatedAt()).thenReturn(Instant.now());
 
         given(this.categoryService.createCategory(request.toDomainDto()))
                 .willReturn(Mono.just(mock));
@@ -228,8 +228,8 @@ public class V1alpha1CategoryControllerDocsTest {
         when(response.getOwnerAccountId()).thenReturn(1L);
         when(response.getName()).thenReturn("Journal");
         when(response.isVisibility()).thenReturn(true);
-        when(response.getCreatedDate()).thenReturn(Instant.now());
-        when(response.getLastModifiedAt()).thenReturn(Instant.now());
+        when(response.getCreatedAt()).thenReturn(Instant.now());
+        when(response.getUpdatedAt()).thenReturn(Instant.now());
 
         given(this.categoryService.updateCategory(1L, request.toDomainDto()))
                 .willReturn(Mono.just(response));
