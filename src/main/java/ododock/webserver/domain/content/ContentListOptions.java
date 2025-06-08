@@ -1,12 +1,12 @@
 package ododock.webserver.domain.content;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.ListOptions;
 
 @Data
-@Builder(toBuilder = true)
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class ContentListOptions extends ListOptions {
 }
