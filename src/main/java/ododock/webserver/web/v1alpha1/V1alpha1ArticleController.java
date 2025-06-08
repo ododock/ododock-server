@@ -7,6 +7,7 @@ import ododock.webserver.domain.article.ArticleService;
 import ododock.webserver.web.ResourcePath;
 import ododock.webserver.web.v1alpha1.dto.article.V1alpha1Article;
 import ododock.webserver.web.v1alpha1.dto.article.V1alpha1ArticleListOptions;
+import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -35,7 +36,7 @@ public class V1alpha1ArticleController {
             produces = APPLICATION_JSON_VALUE)
     public Flux<V1alpha1Article> listArticles(
             final @PathVariable Long id,
-            V1alpha1ArticleListOptions listOptions) {
+            V1alpha1ArticleListOptions listOptions) throws BadRequestException {
         return Flux.from(queryService.listArticles(id, listOptions.toDomainDto()))
                 .map(V1alpha1Article::toControllerDto);
     }
