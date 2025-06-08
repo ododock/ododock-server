@@ -21,14 +21,18 @@ public class V1alpha1ListOptions {
     @Positive
     @Builder.Default
     private Integer pageSize = 100;
+    @Positive
+    @Builder.Default
+    private Integer size = 100;
     @Nullable
-    private String sortBy;
+    private String sort;
     @Nullable
-    private String sortOrder;
+    private String sortKeys;
 
     public V1alpha1ListOptions() {
         this.pageOffset = 1;
         this.pageSize = 100;
+        this.size = 100;
     }
 
 }
