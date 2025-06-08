@@ -39,8 +39,8 @@ public class V1alpha1ArticleSummary extends V1alpha1Base {
         controllerDto.setCategoryId(domainDto.getCategoryId());
         controllerDto.setVisibility(domainDto.isVisibility());
         controllerDto.setTags(domainDto.getTags());
-        controllerDto.setCreatedAt(domainDto.getCreatedDate());
-        controllerDto.setUpdatedAt(domainDto.getLastModifiedAt());
+        controllerDto.setCreatedAt(domainDto.getCreatedAt());
+        controllerDto.setUpdatedAt(domainDto.getUpdatedAt());
 
         return controllerDto;
     }

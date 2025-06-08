@@ -104,8 +104,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
+        when(mockArticle.getCreatedAt()).thenReturn(Instant.now());
+        when(mockArticle.getUpdatedAt()).thenReturn(Instant.now());
 
         given(this.articleService.getArticle("article-id-1"))
                 .willReturn(Mono.just(mockArticle));
@@ -164,8 +164,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
+        when(mockArticle.getCreatedAt()).thenReturn(Instant.now());
+        when(mockArticle.getUpdatedAt()).thenReturn(Instant.now());
 
         ArticleListOptions listOptions = V1alpha1ArticleListOptions.builder()
                 .authorName("John")
@@ -174,6 +174,9 @@ public class V1alpha1ArticleControllerDocsTest {
                 .visibility(true)
                 .tags(List.of("tag1", "tag2"))
                 .keyword("keyword-to-search")
+                .sort("id,-createdAt")
+                .sortKeys("id=68450cf706f5fb691ea7d850,createdAt=2025-06-08T04:09:34.401Z")
+                .size(20)
                 .build().toDomainDto();
 
         given(this.articleQueryService.listArticles(any(), any()))
@@ -186,14 +189,20 @@ public class V1alpha1ArticleControllerDocsTest {
                                 "&categoryId={categoryId}" +
                                 "&visibility={visibility}" +
                                 "&keyword={keyword}" +
-                                "&tags={tags}",
+                                "&tags={tags}" +
+                                "&sort={sort}" +
+                                "&sortKeys={sortKeys}" +
+                                "&size={size}",
                         1L,
                         listOptions.getAuthorName(),
                         listOptions.getTitle(),
                         listOptions.getCategoryId(),
                         listOptions.getVisibility(),
                         listOptions.getKeyword(),
-                        listOptions.getTags() != null && !listOptions.getTags().isEmpty() ? listOptions.getTags().get(0) : null // 단일 태그만 예시
+                        listOptions.getTags() != null && !listOptions.getTags().isEmpty() ? listOptions.getTags().get(0) : null, // 단일 태그만 예시
+                        listOptions.getSort(),
+                        listOptions.getSortKeys(),
+                        listOptions.getSize()
                 )
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -211,7 +220,10 @@ public class V1alpha1ArticleControllerDocsTest {
                                         parameterWithName("categoryId").description("검색할 아티클의 카테고리 ID").optional(),
                                         parameterWithName("visibility").description("공개여부에 따라 아티클 검색").optional(),
                                         parameterWithName("tags").description("검색할 아티클에 설정된 태그 값").optional(),
-                                        parameterWithName("keyword").description("검색할 키워드(제목, 본문, 태그를 대상으로 함)").optional()
+                                        parameterWithName("keyword").description("검색할 키워드(제목, 본문, 태그를 대상으로 함)").optional(),
+                                        parameterWithName("sort").description("검색할 아티클의 정렬 기준. prefix '-'를 사용할 경우, 내림차순. 없는 경우엔 오름차순으로 정렬됨. 기본값은 createdAt 내림차순(최근 생성된 아티클 순)").optional(),
+                                        parameterWithName("sortKeys").description("cursor-based 조회에 사용되는 sort 키 값. 이전에 조회한 아이템들의 마지막 아이템의 정보를 사용함.").optional(),
+                                        parameterWithName("size").description("조회할 아티클의 갯수").optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("[].id").description("조회된 아티클 ID"),
@@ -256,8 +268,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
+        when(mockArticle.getCreatedAt()).thenReturn(Instant.now());
+        when(mockArticle.getUpdatedAt()).thenReturn(Instant.now());
 
         V1alpha1Article controllerDto = V1alpha1Article.builder()
                 .title("title")
@@ -340,8 +352,8 @@ public class V1alpha1ArticleControllerDocsTest {
         when(mockArticle.getExcerpt()).thenReturn("excerpt of the article");
         when(mockArticle.getCategoryId()).thenReturn("403202a5-1d33-4970-9fbc-e80394319098");
         when(mockArticle.getTags()).thenReturn(Set.of("tag1"));
-        when(mockArticle.getCreatedDate()).thenReturn(Instant.now());
-        when(mockArticle.getLastModifiedAt()).thenReturn(Instant.now());
+        when(mockArticle.getCreatedAt()).thenReturn(Instant.now());
+        when(mockArticle.getUpdatedAt()).thenReturn(Instant.now());
 
         V1alpha1Article controllerDto = V1alpha1Article.builder()
                 .title("title")

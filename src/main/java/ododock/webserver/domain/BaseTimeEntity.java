@@ -17,10 +17,10 @@ public abstract class BaseTimeEntity {
 
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
-    private Instant createdDate;
+    private Instant createdAt;
 
     @LastModifiedDate
-    @Column(name = "last_modified_at", nullable = false)
-    private Instant lastModifiedAt;
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
 
 }

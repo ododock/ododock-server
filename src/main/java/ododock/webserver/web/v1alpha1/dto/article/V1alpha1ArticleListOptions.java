@@ -33,6 +33,9 @@ public class V1alpha1ArticleListOptions extends V1alpha1ListOptions {
 
     public ArticleListOptions toDomainDto() {
         return ArticleListOptions.builder()
+                .size(getSize())
+                .sort(getSort())
+                .sortKeys(getSortKeys())
                 .authorName(authorName)
                 .visibility(visibility)
                 .title(title)

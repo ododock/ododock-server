@@ -62,8 +62,8 @@ public class V1alpha1Category extends V1alpha1Base {
                 .ownerAccountId(domainDto.getOwnerAccountId())
                 .position(domainDto.getPosition())
                 .visibility(domainDto.isVisibility())
-                .createdAt(domainDto.getCreatedDate())
-                .updatedAt(domainDto.getLastModifiedAt())
+                .createdAt(domainDto.getCreatedAt())
+                .updatedAt(domainDto.getUpdatedAt())
                 .build();
     }
 

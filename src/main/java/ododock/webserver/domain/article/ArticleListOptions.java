@@ -1,14 +1,14 @@
 package ododock.webserver.domain.article;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import ododock.webserver.domain.ListOptions;
 
 import java.util.List;
 
 @Data
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class ArticleListOptions extends ListOptions {
 

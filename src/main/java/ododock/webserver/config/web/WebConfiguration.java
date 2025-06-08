@@ -69,6 +69,7 @@ public class WebConfiguration {
                 new AccessDeniedExceptionResolverFactory(),
                 new AuthenticationExceptionResolverFactory(),
                 new BadCredentialsExceptionResolverFactory(),
+                new InvalidParameterExceptionResolverFactory(),
                 new IllegalPropertyExceptionResolverFactory(),
                 new InsufficientAuthenticationExceptionResolverFactory(),
                 new MethodArgumentTypeMismatchExceptionResolverFactory(),
