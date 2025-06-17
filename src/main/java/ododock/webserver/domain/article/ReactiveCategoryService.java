@@ -1,7 +1,6 @@
 package ododock.webserver.domain.article;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import ododock.webserver.domain.account.Account;
 import ododock.webserver.repository.jpa.AccountRepository;
 import ododock.webserver.repository.reactive.ArticleRepository;
@@ -13,7 +12,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class ReactiveCategoryService implements CategoryService {
@@ -50,7 +48,7 @@ public class ReactiveCategoryService implements CategoryService {
                     }
                     return categoryRepository.countCategoriesByOwnerAccountId(category.getOwnerAccountId())
                             .flatMap(count -> {
-                                category.updatePosition(Math.toIntExact(++count));
+                                category.updatePosition(Math.toIntExact(count));
                                 return categoryRepository.save(category);
                             });
                 });
@@ -65,33 +63,42 @@ public class ReactiveCategoryService implements CategoryService {
                     existingCategory.updateName(request.getName());
                     existingCategory.updateVisibility(request.isVisibility());
 
-                    if (!existingCategory.getPosition().equals(request.getPosition())) {
-                        return categoryRepository.countCategoriesByOwnerAccountId(ownerId)
-                                .map(count -> {
-                                    if (request.getPosition() >= count) {
-                                        return count.intValue();
-                                    }
-                                    return request.getPosition();
-                                })
-                                .flatMap(adjustedPosition ->
-                                        categoryRepository.findCategoryByOwnerAccountIdAndPosition(ownerId, adjustedPosition)
-                                                .flatMap(target -> {
-                                                    target.updatePosition(existingCategory.getPosition());
-                                                    existingCategory.updatePosition(adjustedPosition);
-
-                                                    return categoryRepository.save(target)
-                                                            .then(categoryRepository.save(existingCategory));
-                                                })
-                                                .switchIfEmpty(Mono.defer(() -> {
-                                                    existingCategory.updatePosition(adjustedPosition);
-                                                    return categoryRepository.save(existingCategory);
-                                                }))
-                                );
+                    if (!request.getPosition().equals(existingCategory.getPosition())) {
+                        return handlePositionUpdate(request, existingCategory);
                     }
 
                     return categoryRepository.save(existingCategory);
                 });
     }
+
+    private Mono<Category> handlePositionUpdate(Category request, Category existingCategory) {
+        if (request.getPosition() > existingCategory.getPosition()) {
+            Mono<Category> target = this.categoryRepository.findCategoryByOwnerAccountIdAndPosition(request.getOwnerAccountId(), request.getPosition());
+            return target
+                    .flatMap(category -> {
+                        category.updatePosition(existingCategory.getPosition());
+                        return this.categoryRepository.save(category);
+                    })
+                    .then(Mono.defer(() -> {
+                        existingCategory.updatePosition(request.getPosition());
+                        return this.categoryRepository.save(existingCategory);
+                    }));
+        }
+        return categoryRepository.findCategoriesByRange(request.getOwnerAccountId(), request.getPosition(), existingCategory.getPosition())
+                .flatMap(targetCategory -> {
+                    if (!targetCategory.getId().equals(request.getId())
+                            && targetCategory.getPosition() <= existingCategory.getPosition()) {
+                        targetCategory.shiftPositionRight();
+                        return categoryRepository.save(targetCategory);
+                    }
+                    return Mono.empty();
+                })
+                .then(Mono.defer(() -> {
+                    existingCategory.updatePosition(request.getPosition());
+                    return categoryRepository.save(existingCategory);
+                }));
+    }
+
 
     @Override
     public Mono<Void> deleteCategory(final String categoryId) {

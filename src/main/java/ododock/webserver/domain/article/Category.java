@@ -73,4 +73,12 @@ public class Category extends BaseEntity {
         this.position = position;
     }
 
+    public void shiftPositionLeft() {
+        this.position = this.position - 1;
+    }
+
+    public void shiftPositionRight() {
+        this.position = this.position + 1;
+    }
+
 }
