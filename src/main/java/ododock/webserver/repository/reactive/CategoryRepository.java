@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-public interface CategoryRepository extends ReactiveMongoRepository<Category, String> {
+public interface CategoryRepository extends ReactiveMongoRepository<Category, String>, ReactiveCategoryRepository {
 
     Flux<Category> findCategoryByOwnerAccountId(Long ownerAccountId, Sort sort);
 
