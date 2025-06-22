@@ -5,7 +5,7 @@ image:
   pullPolicy: IfNotPresent
   tag: "0.1.0-SNAPSHOT"
 
-namespace: oddk
+namespace: ""
 
 imagePullSecrets: [ ]
 nameOverride: ""
@@ -65,6 +65,7 @@ tolerations: [ ]
 affinity: { }
 
 backend:
+  host_url: ### TO BE FILLED ###
   image: 93jpark/oddk-backend:0.1.0-SNAPSHOT
 
   security:

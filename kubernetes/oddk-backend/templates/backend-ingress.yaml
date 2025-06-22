@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: dev.oddk.xyz
+    - host: dev.{{ .Values.backend.host_url | quote }}
       http:
         paths:
           - path: /
@@ -18,17 +18,7 @@ spec:
                 name: {{ include "oddk-backend.fullname" . }}
                 port:
                   number: 8080
-    - host: docs.oddk.xyz
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ include "oddk-backend.fullname" . }}
-                port:
-                  number: 8080
-    - host: oddk.xyz
+    - host: docs.{{ .Values.backend.host_url | quote }}
       http:
         paths:
           - path: /
